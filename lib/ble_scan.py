@@ -35,13 +35,13 @@ EVT_LE_ADVERTISING_REPORT=0x02
 def getBLESocket(devID):
     return bluez.hci_open_dev(devID)
 
-#def returnnumberpacket(pkt):
-#    myInteger = 0
-#    multiple = 256
-#    for i in range(len(pkt)):
-#        myInteger += struct.unpack("B",pkt[i:i+1])[0] * multiple
-#        multiple = 1
-#    return myInteger
+def returnnumberpacket(pkt):
+    myInteger = 0
+    multiple = 256
+    for i in range(len(pkt)):
+        myInteger += struct.unpack("B",pkt[i:i+1])[0] * multiple
+        multiple = 1
+    return myInteger
 
 def returnstringpacket(pkt):
     myString = "";
