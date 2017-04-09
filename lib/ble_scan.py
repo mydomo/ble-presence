@@ -49,9 +49,9 @@ def returnstringpacket(pkt):
         myString += "%02x" %struct.unpack("B",pkt[i:i+1])[0]
     return myString
 
-#def printpacket(pkt):
-#    for i in range(len(pkt)):
-#        sys.stdout.write("%02x " % struct.unpack("B",pkt[i:i+1])[0])
+def printpacket(pkt):
+    for i in range(len(pkt)):
+        sys.stdout.write("%02x " % struct.unpack("B",pkt[i:i+1])[0])
 
 def get_packed_bdaddr(bdaddr_string):
     packable_addr = []
@@ -111,7 +111,7 @@ def parse_events(sock, loop_count=100):
                     #Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
                     #Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
                     #Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
-                    Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -1])
+                    Adstring += ',' + printpacket(pkt[report_pkt_offset -1])
               #      try:
                         #Adstring += ',' + "%i" % struct.unpack("b", pkt[report_pkt_offset -2:report_pkt_offset -1])
                         #Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -2:report_pkt_offset -1])
