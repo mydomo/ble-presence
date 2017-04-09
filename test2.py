@@ -155,4 +155,23 @@ if mode != 1:
         print("error while setting inquiry mode")
     print("result: %d" % result)
 
+
+dev_id = 0
+
+os.system("sudo /etc/init.d/bluetooth restart")
+time.sleep(1)
+os.system("sudo hciconfig hci0 up")
+
+try:
+	sock = bluez.hci_open_dev(dev_id)
+	print ("ble thread started")
+
+except:
+	print ("error accessing bluetooth device…")
+	print ("riavvio in corso...")
+	os.system("sudo /etc/init.d/bluetooth restart")
+	time.sleep(1)
+	os.system("sudo hciconfig hci0 up")
+	#sys.exit()
+
 device_inquiry_with_with_rssi(sock)
