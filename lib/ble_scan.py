@@ -105,21 +105,13 @@ def parse_events(sock, loop_count=100):
                     # build the return string
                     # MAC address
 
-
-                    # commented out - don't know what this byte is.  It's NOT TXPower
-                    txpower, = struct.unpack("b", pkt[report_pkt_offset -2])
-                    print ("\t(Unknown):", txpower)
-                    rssi, = struct.unpack("b", pkt[report_pkt_offset -1])
-                    print ("\tRSSI:", rssi)
-
-
-
                     Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
                     #Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6])
                     #Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
                     #Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
                     #Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
                     #Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
+                    Adstring += "%i" % struct.unpack("b", pkt[report_pkt_offset -1])
                     try:
                         #Adstring += ',' + "%i" % struct.unpack("b", pkt[report_pkt_offset -2:report_pkt_offset -1])
                         #Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -2:report_pkt_offset -1])
