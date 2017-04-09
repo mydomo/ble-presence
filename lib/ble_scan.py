@@ -138,7 +138,7 @@ def parse_events(sock, loop_count=100):
         elif event == bluez.EVT_DISCONN_COMPLETE:
         	i = 0 
         elif event == LE_META_EVENT:
-            subevent, = struct.unpack("B", pkt[3])
+            subevent = struct.unpack("B", pkt[3])
             pkt = pkt[4:]
             if subevent == EVT_LE_CONN_COMPLETE:
             	le_handle_connection_complete(pkt)
