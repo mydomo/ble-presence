@@ -1,7 +1,7 @@
 # test BLE Scanning software
 # jcs 6/8/2014
 
-import blescan
+import lib/ble_scan
 import sys
 
 import bluetooth._bluetooth as bluez
