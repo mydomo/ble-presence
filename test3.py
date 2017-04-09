@@ -63,10 +63,7 @@ for sig in [signal.SIGTERM, signal.SIGINT, signal.SIGHUP, signal.SIGQUIT]:
 
             
 FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-if globals().has_key('logOutFilename') :
-    logging.basicConfig(format=FORMAT,filename=logOutFilename,level=logLevel)
-else:
-    logging.basicConfig(format=FORMAT,level=logLevel)
+logging.basicConfig(format=FORMAT,level=logLevel)
 
 #Reset Bluetooth interface, hci0
 os.system("sudo hciconfig hci0 down")
