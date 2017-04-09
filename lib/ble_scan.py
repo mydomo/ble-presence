@@ -141,12 +141,12 @@ def parse_events(sock, loop_count=100):
             subevent, = struct.unpack("B", pkt[3])
             pkt = pkt[4:]
             if subevent == EVT_LE_CONN_COMPLETE:
-                le_handle_connection_complete(pkt)
+            	le_handle_connection_complete(pkt)
             elif subevent == EVT_LE_ADVERTISING_REPORT:
-                #print "advertising report"
-                num_reports = struct.unpack("B", pkt[0])[0]
-                report_pkt_offset = 0
-                for i in range(0, num_reports):
+            	#print "advertising report"
+            	num_reports = struct.unpack("B", pkt[0])[0]
+            	report_pkt_offset = 0
+            	for i in range(0, num_reports):
                 	Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
                 	Adstring += ","
                 	Adstring += returnstringpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6]) 
