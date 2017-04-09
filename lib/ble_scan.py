@@ -35,13 +35,13 @@ EVT_LE_ADVERTISING_REPORT=0x02
 def getBLESocket(devID):
     return bluez.hci_open_dev(devID)
 
-#def returnnumberpacket(pkt):
-#    myInteger = 0
-#    multiple = 256
-#    for i in range(len(pkt)):
-#        myInteger += struct.unpack("B",pkt[i:i+1])[0] * multiple
-#        multiple = 1
-#    return myInteger
+def returnnumberpacket(pkt):
+    myInteger = 0
+    multiple = 256
+    for i in range(len(pkt)):
+        myInteger += struct.unpack("B",pkt[i:i+1])[0] * multiple
+        multiple = 1
+    return myInteger
 
 def returnstringpacket(pkt):
     myString = "";
@@ -103,23 +103,19 @@ def parse_events(sock, loop_count=100):
                 report_pkt_offset = 0
                 for i in range(0, num_reports):
                     # build the return string
-                    # MAC address
-
                     Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
-                    #Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6])
-                    #Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
-                    #Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
-                    #Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
-                    #Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
-                    Adstring += ',' + printpacket(pkt[report_pkt_offset -1])
-              #      try:
-                        #Adstring += ',' + "%i" % struct.unpack("b", pkt[report_pkt_offset -2:report_pkt_offset -1])
-                        #Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -2:report_pkt_offset -1])
+                    Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6])
+                    Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
+                    Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
+                    Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
+                    Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
+                    try:
+                        Adstring += ',' + "%i" % struct.unpack("b", pkt[report_pkt_offset -2:report_pkt_offset -1])
+                        Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -2:report_pkt_offset -1])
                         #The last byte is always 00; we don't really need it
-                        # RSSI
-                        #Adstring += ',' + "%i" % struct.unpack("b", pkt[report_pkt_offset -1:report_pkt_offset])
-                        #Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -1:report_pkt_offset])
-               #     except: 1
+                        Adstring += ',' + "%i" % struct.unpack("b", pkt[report_pkt_offset -1:report_pkt_offset])
+                        Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -1:report_pkt_offset])
+                    except: 1
                     #Prevent duplicates in results
                     if Adstring not in myFullList: myFullList.append(Adstring)
     sock.setsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, old_filter )
