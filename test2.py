@@ -94,6 +94,8 @@ def device_inquiry_with_with_rssi(sock):
     while not done:
         pkt = sock.recv(255)
         print (pkt)
+        addr = bluez.ba2str( pkt[1+6*i:1+6*i+6] )
+        print (pkt)
         ptype, event, plen = struct.unpack("BBB", pkt[:3])
         if event == bluez.EVT_INQUIRY_RESULT_WITH_RSSI:
             pkt = pkt[3:]
