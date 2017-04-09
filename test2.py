@@ -6,6 +6,7 @@ import sys
 import struct
 import bluetooth._bluetooth as bluez
 import bluetooth
+import time
 
 def printpacket(pkt):
     for c in pkt:
