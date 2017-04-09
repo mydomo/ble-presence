@@ -31,7 +31,7 @@ ble_scan.hci_le_set_scan_parameters(sock)
 ble_scan.hci_enable_le_scan(sock)
 
 while True:
-	returnedList = ble_scan.parse_events(sock, 10)
+	returnedList = ble_scan.parse_events(sock, 25)
 	print ("----------")
 	for beacon in returnedList:
 		print (beacon)
