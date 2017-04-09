@@ -109,7 +109,7 @@ def parse_events(sock, loop_count=100):
                     Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
                     Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
                     Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
-                    Adstring += 'RSSI= ' + "%i" % struct.unpack("b", pkt[:-1])
+                    Adstring += 'RSSI= ' + "%i" % struct.unpack("b", pkt[:- 1])
                #     try:
                 #        Adstring += ',1:' + "%i" % struct.unpack("b", pkt[report_pkt_offset -2:report_pkt_offset -1])
                  #       Adstring += ',2:' + returnstringpacket(pkt[report_pkt_offset -2:report_pkt_offset -1])
