@@ -133,7 +133,7 @@ def parse_events(sock, loop_count=100):
         ptype, event, plen = struct.unpack("BBB", pkt[:3])
         #print "--------------" 
         if event == bluez.EVT_INQUIRY_RESULT_WITH_RSSI:
-		i = 0
+			i = 0
         elif event == bluez.EVT_NUM_COMP_PKTS:
                 i = 0 
         elif event == bluez.EVT_DISCONN_COMPLETE:
