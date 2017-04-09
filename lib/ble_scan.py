@@ -1,5 +1,4 @@
 # TUNED AND FIXED FOR PYTHON3
-
 # BLE iBeaconScanner based on https://github.com/adamf/BLE/blob/master/ble-scanner.py
 # JCS 06/07/14
 
@@ -133,11 +132,11 @@ def parse_events(sock, loop_count=100):
         ptype, event, plen = struct.unpack("BBB", pkt[:3])
         #print "--------------" 
         if event == bluez.EVT_INQUIRY_RESULT_WITH_RSSI:
-		i =0
+			i = 0
         elif event == bluez.EVT_NUM_COMP_PKTS:
-                i =0 
+			i = 0 
         elif event == bluez.EVT_DISCONN_COMPLETE:
-                i =0 
+			i = 0 
         elif event == LE_META_EVENT:
             subevent, = struct.unpack("B", pkt[3])
             pkt = pkt[4:]
@@ -150,20 +149,20 @@ def parse_events(sock, loop_count=100):
                 for i in range(0, num_reports):
 		
 		    if (DEBUG == True):
-			print "-------------"
+				print "-------------"
                     	#print "\tfullpacket: ", printpacket(pkt)
 		    	print "\tUDID: ", printpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6])
 		    	print "\tMAJOR: ", printpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
 		    	print "\tMINOR: ", printpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
-                    	print "\tMAC address: ", packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
+                print "\tMAC address: ", packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
 		    	# commented out - don't know what this byte is.  It's NOT TXPower
-                    	txpower, = struct.unpack("b", pkt[report_pkt_offset -2])
-                    	print "\t(Unknown):", txpower
+				txpower, = struct.unpack("b", pkt[report_pkt_offset -2])
+				print "\t(Unknown):", txpower
 	
-                    	rssi, = struct.unpack("b", pkt[report_pkt_offset -1])
-                    	print "\tRSSI:", rssi
+				rssi, = struct.unpack("b", pkt[report_pkt_offset -1])
+				print "\tRSSI:", rssi
 		    # build the return string
-                    Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
+			Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
 		    Adstring += ","
 		    Adstring += returnstringpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6]) 
 		    Adstring += ","
@@ -180,3 +179,4 @@ def parse_events(sock, loop_count=100):
                 done = True
     sock.setsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, old_filter )
     return myFullList
+
