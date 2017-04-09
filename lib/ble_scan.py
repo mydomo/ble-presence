@@ -104,8 +104,8 @@ def parse_events(sock, loop_count=100):
                 for i in range(0, num_reports):
                     # build the return string
                     Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
-                    print (loop_count)
                     #Prevent duplicates in results
+                    print (num_reports)
                     if Adstring not in myFullList: myFullList.append(Adstring)
     sock.setsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, old_filter )
     return myFullList
