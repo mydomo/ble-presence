@@ -23,6 +23,7 @@ import os
 import sys
 import struct
 import bluetooth._bluetooth as bluez
+import time
 
 LE_META_EVENT = 0x3e
 OGF_LE_CTL=0x08
@@ -104,6 +105,8 @@ def parse_events(sock, loop_count=100):
                 for i in range(0, num_reports):
                     # build the return string
                     Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
+                    Adstring += ",RSSI,"
+                    Adstring += int(time.time())
                     #Prevent duplicates in results
                     if Adstring not in myFullList: myFullList.append(Adstring)
     sock.setsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, old_filter )
