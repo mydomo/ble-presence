@@ -35,7 +35,7 @@ while True:
 	print ("----------")
 	for beacon in returnedList:
 		print (beacon)
-		MAC, RSSI, LASTSEEN = beacon.split(',', 1)
+		MAC, RSSI, LASTSEEN = beacon.split(',')
 		print (MAC)
 		print (RSSI)
 		print (LASTSEEN)
