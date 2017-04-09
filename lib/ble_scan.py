@@ -110,11 +110,11 @@ def parse_events(sock, loop_count=100):
                     Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
                     Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
                     try:
-                        Adstring += ',' + "%i" % struct.unpack("b", pkt[report_pkt_offset -2:report_pkt_offset -1])
-                        Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -2:report_pkt_offset -1])
+                        Adstring += ',1:' + "%i" % struct.unpack("b", pkt[report_pkt_offset -2:report_pkt_offset -1])
+                        Adstring += ',2:' + returnstringpacket(pkt[report_pkt_offset -2:report_pkt_offset -1])
                         #The last byte is always 00; we don't really need it
-                        Adstring += ',' + "%i" % struct.unpack("b", pkt[report_pkt_offset -1:report_pkt_offset])
-                        Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -1:report_pkt_offset])
+                        Adstring += ',3:' + "%i" % struct.unpack("b", pkt[report_pkt_offset -1:report_pkt_offset])
+                        Adstring += ',4:' + returnstringpacket(pkt[report_pkt_offset -1:report_pkt_offset])
                     except: 1
                     #Prevent duplicates in results
                     if Adstring not in myFullList: myFullList.append(Adstring)
