@@ -121,20 +121,20 @@ def parse_events(sock, loop_count=100):
     sock.setsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, old_filter )
     return myFullList
 
-if __name__ == '__main__':
-    dev_id = 0
-    try:
-        sock = bluez.hci_open_dev(dev_id)
-        print("ble thread started")
-    except:
-        print("error accessing bluetooth device...")
-        sys.exit(1)
-
-    hci_le_set_scan_parameters(sock)
-    hci_enable_le_scan(sock)
-
-    while True:
-        returnedList = parse_events(sock, 10)
-        print("----------")
-        for beacon in returnedList:
-            print(beacon)
+#if __name__ == '__main__':
+#    dev_id = 0
+#   try:
+#        sock = bluez.hci_open_dev(dev_id)
+#        print("ble thread started")
+#    except:
+#        print("error accessing bluetooth device...")
+#        sys.exit(1)
+#
+#    hci_le_set_scan_parameters(sock)
+#    hci_enable_le_scan(sock)
+#
+#    while True:
+#        returnedList = parse_events(sock, 10)
+#        print("----------")
+#        for beacon in returnedList:
+#            print(beacon)
