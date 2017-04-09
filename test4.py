@@ -23,7 +23,7 @@ if not btlib:
     )
 bluez = CDLL(btlib, use_errno=True)
 
-dev_id = bluez.hci_get_route(None)
+dev_id = bluez.hci_get_route(0)
 
 sock = socket(AF_BLUETOOTH, SOCK_RAW, BTPROTO_HCI)
 sock.bind((dev_id,))
