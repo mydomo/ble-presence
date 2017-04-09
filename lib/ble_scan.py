@@ -104,19 +104,7 @@ def parse_events(sock, loop_count=100):
                 for i in range(0, num_reports):
                     # build the return string
                     Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
-                    Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6])
-                    Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
-                    Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
-                    Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
-                    Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
-                    Adstring += 'RSSI= ' + struct.unpack("b",pkt[-1:1])[0]
-               #     try:
-                #        Adstring += ',1:' + "%i" % struct.unpack("b", pkt[report_pkt_offset -2:report_pkt_offset -1])
-                 #       Adstring += ',2:' + returnstringpacket(pkt[report_pkt_offset -2:report_pkt_offset -1])
-                  #      #The last byte is always 00; we don't really need it
-                   #     Adstring += ',3:' + "%i" % struct.unpack("b", pkt[report_pkt_offset -1: report_pkt_offset + 0])
-                    #    Adstring += ',4:' + returnstringpacket(pkt[report_pkt_offset -1:report_pkt_offset])
-                    #except: 1
+                    print (loop_count)
                     #Prevent duplicates in results
                     if Adstring not in myFullList: myFullList.append(Adstring)
     sock.setsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, old_filter )
