@@ -103,13 +103,13 @@ def parse_events(sock, loop_count=100):
                 report_pkt_offset = 0
                 for i in range(0, num_reports):
                     # build the return string
-                    print (pkt)
                     Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
                     Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6])
                     Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
                     Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
                     Adstring += ',' + "%i" % returnnumberpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
                     Adstring += ',' + returnstringpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
+                    Adstring += "%i" % struct.unpack("b", pkt[-1])
                #     try:
                 #        Adstring += ',1:' + "%i" % struct.unpack("b", pkt[report_pkt_offset -2:report_pkt_offset -1])
                  #       Adstring += ',2:' + returnstringpacket(pkt[report_pkt_offset -2:report_pkt_offset -1])
