@@ -106,7 +106,7 @@ def parse_events(sock, loop_count=100):
                     # build the return string
                     Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
                     Adstring += ",RSSI,"
-                    Adstring += int(time.time())
+                    Adstring += str(int(time.time()))
                     #Prevent duplicates in results
                     if Adstring not in myFullList: myFullList.append(Adstring)
     sock.setsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, old_filter )
