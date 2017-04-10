@@ -105,7 +105,8 @@ def parse_events(sock, loop_count=100):
                 for i in range(0, num_reports):
                     # build the return string
                     Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
-                    Adstring += ",RSSI,"
+                    rssi, = struct.unpack("b", pkt[ -1])
+                    Adstring += "," + rssi + ","
                     Adstring += str(int(time.time()))
                     #Prevent duplicates in results
                     if Adstring not in myFullList: myFullList.append(Adstring)
