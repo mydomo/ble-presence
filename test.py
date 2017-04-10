@@ -34,8 +34,11 @@ while True:
 	returnedList = ble_scan.parse_events(sock, 25)
 	print ("----------")
 	for beacon in returnedList:
-		print (beacon)
 		MAC, RSSI, LASTSEEN = beacon.split(',')
 		print (MAC)
 		print (RSSI)
 		print (LASTSEEN)
+
+
+
+
