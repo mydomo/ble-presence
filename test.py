@@ -33,6 +33,7 @@ ble_scan.hci_enable_le_scan(sock)
 while True:
 	returnedList = ble_scan.parse_events(sock, 25)
 	print ("----------")
+	mybacon = {}
 	for beacon in returnedList:
 		MAC, RSSI, LASTSEEN = beacon.split(',')
 		#print (MAC)
