@@ -35,10 +35,11 @@ while True:
 	print ("----------")
 	for beacon in returnedList:
 		MAC, RSSI, LASTSEEN = beacon.split(',')
-		print (MAC)
-		print (RSSI)
-		print (LASTSEEN)
-
+		#print (MAC)
+		#print (RSSI)
+		#print (LASTSEEN)
+		mybacon[MAC] = [RSSI,LASTSEEN]
+	print (mybacon)
 
 
 
