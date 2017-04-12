@@ -84,10 +84,11 @@ def start_server():
     # this will make an infinite loop needed for 
     # not reseting server for every client
     while True:
-    	returnedList = ble_scan.parse_events(sock, 25)
-    	for beacon in returnedList:
+        returnedList = ble_scan.parse_events(sock, 25)
+        for beacon in returnedList:
             MAC, RSSI, LASTSEEN = beacon.split(',')
             mybeacon[MAC] = [RSSI,LASTSEEN]
+        
         conn, addr = soc.accept()
         ip, port = str(addr[0]), str(addr[1])
         print('Accepting connection from ' + ip + ':' + port)
