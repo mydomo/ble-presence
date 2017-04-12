@@ -43,7 +43,7 @@ def start_server():
 
 	import socket
 
-    dev_id = 0
+	dev_id = 0
 
 	os.system("sudo /etc/init.d/bluetooth restart")
 	time.sleep(1)
