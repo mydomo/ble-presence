@@ -26,7 +26,7 @@ def client_thread(conn, ip, port, mybeacon, MAX_BUFFER_SIZE = 4096):
     # decode input and strip the end of line
     input_from_client = input_from_client_bytes.decode("utf8").rstrip()
 
-    res = do_some_stuffs_with_input(input_from_client, mybeacon)
+    res = do_some_stuffs_with_input(input_from_client, str(mybeacon))
     print("Result of processing {} is: {}".format(input_from_client, res))
 
     vysl = res.encode("utf8")  # encode the result string
