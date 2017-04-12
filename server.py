@@ -1,6 +1,6 @@
 # server.py
 
-def do_some_stuffs_with_input(input_string):  
+def do_some_stuffs_with_input(input_string, mybeacon):  
     """
     This is where all the processing happens.
 
@@ -11,7 +11,7 @@ def do_some_stuffs_with_input(input_string):
     	return mybeacon
     #return input_string[::-1]
 
-def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
+def client_thread(conn, ip, port, mybeacon, MAX_BUFFER_SIZE = 4096):
 
     # the input is in bytes, so decode it
     input_from_client_bytes = conn.recv(MAX_BUFFER_SIZE)
@@ -26,7 +26,7 @@ def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
     # decode input and strip the end of line
     input_from_client = input_from_client_bytes.decode("utf8").rstrip()
 
-    res = do_some_stuffs_with_input(input_from_client)
+    res = do_some_stuffs_with_input(input_from_client, mybeacon)
     print("Result of processing {} is: {}".format(input_from_client, res))
 
     vysl = res.encode("utf8")  # encode the result string
@@ -93,7 +93,7 @@ def start_server():
         ip, port = str(addr[0]), str(addr[1])
         print('Accepting connection from ' + ip + ':' + port)
         try:
-            Thread(target=client_thread, args=(conn, ip, port)).start()
+            Thread(target=client_thread, args=(conn, ip, port, mybeacon)).start()
         except:
             print("Terible error!")
             import traceback
