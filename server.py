@@ -39,11 +39,9 @@ def start_server():
 	import sys
 	import os
 	import time
-
-
 	import bluetooth._bluetooth as bluez
-    
-    import socket
+
+	import socket
 
     dev_id = 0
 
@@ -98,7 +96,7 @@ def start_server():
 		#print (RSSI)
 		#print (LASTSEEN)
 		mybeacon[MAC] = [RSSI,LASTSEEN]
-    	
+
         conn, addr = soc.accept()
         ip, port = str(addr[0]), str(addr[1])
         print('Accepting connection from ' + ip + ':' + port)
