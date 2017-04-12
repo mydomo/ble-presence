@@ -66,9 +66,9 @@ def start_server():
 	mybeacon = {}
 
 	soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # this is for easy starting/killing the app
-    soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    print('Socket created')
+	# this is for easy starting/killing the app
+	soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	print('Socket created')
 
     try:
         soc.bind(("10.50.0.55", 12345))
