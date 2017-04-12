@@ -29,7 +29,7 @@ except:
 
 ble_scan.hci_le_set_scan_parameters(sock)
 ble_scan.hci_enable_le_scan(sock)
-mybacon = {}
+mybeacon = {}
 while True:
 	returnedList = ble_scan.parse_events(sock, 25)
 	print ("----------")
@@ -38,8 +38,8 @@ while True:
 		#print (MAC)
 		#print (RSSI)
 		#print (LASTSEEN)
-		mybacon[MAC] = [RSSI,LASTSEEN]
-	print (mybacon)
+		mybeacon[MAC] = [RSSI,LASTSEEN]
+	print (mybeacon)
 
 
 
