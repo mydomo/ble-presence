@@ -3,7 +3,7 @@
 import socket
 
 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
-soc.connect(("10.0.50.55", 12345))
+soc.connect(("10.50.0.55", 12345))
 
 clients_input = input("What you want to proceed my dear client?\n")  
 soc.send(clients_input.encode("utf8")) # we must encode the string to bytes  
