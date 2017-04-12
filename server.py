@@ -65,8 +65,7 @@ def start_server():
 	ble_scan.hci_enable_le_scan(sock)
 	mybeacon = {}
 
-
-    soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # this is for easy starting/killing the app
     soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     print('Socket created')
