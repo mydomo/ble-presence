@@ -6,9 +6,10 @@ def do_some_stuffs_with_input(input_string):
 
     Let's just read the string backwards
     """
-
-    print("Processing that nasty input!")
-    return input_string[::-1]
+    if input_string == "beacon_data"
+    	print("sending beacon data!")
+    	return "BEACON DATA"
+    #return input_string[::-1]
 
 def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
 
