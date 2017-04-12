@@ -6,7 +6,7 @@ def do_some_stuffs_with_input(input_string):
 
     Let's just read the string backwards
     """
-    if input_string == 'beacon_data'
+    if input_string is 'beacon_data'
     	print("sending beacon data!")
     	return "BEACON DATA"
     #return input_string[::-1]
