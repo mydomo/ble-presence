@@ -8,7 +8,7 @@ def do_some_stuffs_with_input(input_string):
     """
     if input_string == 'beacon_data':
     	print("sending beacon data!")
-    	return "BEACON DATA"
+    	return mybeacon
     #return input_string[::-1]
 
 def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
@@ -35,8 +35,39 @@ def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
     print('Connection ' + ip + ':' + port + " ended")
 
 def start_server():
+	from lib import ble_scan
+	import sys
+	import os
+	import time
 
+
+	import bluetooth._bluetooth as bluez
+    
     import socket
+
+    dev_id = 0
+
+	os.system("sudo /etc/init.d/bluetooth restart")
+	time.sleep(1)
+	os.system("sudo hciconfig hci0 up")
+
+	try:
+		sock = bluez.hci_open_dev(dev_id)
+		print ("ble thread started")
+
+	except:
+		print ("error accessing bluetooth device…")
+		print ("riavvio in corso...")
+		os.system("sudo /etc/init.d/bluetooth restart")
+		time.sleep(1)
+		os.system("sudo hciconfig hci0 up")
+		#sys.exit()
+
+	ble_scan.hci_le_set_scan_parameters(sock)
+	ble_scan.hci_enable_le_scan(sock)
+	mybeacon = {}
+
+
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # this is for easy starting/killing the app
     soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -60,6 +91,14 @@ def start_server():
     # this will make an infinite loop needed for 
     # not reseting server for every client
     while True:
+    	returnedList = ble_scan.parse_events(sock, 25)
+    	for beacon in returnedList:
+		MAC, RSSI, LASTSEEN = beacon.split(',')
+		#print (MAC)
+		#print (RSSI)
+		#print (LASTSEEN)
+		mybeacon[MAC] = [RSSI,LASTSEEN]
+    	
         conn, addr = soc.accept()
         ip, port = str(addr[0]), str(addr[1])
         print('Accepting connection from ' + ip + ':' + port)
