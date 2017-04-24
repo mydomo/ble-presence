@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # server.py
 
 def do_some_stuffs_with_input(input_string, mybeacon):  

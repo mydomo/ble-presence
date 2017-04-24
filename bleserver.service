@@ -1,0 +1,16 @@
+# REFERENCE: https://www.reddit.com/r/raspberry_pi/comments/4vhofs/creating_a_systemd_daemon_so_you_can_run_a_python/
+#
+***bleserver.service***
+[Unit]
+Description=BLE Python Socket Server
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/home/test/ble-presence/server.py
+User=root
+WorkingDirectory=/home/test/ble-presence
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
