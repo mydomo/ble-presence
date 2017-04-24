@@ -120,4 +120,4 @@ if __name__ == '__main__':
     if killer.kill_now:
       break
 
-  print "End of the program. I was killed gracefully :)"
+  print ("End of the program. I was killed gracefully :)")
