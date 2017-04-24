@@ -8,7 +8,7 @@ def do_some_stuffs_with_input(input_string, mybeacon):
     Let's just read the string backwards
     """
     if input_string == 'beacon_data':
-    	print("sending beacon data!")
+    	#print("sending beacon data!")
     	return mybeacon
     #return input_string[::-1]
 
@@ -28,12 +28,12 @@ def client_thread(conn, ip, port, mybeacon, MAX_BUFFER_SIZE = 4096):
     input_from_client = input_from_client_bytes.decode("utf8").rstrip()
 
     res = do_some_stuffs_with_input(input_from_client, str(mybeacon))
-    print("Result of processing {} is: {}".format(input_from_client, res))
+    #print("Result of processing {} is: {}".format(input_from_client, res))
 
     vysl = res.encode("utf8")  # encode the result string
     conn.sendall(vysl)  # send it to client
     conn.close()  # close connection
-    print('Connection ' + ip + ':' + port + " ended")
+    #print('Connection ' + ip + ':' + port + " ended")
 
 def start_server():
 
@@ -50,7 +50,7 @@ def start_server():
 
     try:
     	sock = bluez.hci_open_dev(dev_id)
-    	print ("ble thread started")
+    	#print ("ble thread started")
     except:
     	print ("error accessing bluetooth device…")
     	print ("riavvio in corso...")
@@ -65,19 +65,19 @@ def start_server():
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # this is for easy starting/killing the app
     soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    print('Socket created')
+    #print('Socket created')
 
     try:
         soc.bind(("10.50.0.55", 12345))
-        print('Socket bind complete')
+    #    print('Socket bind complete')
     except socket.error as msg:
         import sys
-        print('Bind failed. Error : ' + str(sys.exc_info()))
+    #    print('Bind failed. Error : ' + str(sys.exc_info()))
         sys.exit()
 
     #Start listening on socket
     soc.listen(10)
-    print('Socket now listening')
+    #print('Socket now listening')
 
     # for handling task in separate jobs we need threading
     from threading import Thread
@@ -92,7 +92,7 @@ def start_server():
         
         conn, addr = soc.accept()
         ip, port = str(addr[0]), str(addr[1])
-        print('Accepting connection from ' + ip + ':' + port)
+        #print('Accepting connection from ' + ip + ':' + port)
         try:
             Thread(target=client_thread, args=(conn, ip, port, mybeacon)).start()
         except:
