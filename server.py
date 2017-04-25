@@ -75,6 +75,7 @@ def ble_scanner():
             for beacon in returnedList:
                 MAC, RSSI, LASTSEEN = beacon.split(',')
                 mybeacon[MAC] = [RSSI,LASTSEEN]
+            time.sleep(1)
         except:
             dev_id = 0
             os.system("sudo /etc/init.d/bluetooth restart")
