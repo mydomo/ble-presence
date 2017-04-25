@@ -69,7 +69,7 @@ def ble_scanner():
         for beacon in returnedList:
             MAC, RSSI, LASTSEEN = beacon.split(',')
             mybeacon[MAC] = [RSSI,LASTSEEN]
-        print str(mybeacon)
+        print (str(mybeacon))
 
 def start_server():
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
