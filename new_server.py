@@ -7,10 +7,12 @@ import os
 import time
 import bluetooth._bluetooth as bluez
 import signal
-
+mode = ''
+mybeacon = ''
 
 def do_some_stuffs_with_input(input_string):
     global mode
+    global mybeacon
     """
     This is where all the processing happens.
     """
