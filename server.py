@@ -57,7 +57,7 @@ def start_server():
     	sock = bluez.hci_open_dev(dev_id)
     	#print ("ble thread started")
     except:
-    	print ("error accessing bluetooth device…")
+    	print ("error accessing bluetooth device...")
     	print ("riavvio in corso...")
     	os.system("sudo /etc/init.d/bluetooth restart")
     	time.sleep(1)
