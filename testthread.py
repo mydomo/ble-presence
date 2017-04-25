@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 from threading import Thread
 
-def uno:
+def uno():
     print ('Starting ')
     while(True):
         print ('1')
 
-def due:
+def due():
     print ('starting second')
     while(True):
         print ('2')
