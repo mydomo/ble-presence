@@ -103,6 +103,8 @@ def start_server():
             print("Terible error!")
             import traceback
             traceback.print_exc()
+        if killer.kill_now:
+            break
     soc.close()
 
 ### MAIN PROGRAM ###
@@ -116,10 +118,7 @@ class GracefulKiller:
     self.kill_now = True
 
 if __name__ == '__main__':
-  killer = GracefulKiller()
-  while True:
+    killer = GracefulKiller()
     Thread(target=start_server).start()
     Thread(target=ble_scanner).start()
-    if killer.kill_now:
-      break
 #  print ("End of the program. I was killed gracefully :)")
