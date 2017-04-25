@@ -95,22 +95,31 @@ def start_server():
             for beacon in returnedList:
                 MAC, RSSI, LASTSEEN = beacon.split(',')
                 mybeacon[MAC] = [RSSI,LASTSEEN]
+        
+            conn, addr = soc.accept()
+            ip, port = str(addr[0]), str(addr[1])
+            #print('Accepting connection from ' + ip + ':' + port)
+            try:
+                Thread(target=client_thread, args=(conn, ip, port, mybeacon)).start()
+            except:
+                print("Terible error!")
+                import traceback
+                traceback.print_exc()
 
         if mode == 'battery_level':
             os.system("sudo /etc/init.d/bluetooth restart")
             time.sleep(1)
             os.system("sudo hciconfig hci0 up")
-            mybeacon = 'good'
-        
-        conn, addr = soc.accept()
-        ip, port = str(addr[0]), str(addr[1])
-        #print('Accepting connection from ' + ip + ':' + port)
-        try:
-            Thread(target=client_thread, args=(conn, ip, port, mybeacon)).start()
-        except:
-            print("Terible error!")
-            import traceback
-            traceback.print_exc()
+            batt_level = 'good'
+            conn, addr = soc.accept()
+            ip, port = str(addr[0]), str(addr[1])
+            try:
+                Thread(target=client_thread, args=(conn, ip, port, batt_level)).start()
+            except:
+                print("Terible error!")
+                import traceback
+                traceback.print_exc()
+
 
     soc.close()
 
