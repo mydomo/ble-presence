@@ -9,6 +9,7 @@ import bluetooth._bluetooth as bluez
 import signal
 mode = ''
 mybeacon = ''
+beaconing = True
 
 def do_some_stuffs_with_input(input_string):
     global mode
@@ -64,12 +65,34 @@ def ble_scanner():
     ble_scan.hci_le_set_scan_parameters(sock)
     ble_scan.hci_enable_le_scan(sock)
     mybeacon = {}
-    while True:
-        returnedList = ble_scan.parse_events(sock, 25)
-        for beacon in returnedList:
-            MAC, RSSI, LASTSEEN = beacon.split(',')
-            mybeacon[MAC] = [RSSI,LASTSEEN]
+    while beaconing == True:
+        try:
+            returnedList = ble_scan.parse_events(sock, 25)
+            for beacon in returnedList:
+                MAC, RSSI, LASTSEEN = beacon.split(',')
+                mybeacon[MAC] = [RSSI,LASTSEEN]
+        except:
+            dev_id = 0
+            os.system("sudo /etc/init.d/bluetooth restart")
+            time.sleep(1)
+            os.system("sudo hciconfig hci0 up")
+            sock = bluez.hci_open_dev(dev_id)
+            ble_scan.hci_le_set_scan_parameters(sock)
+            ble_scan.hci_enable_le_scan(sock)
+
         print (str(mybeacon))
+
+def read_battery_level()
+    global beaconing
+    if mode == 'battery_level':
+        print ('Reading battery level...')
+        os.system("sudo /etc/init.d/bluetooth restart")
+        time.sleep(1)
+        os.system("sudo hciconfig hci0 up")
+        beaconing = False
+        time.sleep(10)
+        print ('Finished reading!')
+        beaconing = True
 
 def start_server():
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -121,4 +144,5 @@ if __name__ == '__main__':
     killer = GracefulKiller()
     Thread(target=start_server).start()
     Thread(target=ble_scanner).start()
+    Thread(target=read_battery_level).start()
 #  print ("End of the program. I was killed gracefully :)")
