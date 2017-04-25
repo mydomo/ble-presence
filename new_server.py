@@ -118,7 +118,7 @@ class GracefulKiller:
 if __name__ == '__main__':
   killer = GracefulKiller()
   while True:
-    start_server()
+    #start_server()
     ble_scanner() 
     if killer.kill_now:
       break
