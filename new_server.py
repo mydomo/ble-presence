@@ -81,6 +81,7 @@ def ble_scanner():
             ble_scan.hci_enable_le_scan(sock)
 
         print (str(mybeacon))
+        print (mode)
 
 def read_battery_level():
     global beaconing
