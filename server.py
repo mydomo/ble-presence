@@ -84,20 +84,17 @@ def ble_scanner():
             ble_scan.hci_le_set_scan_parameters(sock)
             ble_scan.hci_enable_le_scan(sock)
 
-            print (str(mybeacon))
-
 def read_battery_level():
     global beaconing
     global mode
     while True:
         if mode == 'battery_level':
             beaconing = False
-            print ('Reading battery level...')
             os.system("sudo /etc/init.d/bluetooth restart")
             time.sleep(1)
             os.system("sudo hciconfig hci0 up")
-            time.sleep(10)
-            print ('Finished reading!')
+            #PUT HERE THE CODE TO READ THE BATTERY LEVEL
+            #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
             beaconing = True
             mode = 'beacon_data'
             Thread(target=ble_scanner).start()
