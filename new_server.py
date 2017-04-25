@@ -18,8 +18,12 @@ def do_some_stuffs_with_input(input_string):
     """
     if input_string == 'beacon_data':
     	#print("sending beacon data!")
-        mode = 'beacon_data'
-        return str(mybeacon)
+        if beaconing == False:
+            return str('Scanning stopped by other function')
+        if beaconing == True:
+            mode = 'beacon_data'
+            return str(mybeacon)
+            
     if input_string == 'battery_level':
         mode = 'battery_level'
         return 'battery_level_processed'
@@ -86,11 +90,11 @@ def read_battery_level():
     global beaconing
     while True:
         if mode == 'battery_level':
+            beaconing = False
             print ('Reading battery level...')
             os.system("sudo /etc/init.d/bluetooth restart")
             time.sleep(1)
             os.system("sudo hciconfig hci0 up")
-            beaconing = False
             time.sleep(10)
             print ('Finished reading!')
             beaconing = True
