@@ -10,7 +10,7 @@ def do_some_stuffs_with_input(input_string, mybeacon):
     if input_string == 'beacon_data':
     	#print("sending beacon data!")
         mode = 'beacon_data'
-    	return mybeacon
+        return mybeacon
 
     if input_string == 'battery_data':
         mode = 'battery_data'
