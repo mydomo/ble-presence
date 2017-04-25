@@ -9,8 +9,12 @@ def do_some_stuffs_with_input(input_string, mybeacon):
     """
     if input_string == 'beacon_data':
     	#print("sending beacon data!")
+        mode = 'beacon_data'
     	return mybeacon
-    #return input_string[::-1]
+
+    if input_string == 'battery_data':
+        mode = 'battery_data'
+        return mybeacon
 
 def client_thread(conn, ip, port, mybeacon, MAX_BUFFER_SIZE = 4096):
 
@@ -85,11 +89,14 @@ def start_server():
     # this will make an infinite loop needed for 
     # not reseting server for every client
     while True:
-        returnedList = ble_scan.parse_events(sock, 25)
-        for beacon in returnedList:
-            MAC, RSSI, LASTSEEN = beacon.split(',')
-            mybeacon[MAC] = [RSSI,LASTSEEN]
-        
+        if mode = 'beacon_data':
+            returnedList = ble_scan.parse_events(sock, 25)
+            for beacon in returnedList:
+                MAC, RSSI, LASTSEEN = beacon.split(',')
+                mybeacon[MAC] = [RSSI,LASTSEEN]
+        if mode = 'battery_data':
+            mybeacon = 'good'
+
         conn, addr = soc.accept()
         ip, port = str(addr[0]), str(addr[1])
         #print('Accepting connection from ' + ip + ':' + port)
