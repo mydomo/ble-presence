@@ -123,6 +123,7 @@ class GracefulKiller:
 
 if __name__ == '__main__':
   killer = GracefulKiller()
+  mode = 'beacon_data'
   while True:
     start_server() 
     if killer.kill_now:
