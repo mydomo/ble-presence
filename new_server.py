@@ -69,21 +69,20 @@ def ble_scanner():
     ble_scan.hci_le_set_scan_parameters(sock)
     ble_scan.hci_enable_le_scan(sock)
     mybeacon = {}
-    while True:
-        if beaconing == True:
-            try:
-                returnedList = ble_scan.parse_events(sock, 25)
-                for beacon in returnedList:
-                    MAC, RSSI, LASTSEEN = beacon.split(',')
-                    mybeacon[MAC] = [RSSI,LASTSEEN]
-            except:
-                dev_id = 0
-                os.system("sudo /etc/init.d/bluetooth restart")
-                time.sleep(1)
-                os.system("sudo hciconfig hci0 up")
-                sock = bluez.hci_open_dev(dev_id)
-                ble_scan.hci_le_set_scan_parameters(sock)
-                ble_scan.hci_enable_le_scan(sock)
+    if beaconing == True:
+        try:
+            returnedList = ble_scan.parse_events(sock, 25)
+            for beacon in returnedList:
+                MAC, RSSI, LASTSEEN = beacon.split(',')
+                mybeacon[MAC] = [RSSI,LASTSEEN]
+        except:
+            dev_id = 0
+            os.system("sudo /etc/init.d/bluetooth restart")
+            time.sleep(1)
+            os.system("sudo hciconfig hci0 up")
+            sock = bluez.hci_open_dev(dev_id)
+            ble_scan.hci_le_set_scan_parameters(sock)
+            ble_scan.hci_enable_le_scan(sock)
 
             print (str(mybeacon))
 
@@ -101,6 +100,7 @@ def read_battery_level():
             print ('Finished reading!')
             beaconing = True
             mode = 'beacon_data'
+            Thread(target=ble_scanner).start()
 
 
 def start_server():
