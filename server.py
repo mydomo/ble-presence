@@ -1,19 +1,21 @@
 #!/usr/bin/python3
-# server.py
+import socket
+from lib import ble_scan
+from threading import Thread
+import sys
+import os
+import time
+import bluetooth._bluetooth as bluez
+import signal
+
 
 def do_some_stuffs_with_input(input_string, mybeacon):  
     """
     This is where all the processing happens.
-
-    Let's just read the string backwards
     """
     if input_string == 'beacon_data':
     	#print("sending beacon data!")
         mode = 'beacon_data'
-        return mybeacon
-
-    if input_string == 'battery_data':
-        mode = 'battery_data'
         return mybeacon
 
 def client_thread(conn, ip, port, mybeacon, MAX_BUFFER_SIZE = 4096):
@@ -23,7 +25,6 @@ def client_thread(conn, ip, port, mybeacon, MAX_BUFFER_SIZE = 4096):
 
     # MAX_BUFFER_SIZE is how big the message can be
     # this is test if it's sufficiently big
-    import sys
     siz = sys.getsizeof(input_from_client_bytes)
     if  siz >= MAX_BUFFER_SIZE:
         print("The length of input is probably too long: {}".format(siz))
@@ -41,12 +42,6 @@ def client_thread(conn, ip, port, mybeacon, MAX_BUFFER_SIZE = 4096):
 
 def start_server():
 
-    import socket
-    from lib import ble_scan
-    import sys
-    import os
-    import time
-    import bluetooth._bluetooth as bluez
     dev_id = 0
     os.system("sudo /etc/init.d/bluetooth restart")
     time.sleep(1)
@@ -75,7 +70,6 @@ def start_server():
         soc.bind(("10.50.0.55", 12345))
     #    print('Socket bind complete')
     except socket.error as msg:
-        import sys
     #    print('Bind failed. Error : ' + str(sys.exc_info()))
         sys.exit()
 
@@ -84,18 +78,15 @@ def start_server():
     #print('Socket now listening')
 
     # for handling task in separate jobs we need threading
-    from threading import Thread
+    #from threading import Thread
 
     # this will make an infinite loop needed for 
     # not reseting server for every client
     while True:
-        if mode == 'beacon_data':
-            returnedList = ble_scan.parse_events(sock, 25)
-            for beacon in returnedList:
-                MAC, RSSI, LASTSEEN = beacon.split(',')
-                mybeacon[MAC] = [RSSI,LASTSEEN]
-        if mode == 'battery_data':
-            mybeacon = 'good'
+        returnedList = ble_scan.parse_events(sock, 25)
+        for beacon in returnedList:
+            MAC, RSSI, LASTSEEN = beacon.split(',')
+            mybeacon[MAC] = [RSSI,LASTSEEN]
 
         conn, addr = soc.accept()
         ip, port = str(addr[0]), str(addr[1])
@@ -109,9 +100,6 @@ def start_server():
     soc.close()
 
 ### MAIN PROGRAM ###
-import signal
-import time
-
 class GracefulKiller:
   kill_now = False
   def __init__(self):
@@ -123,10 +111,8 @@ class GracefulKiller:
 
 if __name__ == '__main__':
   killer = GracefulKiller()
-  mode = 'beacon_data'
   while True:
     start_server() 
     if killer.kill_now:
       break
-
-  print ("End of the program. I was killed gracefully :)")
+#  print ("End of the program. I was killed gracefully :)")
