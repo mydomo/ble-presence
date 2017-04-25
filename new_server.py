@@ -12,7 +12,6 @@ mybeacon = ''
 
 def do_some_stuffs_with_input(input_string):
     global mode
-    global mybeacon
     """
     This is where all the processing happens.
     """
