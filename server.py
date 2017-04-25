@@ -99,6 +99,7 @@ def read_battery_level():
             beaconing = True
             mode = 'beacon_data'
             Thread(target=ble_scanner).start()
+        time.sleep(1)
 
 
 def start_server():
