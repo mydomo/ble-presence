@@ -89,6 +89,7 @@ def ble_scanner():
 
 def read_battery_level():
     global beaconing
+    global mode
     while True:
         if mode == 'battery_level':
             beaconing = False
