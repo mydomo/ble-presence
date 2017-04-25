@@ -69,7 +69,7 @@ def ble_scanner():
     ble_scan.hci_le_set_scan_parameters(sock)
     ble_scan.hci_enable_le_scan(sock)
     mybeacon = {}
-    if beaconing == True:
+    while beaconing == True:
         try:
             returnedList = ble_scan.parse_events(sock, 25)
             for beacon in returnedList:
