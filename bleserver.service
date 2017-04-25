@@ -1,4 +1,6 @@
-#REFERENCE: https://learn.adafruit.com/running-programs-automatically-on-your-tiny-computer/systemd-writing-and-enabling-a-service
+# REFERENCE: https://www.reddit.com/r/raspberry_pi/comments/4vhofs/creating_a_systemd_daemon_so_you_can_run_a_python/
+#
+***bleserver.service***
 [Unit]
 Description=BLE Python Socket Server
 After=multi-user.target
@@ -12,4 +14,3 @@ Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
-Alias=bleserver.service
