@@ -82,7 +82,7 @@ def ble_scanner():
 
         print (str(mybeacon))
 
-def read_battery_level()
+def read_battery_level():
     global beaconing
     if mode == 'battery_level':
         print ('Reading battery level...')
