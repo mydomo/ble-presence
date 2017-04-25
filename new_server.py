@@ -118,8 +118,8 @@ class GracefulKiller:
 if __name__ == '__main__':
   killer = GracefulKiller()
   while True:
-    #start_server()
-    ble_scanner() 
+    Thread(target=start_server).start()
+    Thread(target=ble_scanner).start()
     if killer.kill_now:
       break
 #  print ("End of the program. I was killed gracefully :)")
