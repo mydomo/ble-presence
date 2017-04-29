@@ -41,7 +41,7 @@ def do_some_stuffs_with_input(input_string):
         mode = 'battery_level'
         if not mybattery and read_value_lock == True:
             return str('Reading in progress...')
-        else if not mybattery and read_value_lock == False:
+        elif not mybattery and read_value_lock == False:
             return str('Reading started')
         else:
             return str(mybattery)
