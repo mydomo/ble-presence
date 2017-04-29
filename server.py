@@ -41,9 +41,9 @@ def do_some_stuffs_with_input(input_string):
         mode = 'battery_level'
         if not mybattery and read_value_lock == True:
             return str('Reading in progress...')
-        if not mybattery and read_value_lock == False:
+        else if not mybattery and read_value_lock == False:
             return str('Reading started')
-        if not mybattery:
+        else:
             return str(mybattery)
 
     if input_string == 'stop':
@@ -132,6 +132,7 @@ def read_battery_level():
                 uuid_to_check = '0x2a19'
                 beaconing = False
                 os.system("sudo hciconfig hci0 down")
+                time.sleep(1)
                 os.system("sudo hciconfig hci0 reset")
                 os.system("sudo /etc/init.d/bluetooth restart")
                 time.sleep(1)
