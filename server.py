@@ -38,9 +38,9 @@ def do_some_stuffs_with_input(input_string):
         devices_to_analize = string_devices_to_analize.split(',')
        # print (devices_to_analize)
         mode = 'battery_level'
-        if ble_value == '':
+        if mybattery == '':
             return str('evaluating')
-        if ble_value != '':
+        if mybattery != '':
             return str(mybattery)
 
     if input_string == 'stop':
@@ -132,12 +132,14 @@ def read_battery_level():
                 time.sleep(1)
                 os.system("sudo hciconfig hci0 up")
                 #PUT HERE THE CODE TO READ THE BATTERY LEVEL
-                handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
-                handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
-                #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
-                ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                try:
+                    handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                    handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                    #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
+                    ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                except:
+                    ble_value = 'nd'
                 time_checked = str(int(time.time()))
-
                 mybattery[device] = [ble_value,time_checked]
                 print (mybattery)
                 
