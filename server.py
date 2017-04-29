@@ -110,7 +110,7 @@ def read_battery_level():
     global ble_value
     while True:
         if mode == 'battery_level':
-            device_to_connect = '44:af:f1:20:2c:9f'
+            device_to_connect = '9c:20:7b:e0:6c:41'
             #device_to_connect = 'de:7f:fd:9a:df:78'
             uuid_to_check = '0x2a19'
             beaconing = False
