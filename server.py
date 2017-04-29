@@ -32,6 +32,7 @@ def do_some_stuffs_with_input(input_string):
 
     if input_string.startswith('battery_level:'):
         string_devices_to_analize = input_string.replace("battery_level: ", "")
+        print (string_devices_to_analize)
         devices_to_analize = string_devices_to_analize.split(',')
         mode = 'battery_level'
         if ble_value == '':
