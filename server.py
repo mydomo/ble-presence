@@ -29,6 +29,9 @@ def do_some_stuffs_with_input(input_string):
         mode = 'battery_level'
         return str(ble_value)
 
+    if input_string == 'stop':
+        break
+
 def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
 
     # the input is in bytes, so decode it
