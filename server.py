@@ -146,7 +146,7 @@ def read_battery_level():
                 except:
                     ble_value = 'nd'
 
-                if ble_value != '' and ble_value != 'nd':
+                if ble_value != '':
                     ble_value = int(ble_value ,16)
 
                 if ble_value == '':
