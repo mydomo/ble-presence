@@ -118,7 +118,8 @@ def read_battery_level():
     global mode
     global mybattery
     while True:
-        if mode == 'battery_level':
+        if mode == 'battery_level' and read_value_lock == False:
+            read_value_lock = True
             print (devices_to_analize)
             for device in devices_to_analize:
                 device_to_connect = device
@@ -139,8 +140,11 @@ def read_battery_level():
                     ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
                 except:
                     ble_value = 'nd'
+                if ble_value == '':
+                    ble_value = 'nd'    
                 time_checked = str(int(time.time()))
                 mybattery[device] = [ble_value,time_checked]
+                read_value_lock = False
                 print (mybattery)
                 
             #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
