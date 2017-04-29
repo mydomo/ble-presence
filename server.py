@@ -10,6 +10,7 @@ import signal
 mode = ''
 mybeacon = ''
 beaconing = True
+ble_value = ''
 
 def do_some_stuffs_with_input(input_string):
     global mode
@@ -96,9 +97,9 @@ def read_battery_level():
             time.sleep(1)
             os.system("sudo hciconfig hci0 up")
             #PUT HERE THE CODE TO READ THE BATTERY LEVEL
-            handle_ble = os.system("sudo hcitool lecc --random de:7f:fd:9a:df:78 | awk '{print $3}'")
+            handle_ble = str(os.system("sudo hcitool lecc --random de:7f:fd:9a:df:78 | awk '{print $3}'"))
             handle_ble_connect = os.system("sudo hcitool ledc " + handle_ble)
-            ble_value = os.system("sudo gatttool -t random --char-read --uuid 0x2a19 -b de:7f:fd:9a:df:78 | awk '{print $4}'")
+            ble_value = str(os.system("sudo gatttool -t random --char-read --uuid 0x2a19 -b de:7f:fd:9a:df:78 | awk '{print $4}'"))
             #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
             beaconing = True
             mode = 'beacon_data'
