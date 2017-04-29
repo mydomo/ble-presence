@@ -10,7 +10,7 @@ import signal
 mode = ''
 mybeacon = ''
 beaconing = True
-ble_value = 'evaluating'
+ble_value = ''
 
 def do_some_stuffs_with_input(input_string):
     global mode
