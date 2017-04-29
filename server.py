@@ -35,6 +35,7 @@ def do_some_stuffs_with_input(input_string):
         print (string_devices_to_analize)
         print (string_devices_to_analize.split(','))
         devices_to_analize = string_devices_to_analize.split(',')
+        print (devices_to_analize)
         mode = 'battery_level'
         if ble_value == '':
             return str('evaluating')
