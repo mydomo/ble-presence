@@ -78,6 +78,9 @@ def ble_scanner():
                 mybeacon[MAC] = [RSSI,LASTSEEN]
             time.sleep(1)
         except:
+            print ("failed restarting device…")
+            print (ble_value)
+            print (mode)
             dev_id = 0
             os.system("sudo /etc/init.d/bluetooth restart")
             time.sleep(1)
@@ -85,6 +88,7 @@ def ble_scanner():
             sock = bluez.hci_open_dev(dev_id)
             ble_scan.hci_le_set_scan_parameters(sock)
             ble_scan.hci_enable_le_scan(sock)
+            time.sleep(2)
 
 def read_battery_level():
     global beaconing
