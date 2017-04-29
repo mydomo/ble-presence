@@ -132,10 +132,10 @@ def read_battery_level():
 
                 mybattery[device] = [ble_value,time_checked]
                 
-                #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
-                beaconing = True
-                mode = 'beacon_data'
-                Thread(target=ble_scanner).start()
+            #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
+            beaconing = True
+            mode = 'beacon_data'
+            Thread(target=ble_scanner).start()
         time.sleep(1)
 
 
