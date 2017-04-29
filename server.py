@@ -27,7 +27,7 @@ def do_some_stuffs_with_input(input_string):
 
     if input_string == 'battery_level':
         mode = 'battery_level'
-        return str(ble_value)
+        return int(ble_value)
 
     if input_string == 'stop':
         killer.kill_now = True
@@ -111,7 +111,7 @@ def read_battery_level():
             #PUT HERE THE CODE TO READ THE BATTERY LEVEL
             handle_ble = str(os.system("sudo hcitool lecc --random de:7f:fd:9a:df:78 | awk '{print $3}'"))
             handle_ble_connect = os.system("sudo hcitool ledc " + handle_ble)
-            ble_value = str(os.system("sudo gatttool -t random --char-read --uuid 0x2a19 -b de:7f:fd:9a:df:78 | awk '{print $4}'"))
+            ble_value = int(os.system("sudo gatttool -t random --char-read --uuid 0x2a19 -b de:7f:fd:9a:df:78 | awk '{print $4}'"))
             #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
             beaconing = True
             mode = 'beacon_data'
