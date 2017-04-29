@@ -19,6 +19,7 @@ mybattery = {}
 
 def do_some_stuffs_with_input(input_string):
     global mode
+    global devices_to_analize
     """
     This is where all the processing happens.
     """
