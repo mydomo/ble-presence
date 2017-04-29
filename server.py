@@ -27,10 +27,11 @@ def do_some_stuffs_with_input(input_string):
 
     if input_string == 'battery_level':
         mode = 'battery_level'
-        return int(ble_value)
+        return str(int(ble_value))
 
     if input_string == 'stop':
         killer.kill_now = True
+        return str('Service stopping')
 
 def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
 
