@@ -30,6 +30,7 @@ def do_some_stuffs_with_input(input_string):
         return str(ble_value)
 
     if input_string == 'stop':
+        soc.close()
         break
 
 def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
