@@ -139,12 +139,10 @@ def read_battery_level():
                 os.system("sudo hciconfig hci0 up")
                 #PUT HERE THE CODE TO READ THE BATTERY LEVEL
                 try:
-                    #handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
-                    #handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
-                    #ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
-                    handle_ble = Popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'", shell=True).wait()
-                    handle_ble_connect = Popen("sudo hcitool ledc " + handle_ble, shell=True).wait()
-                    ble_value = Popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'", shell=True).wait()
+                    handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                    handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                    #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
+                    ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
                 except:
                     ble_value = 'nd'
 
