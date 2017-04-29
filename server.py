@@ -122,8 +122,8 @@ def read_battery_level():
             print (devices_to_analize)
             for device in devices_to_analize:
                 device_to_connect = device
-                print ("Dispositivi da analizzare: " + devices_to_analize)
-                print ("Analizzo dispositivo: " +device)
+                print ("Dispositivi da analizzare: " + str(devices_to_analize))
+                print ("Analizzo dispositivo: " + str(device))
                 uuid_to_check = '0x2a19'
                 beaconing = False
                 os.system("sudo hciconfig hci0 down")
