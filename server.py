@@ -10,7 +10,7 @@ import signal
 mode = ''
 mybeacon = ''
 beaconing = True
-ble_value = ''
+ble_value = 'evaluating'
 
 def do_some_stuffs_with_input(input_string):
     global mode
@@ -74,6 +74,8 @@ def ble_scanner():
     ble_scan.hci_enable_le_scan(sock)
     mybeacon = {}
     while beaconing == True:
+        if killer.kill_now:
+            break
         try:
             returnedList = ble_scan.parse_events(sock, 25)
             for beacon in returnedList:
