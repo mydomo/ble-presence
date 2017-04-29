@@ -115,6 +115,7 @@ def read_battery_level():
     global mybattery
     while True:
         if mode == 'battery_level':
+            print devices_to_analize
             for device in devices_to_analize:
                 device_to_connect = device
                 print (devices_to_analize)
