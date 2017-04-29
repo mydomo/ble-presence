@@ -77,8 +77,6 @@ def ble_scanner():
     dev_id = 0
     os.system("sudo /etc/init.d/bluetooth restart")
     time.sleep(1)
-    os.system("sudo hciconfig hci0 down")
-    os.system("sudo hciconfig hci0 reset")
     os.system("sudo hciconfig hci0 up")
 
     try:
