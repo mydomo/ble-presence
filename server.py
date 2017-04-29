@@ -16,6 +16,7 @@ beaconing = True
 ble_value = ''
 devices_to_analize = {}
 mybattery = {}
+read_value_lock = False
 
 def do_some_stuffs_with_input(input_string):
     global mode
@@ -38,9 +39,9 @@ def do_some_stuffs_with_input(input_string):
         devices_to_analize = string_devices_to_analize.split(',')
        # print (devices_to_analize)
         mode = 'battery_level'
-        if mybattery == '':
-            return str('evaluating')
-        if mybattery != '':
+        if mybattery == '{}' and read_value_lock == False:
+            return str('Reading Started')
+        if mybattery != '{}':
             return str(mybattery)
 
     if input_string == 'stop':
@@ -117,7 +118,7 @@ def read_battery_level():
     global beaconing
     global mode
     global mybattery
-    read_value_lock = False
+    global read_value_lock
     while True:
         if mode == 'battery_level' and read_value_lock == False:
             read_value_lock = True
@@ -141,6 +142,10 @@ def read_battery_level():
                     ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
                 except:
                     ble_value = 'nd'
+
+                if ble_value != '':
+                    ble_value = int(ble_value ,16)
+
                 if ble_value == '':
                     ble_value = 'nd'    
                 time_checked = str(int(time.time()))
