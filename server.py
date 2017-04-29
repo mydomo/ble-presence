@@ -81,6 +81,7 @@ def ble_scanner():
             print ("failed restarting device…")
             print (ble_value)
             print (mode)
+            print (beaconing)
             dev_id = 0
             os.system("sudo /etc/init.d/bluetooth restart")
             time.sleep(1)
