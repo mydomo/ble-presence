@@ -29,9 +29,9 @@ def do_some_stuffs_with_input(input_string):
 
     if input_string == 'battery_level':
         mode = 'battery_level'
-        if ble_value == ''
+        if ble_value == '':
             return str('evaluating')
-        if ble_value != ''  
+        if ble_value != '':
             return str(int(ble_value ,16))
 
     if input_string == 'stop':
