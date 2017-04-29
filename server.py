@@ -26,7 +26,7 @@ def do_some_stuffs_with_input(input_string):
 
     if input_string == 'battery_level':
         mode = 'battery_level'
-        return 'battery_level_processed'
+        return str(ble_value)
 
 def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
 
@@ -88,6 +88,7 @@ def ble_scanner():
 def read_battery_level():
     global beaconing
     global mode
+    global ble_value
     while True:
         if mode == 'battery_level':
             beaconing = False
@@ -95,6 +96,9 @@ def read_battery_level():
             time.sleep(1)
             os.system("sudo hciconfig hci0 up")
             #PUT HERE THE CODE TO READ THE BATTERY LEVEL
+            handle_ble = os.system("sudo hcitool lecc --random de:7f:fd:9a:df:78 | awk '{print $3}'")
+            handle_ble_connect = os.system("sudo hcitool ledc "handle_ble)
+            ble_value = os.system("sudo gatttool -t random --char-read --uuid 0x2a19 -b de:7f:fd:9a:df:78 | awk '{print $4}'")
             #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
             beaconing = True
             mode = 'beacon_data'
