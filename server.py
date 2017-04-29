@@ -11,6 +11,7 @@ import subprocess
 
 mode = ''
 mybeacon = ''
+mybattery = ''
 beaconing = True
 ble_value = ''
 
@@ -27,12 +28,14 @@ def do_some_stuffs_with_input(input_string):
             mode = 'beacon_data'
             return str(mybeacon)
 
-    if input_string == 'battery_level':
+    if input_string.startswith('battery_level:'):
+        string_devices_to_analize = input_string.replace("battery_level: ", "")
+        devices_to_analize = string_devices_to_analize.split(',')
         mode = 'battery_level'
         if ble_value == '':
             return str('evaluating')
         if ble_value != '':
-            return str(int(ble_value ,16))
+            return str(mybattery)
 
     if input_string == 'stop':
         killer.kill_now = True
@@ -107,26 +110,30 @@ def ble_scanner():
 def read_battery_level():
     global beaconing
     global mode
-    global ble_value
+    global mybattery
     while True:
         if mode == 'battery_level':
-            #device_to_connect = '9c:20:7b:e0:6c:41'
-            device_to_connect = 'de:7f:fd:9a:df:78'
-            uuid_to_check = '0x2a19'
-            beaconing = False
-            os.system("sudo hciconfig hci0 down")
-            os.system("sudo hciconfig hci0 reset")
-            os.system("sudo /etc/init.d/bluetooth restart")
-            time.sleep(1)
-            os.system("sudo hciconfig hci0 up")
-            #PUT HERE THE CODE TO READ THE BATTERY LEVEL
-            handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
-            handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
-            ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
-            #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
-            beaconing = True
-            mode = 'beacon_data'
-            Thread(target=ble_scanner).start()
+            for device in devices_to_analize:
+                device_to_connect = device
+                uuid_to_check = '0x2a19'
+                beaconing = False
+                os.system("sudo hciconfig hci0 down")
+                os.system("sudo hciconfig hci0 reset")
+                os.system("sudo /etc/init.d/bluetooth restart")
+                time.sleep(1)
+                os.system("sudo hciconfig hci0 up")
+                #PUT HERE THE CODE TO READ THE BATTERY LEVEL
+                handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
+                time_checked = str(int(time.time()))
+
+                mybattery[device] = [ble_value,time_checked]
+                
+                #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
+                beaconing = True
+                mode = 'beacon_data'
+                Thread(target=ble_scanner).start()
         time.sleep(1)
 
 
