@@ -39,9 +39,11 @@ def do_some_stuffs_with_input(input_string):
         devices_to_analize = string_devices_to_analize.split(',')
        # print (devices_to_analize)
         mode = 'battery_level'
-        if mybattery == '{}' and read_value_lock == False:
-            return str('Reading Started')
-        if mybattery != '{}':
+        if not mybattery and read_value_lock == True:
+            return str('Reading in progress...')
+        if not mybattery and read_value_lock == False:
+            return str('Reading started')
+        if not mybattery:
             return str(mybattery)
 
     if input_string == 'stop':
@@ -147,7 +149,7 @@ def read_battery_level():
                     ble_value = int(ble_value ,16)
 
                 if ble_value == '':
-                    ble_value = 'nd'    
+                    ble_value = '255'    
                 time_checked = str(int(time.time()))
                 mybattery[device] = [ble_value,time_checked]
                 read_value_lock = False
