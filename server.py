@@ -117,6 +117,8 @@ def read_battery_level():
         if mode == 'battery_level':
             for device in devices_to_analize:
                 device_to_connect = device
+                print (devices_to_analize)
+                print (device)
                 uuid_to_check = '0x2a19'
                 beaconing = False
                 os.system("sudo hciconfig hci0 down")
@@ -131,6 +133,7 @@ def read_battery_level():
                 time_checked = str(int(time.time()))
 
                 mybattery[device] = [ble_value,time_checked]
+                print (mybattery)
                 
             #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
             beaconing = True
