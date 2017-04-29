@@ -33,10 +33,10 @@ def do_some_stuffs_with_input(input_string):
 
     if input_string.startswith('battery_level:'):
         string_devices_to_analize = input_string.replace("battery_level: ", "")
-        print (string_devices_to_analize)
-        print (string_devices_to_analize.split(','))
+       # print (string_devices_to_analize)
+       # print (string_devices_to_analize.split(','))
         devices_to_analize = string_devices_to_analize.split(',')
-        print (devices_to_analize)
+       # print (devices_to_analize)
         mode = 'battery_level'
         if ble_value == '':
             return str('evaluating')
@@ -122,8 +122,8 @@ def read_battery_level():
             print (devices_to_analize)
             for device in devices_to_analize:
                 device_to_connect = device
-                print (devices_to_analize)
-                print (device)
+                print ("Dispositivi da analizzare: " + devices_to_analize)
+                print ("Analizzo dispositivo: " +device)
                 uuid_to_check = '0x2a19'
                 beaconing = False
                 os.system("sudo hciconfig hci0 down")
@@ -134,7 +134,8 @@ def read_battery_level():
                 #PUT HERE THE CODE TO READ THE BATTERY LEVEL
                 handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
                 handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
-                ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
+                #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
+                ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
                 time_checked = str(int(time.time()))
 
                 mybattery[device] = [ble_value,time_checked]
