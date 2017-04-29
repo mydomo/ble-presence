@@ -132,18 +132,18 @@ def read_battery_level():
                 uuid_to_check = '0x2a19'
                 beaconing = False
                 time.sleep(1)
-                subprocess.Popen("sudo hciconfig hci0 down", shell=True).wait()
-                subprocess.Popen("sudo hciconfig hci0 reset", shell=True).wait()
-                subprocess.Popen("sudo /etc/init.d/bluetooth restart", shell=True).wait()
-                subprocess.Popen("sudo hciconfig hci0 up", shell=True).wait()
+                Popen("sudo hciconfig hci0 down", shell=True).wait()
+                Popen("sudo hciconfig hci0 reset", shell=True).wait()
+                Popen("sudo /etc/init.d/bluetooth restart", shell=True).wait()
+                Popen("sudo hciconfig hci0 up", shell=True).wait()
                 #PUT HERE THE CODE TO READ THE BATTERY LEVEL
                 try:
                     #handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
                     #handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
                     #ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
-                    handle_ble = subprocess.Popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'", shell=True).wait()
-                    handle_ble_connect = subprocess.Popen("sudo hcitool ledc " + handle_ble, shell=True).wait()
-                    ble_value = subprocess.Popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'", shell=True).wait()
+                    handle_ble = Popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'", shell=True).wait()
+                    handle_ble_connect = Popen("sudo hcitool ledc " + handle_ble, shell=True).wait()
+                    ble_value = Popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'", shell=True).wait()
                 except:
                     ble_value = 'nd'
 
