@@ -29,7 +29,7 @@ def do_some_stuffs_with_input(input_string):
 
     if input_string == 'battery_level':
         mode = 'battery_level'
-        return str(int(ble_value))
+        return str(ble_value)
 
     if input_string == 'stop':
         killer.kill_now = True
