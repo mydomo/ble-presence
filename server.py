@@ -131,12 +131,11 @@ def read_battery_level():
                 print ("Analizzo dispositivo: " + str(device))
                 uuid_to_check = '0x2a19'
                 beaconing = False
-                os.system("sudo hciconfig hci0 down")
                 time.sleep(1)
-                os.system("sudo hciconfig hci0 reset")
-                os.system("sudo /etc/init.d/bluetooth restart")
-                time.sleep(1)
-                os.system("sudo hciconfig hci0 up")
+                Popen("sudo hciconfig hci0 down", shell=True).wait()
+                Popen("sudo hciconfig hci0 reset", shell=True).wait()
+                Popen("sudo /etc/init.d/bluetooth restart", shell=True).wait()
+                Popen("sudo hciconfig hci0 up", shell=True).wait()
                 #PUT HERE THE CODE TO READ THE BATTERY LEVEL
                 try:
                     #handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
