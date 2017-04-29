@@ -79,6 +79,8 @@ def ble_scanner():
             time.sleep(1)
         except:
             print ("failed restarting device…")
+            os.system("sudo hciconfig hci0 down")
+            os.system("sudo hciconfig hci0 reset")
             print (ble_value)
             print (mode)
             print (beaconing)
