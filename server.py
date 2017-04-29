@@ -7,6 +7,8 @@ import os
 import time
 import bluetooth._bluetooth as bluez
 import signal
+import subprocess
+
 mode = ''
 mybeacon = ''
 beaconing = True
@@ -110,9 +112,9 @@ def read_battery_level():
             time.sleep(1)
             os.system("sudo hciconfig hci0 up")
             #PUT HERE THE CODE TO READ THE BATTERY LEVEL
-            handle_ble = str(os.system("sudo hcitool lecc --random de:7f:fd:9a:df:78 | awk '{print $3}'"))
-            handle_ble_connect = os.system("sudo hcitool ledc " + handle_ble)
-            ble_value = int(os.system("sudo gatttool -t random --char-read --uuid 0x2a19 -b de:7f:fd:9a:df:78 | awk '{print $4}'"))
+            handle_ble = os.popen("sudo hcitool lecc --random de:7f:fd:9a:df:78 | awk '{print $3}'").read()
+            handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+            ble_value = os.popen("sudo gatttool -t random --char-read --uuid 0x2a19 -b de:7f:fd:9a:df:78 | awk '{print $4}'").read()
             #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
             beaconing = True
             mode = 'beacon_data'
