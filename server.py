@@ -133,6 +133,7 @@ def read_battery_level():
                 beaconing = False
                 os.system("sudo hciconfig hci0 down")
                 time.sleep(1)
+<<<<<<< HEAD
                 os.system("sudo hciconfig hci0 reset")
                 os.system("sudo /etc/init.d/bluetooth restart")
                 time.sleep(1)
@@ -143,6 +144,20 @@ def read_battery_level():
                     handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
                     #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
                     ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+=======
+                Popen("sudo hciconfig hci0 down", shell=True).wait()
+                Popen("sudo hciconfig hci0 reset", shell=True).wait()
+                Popen("sudo /etc/init.d/bluetooth restart", shell=True).wait()
+                Popen("sudo hciconfig hci0 up", shell=True).wait()
+                #PUT HERE THE CODE TO READ THE BATTERY LEVEL
+                try:
+                    #handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                    #handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                    #ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                    handle_ble = Popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'", shell=True).wait()
+                    handle_ble_connect = Popen("sudo hcitool ledc " + handle_ble, shell=True).wait()
+                    ble_value = Popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'", shell=True).wait()
+>>>>>>> parent of 58cf8f4... fix
                 except:
                     ble_value = 'nd'
 
