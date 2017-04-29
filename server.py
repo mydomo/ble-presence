@@ -14,6 +14,8 @@ mybeacon = ''
 mybattery = ''
 beaconing = True
 ble_value = ''
+devices_to_analize = {}
+mybattery = {}
 
 def do_some_stuffs_with_input(input_string):
     global mode
