@@ -30,7 +30,7 @@ def do_some_stuffs_with_input(input_string):
         return str(ble_value)
 
     if input_string == 'stop':
-        soc.close()
+        killer.kill_now = True
 
 def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
 
@@ -140,6 +140,8 @@ def start_server():
     # this will make an infinite loop needed for 
     # not reseting server for every client
     while True:
+        if killer.kill_now:
+            break
         conn, addr = soc.accept()
         ip, port = str(addr[0]), str(addr[1])
         #print('Accepting connection from ' + ip + ':' + port)
@@ -149,8 +151,6 @@ def start_server():
             print("Terible error!")
             import traceback
             traceback.print_exc()
-        if killer.kill_now:
-            break
     soc.close()
 
 ### MAIN PROGRAM ###
