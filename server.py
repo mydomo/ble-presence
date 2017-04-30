@@ -7,12 +7,20 @@ import os
 import time
 import bluetooth._bluetooth as bluez
 import signal
+import subprocess
+
 mode = ''
 mybeacon = ''
+mybattery = ''
 beaconing = True
+ble_value = ''
+devices_to_analize = {}
+mybattery = {}
+read_value_lock = False
 
 def do_some_stuffs_with_input(input_string):
     global mode
+    global devices_to_analize
     """
     This is where all the processing happens.
     """
@@ -24,9 +32,23 @@ def do_some_stuffs_with_input(input_string):
             mode = 'beacon_data'
             return str(mybeacon)
 
-    if input_string == 'battery_level':
+    if input_string.startswith('battery_level:'):
+        string_devices_to_analize = input_string.replace("battery_level: ", "")
+       # print (string_devices_to_analize)
+       # print (string_devices_to_analize.split(','))
+        devices_to_analize = string_devices_to_analize.split(',')
+       # print (devices_to_analize)
         mode = 'battery_level'
-        return 'battery_level_processed'
+        if not mybattery and read_value_lock == True:
+            return str('Reading in progress...')
+        elif not mybattery and read_value_lock == False:
+            return str('Reading started')
+        else:
+            return str(mybattery)
+
+    if input_string == 'stop':
+        killer.kill_now = True
+        return str('Service stopping')
 
 def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
 
@@ -70,6 +92,8 @@ def ble_scanner():
     ble_scan.hci_enable_le_scan(sock)
     mybeacon = {}
     while beaconing == True:
+        if killer.kill_now:
+            break
         try:
             returnedList = ble_scan.parse_events(sock, 25)
             for beacon in returnedList:
@@ -77,6 +101,12 @@ def ble_scanner():
                 mybeacon[MAC] = [RSSI,LASTSEEN]
             time.sleep(1)
         except:
+            print ("failed restarting device…")
+            os.system("sudo hciconfig hci0 down")
+            os.system("sudo hciconfig hci0 reset")
+            print (ble_value)
+            print (mode)
+            print (beaconing)
             dev_id = 0
             os.system("sudo /etc/init.d/bluetooth restart")
             time.sleep(1)
@@ -84,17 +114,63 @@ def ble_scanner():
             sock = bluez.hci_open_dev(dev_id)
             ble_scan.hci_le_set_scan_parameters(sock)
             ble_scan.hci_enable_le_scan(sock)
+            time.sleep(2)
 
 def read_battery_level():
     global beaconing
     global mode
+    global mybattery
+    global read_value_lock
     while True:
-        if mode == 'battery_level':
-            beaconing = False
-            os.system("sudo /etc/init.d/bluetooth restart")
-            time.sleep(1)
-            os.system("sudo hciconfig hci0 up")
-            #PUT HERE THE CODE TO READ THE BATTERY LEVEL
+        if mode == 'battery_level' and read_value_lock == False:
+            read_value_lock = True
+            print (devices_to_analize)
+            for device in devices_to_analize:
+                device_to_connect = device
+                print ("Dispositivi da analizzare: " + str(devices_to_analize))
+                print ("Analizzo dispositivo: " + str(device))
+                uuid_to_check = '0x2a19'
+                beaconing = False
+                os.system("sudo hciconfig hci0 down")
+                time.sleep(1)
+<<<<<<< HEAD
+                os.system("sudo hciconfig hci0 reset")
+                os.system("sudo /etc/init.d/bluetooth restart")
+                time.sleep(1)
+                os.system("sudo hciconfig hci0 up")
+                #PUT HERE THE CODE TO READ THE BATTERY LEVEL
+                try:
+                    handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                    handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                    #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
+                    ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+=======
+                Popen("sudo hciconfig hci0 down", shell=True).wait()
+                Popen("sudo hciconfig hci0 reset", shell=True).wait()
+                Popen("sudo /etc/init.d/bluetooth restart", shell=True).wait()
+                Popen("sudo hciconfig hci0 up", shell=True).wait()
+                #PUT HERE THE CODE TO READ THE BATTERY LEVEL
+                try:
+                    #handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                    #handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                    #ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                    handle_ble = Popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'", shell=True).wait()
+                    handle_ble_connect = Popen("sudo hcitool ledc " + handle_ble, shell=True).wait()
+                    ble_value = Popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'", shell=True).wait()
+>>>>>>> parent of 58cf8f4... fix
+                except:
+                    ble_value = 'nd'
+
+                if ble_value != '':
+                    ble_value = int(ble_value ,16)
+
+                if ble_value == '':
+                    ble_value = '255'    
+                time_checked = str(int(time.time()))
+                mybattery[device] = [ble_value,time_checked]
+                read_value_lock = False
+                print (mybattery)
+                
             #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
             beaconing = True
             mode = 'beacon_data'
@@ -125,6 +201,8 @@ def start_server():
     # this will make an infinite loop needed for 
     # not reseting server for every client
     while True:
+        if killer.kill_now:
+            break
         conn, addr = soc.accept()
         ip, port = str(addr[0]), str(addr[1])
         #print('Accepting connection from ' + ip + ':' + port)
@@ -134,8 +212,6 @@ def start_server():
             print("Terible error!")
             import traceback
             traceback.print_exc()
-        if killer.kill_now:
-            break
     soc.close()
 
 ### MAIN PROGRAM ###
@@ -153,3 +229,4 @@ if __name__ == '__main__':
     Thread(target=start_server).start()
     Thread(target=ble_scanner).start()
     Thread(target=read_battery_level).start()
+#  print ("End of the program. I was killed gracefully :)")
