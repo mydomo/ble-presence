@@ -168,9 +168,10 @@ def start_server():
     # this is for easy starting/killing the app
     soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     #print('Socket created')
-
+    lan_ip = socket.gethostbyname(socket.gethostname())
+    print (lan_ip)
     try:
-        soc.bind(("127.0.0.1", 12345))
+        soc.bind((lan_ip, 12345))
     #    print('Socket bind complete')
     except socket.error as msg:
     #    print('Bind failed. Error : ' + str(sys.exc_info()))
