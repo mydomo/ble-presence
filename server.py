@@ -1,4 +1,23 @@
 #!/usr/bin/python3
+
+#################################################################################
+#  BLE PRESENCE FOR DOMOTICZ                                                    #
+#                                                                               #
+#  AUTHOR: MARCO BAGLIVO (ITALY) (https://github.com/mydomo)                    #
+#                                                                               #
+#################################################################################
+# BLE_SCAN LIBRARY IS A FORK OF https://github.com/flyinactor91/RasPi-iBeacons  #
+#################################################################################
+
+#################################################################################
+# INSTALL REQUIREMENTS ON UBUNTU SERVER 16.04:                                  #
+#                                                                               #
+# sudo apt-get install -y libbluetooth-dev bluez                                #
+# sudo apt-get install python-dev python3-dev python3-setuptools python3-pip    #
+# sudo pip3 install pybluez                                                     #
+#                                                                               #
+#################################################################################
+
 import socket
 from lib import ble_scan
 from threading import Thread
@@ -9,54 +28,86 @@ import bluetooth._bluetooth as bluez
 import signal
 import subprocess
 
+##########- CONFIGURE SCRIPT -##########
+
+##########- CONFIGURE TRANSLATIONS -##########
+lang_SCAN_STOPPED = 'Scanning stopped by other function'
+lang_READING_LOCK = 'Reading in progress...'
+lang_READING_START = 'Reading started'
+
+
+##########- START VARIABLE INITIALIZATION -##########
 mode = ''
-mybeacon = ''
-mybattery = ''
-beaconing = True
+beacons_detected = ''
+batt_lev_detected = ''
+scan_beacon_data = True
 ble_value = ''
 devices_to_analize = {}
-mybattery = {}
+batt_lev_detected = {}
 read_value_lock = False
+##########- END VARIABLE INITIALIZATION -##########
 
-def do_some_stuffs_with_input(input_string):
+##########- START FUNCTION THAT HANDLE CLIENT INPUT -##########
+
+def socket_input_process(input_string):
     global mode
     global devices_to_analize
-    """
-    This is where all the processing happens.
-    """
+
+    global lang_SCAN_STOPPED
+    global lang_READING_LOCK
+    global lang_READING_START
+
+    ###- TRANSMIT BEACON DATA -###
+    # check if client requested "beacon_data"
     if input_string == 'beacon_data':
-        #print("sending beacon data!")
-        if beaconing == False:
-            return str('Scanning stopped by other function')
-        if beaconing == True:
+        # if beacon scanning function has being stopped in order to process one other request (ex.: battery level) warn the client
+        if scan_beacon_data == False:
+            return str(lang_SCAN_STOPPED)
+
+        # if beacon scanning function is active send the data to the client
+        if scan_beacon_data == True:
+            # set operative mode to beacon_data
             mode = 'beacon_data'
-            return str(mybeacon)
+            #return str(beacons_detected)
+            return str(sorted(beacons_detected, key=lambda x: x[1], reverse=True))
 
+
+    ###- TRANSMIT BATTERY LEVEL -###
+    # check if the request start with battery_level:
     if input_string.startswith('battery_level:'):
+        # trim "battery_level:" from the request
         string_devices_to_analize = input_string.replace("battery_level: ", "")
-       # print (string_devices_to_analize)
-       # print (string_devices_to_analize.split(','))
+        # split each MAC address in a list in order to be processed
         devices_to_analize = string_devices_to_analize.split(',')
-       # print (devices_to_analize)
+        # set operative mode to battery_level
         mode = 'battery_level'
-        if not mybattery and read_value_lock == True:
-            return str('Reading in progress...')
-        elif not mybattery and read_value_lock == False:
-            return str('Reading started')
-        else:
-            return str(mybattery)
+        
+        # if the reading has already requested and there is no result ask to wait
+        if not batt_lev_detected and read_value_lock == True:
+            return str(lang_READING_LOCK)
 
+        # if the reading is requested for the first time start say that will start
+        elif not batt_lev_detected and read_value_lock == False:
+            return str(lang_READING_START)
+
+        # if is present a battery data send it
+        else:
+            return str(batt_lev_detected)
+
+    ###- STOP RUNNING SERVICES -###
     if input_string == 'stop':
         killer.kill_now = True
         return str('Service stopping')
+##########- END FUNCTION THAT HANDLE CLIENT INPUT -##########
 
-def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
+##########- START FUNCTION THAT HANDLE SOCKET'S TRANSMISSION -##########
+def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 32768):
 
     # the input is in bytes, so decode it
     input_from_client_bytes = conn.recv(MAX_BUFFER_SIZE)
 
     # MAX_BUFFER_SIZE is how big the message can be
-    # this is test if it's sufficiently big
+    # this is test if it's too big
     siz = sys.getsizeof(input_from_client_bytes)
     if  siz >= MAX_BUFFER_SIZE:
         print("The length of input is probably too long: {}".format(siz))
@@ -64,16 +115,16 @@ def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 4096):
     # decode input and strip the end of line
     input_from_client = input_from_client_bytes.decode("utf8").rstrip()
 
-    res = do_some_stuffs_with_input(input_from_client)
+    res = socket_input_process(input_from_client)
     #print("Result of processing {} is: {}".format(input_from_client, res))
 
     vysl = res.encode("utf8")  # encode the result string
     conn.sendall(vysl)  # send it to client
     conn.close()  # close connection
-    #print('Connection ' + ip + ':' + port + " ended")
+##########- END FUNCTION THAT HANDLE SOCKET'S TRANSMISSION -##########
 
 def ble_scanner():
-    global mybeacon
+    global beacons_detected
     dev_id = 0
     os.system("sudo /etc/init.d/bluetooth restart")
     time.sleep(1)
@@ -90,15 +141,15 @@ def ble_scanner():
         os.system("sudo hciconfig hci0 up")
     ble_scan.hci_le_set_scan_parameters(sock)
     ble_scan.hci_enable_le_scan(sock)
-    mybeacon = {}
-    while beaconing == True:
+    beacons_detected = {}
+    while scan_beacon_data == True:
         if killer.kill_now:
             break
         try:
             returnedList = ble_scan.parse_events(sock, 25)
             for beacon in returnedList:
                 MAC, RSSI, LASTSEEN = beacon.split(',')
-                mybeacon[MAC] = [RSSI,LASTSEEN]
+                beacons_detected[MAC] = [RSSI,LASTSEEN]
             time.sleep(1)
         except:
             print ("failed restarting device…")
@@ -106,7 +157,7 @@ def ble_scanner():
             os.system("sudo hciconfig hci0 reset")
             print (ble_value)
             print (mode)
-            print (beaconing)
+            print (scan_beacon_data)
             dev_id = 0
             os.system("sudo /etc/init.d/bluetooth restart")
             time.sleep(1)
@@ -117,9 +168,9 @@ def ble_scanner():
             time.sleep(2)
 
 def read_battery_level():
-    global beaconing
+    global scan_beacon_data
     global mode
-    global mybattery
+    global batt_lev_detected
     global read_value_lock
     while True:
         if mode == 'battery_level' and read_value_lock == False:
@@ -130,7 +181,7 @@ def read_battery_level():
                 print ("Dispositivi da analizzare: " + str(devices_to_analize))
                 print ("Analizzo dispositivo: " + str(device))
                 uuid_to_check = '0x2a19'
-                beaconing = False
+                scan_beacon_data = False
                 os.system("sudo hciconfig hci0 down")
                 time.sleep(1)
                 os.system("sudo hciconfig hci0 reset")
@@ -152,12 +203,12 @@ def read_battery_level():
                 if ble_value == '':
                     ble_value = '255'    
                 time_checked = str(int(time.time()))
-                mybattery[device] = [ble_value,time_checked]
+                batt_lev_detected[device] = [ble_value,time_checked]
                 read_value_lock = False
-                print (mybattery)
+                print (batt_lev_detected)
                 
-            #AS SOON AS IT FINISH RESTART THE BEACONING PROCESS
-            beaconing = True
+            #AS SOON AS IT FINISH RESTART THE scan_beacon_data PROCESS
+            scan_beacon_data = True
             mode = 'beacon_data'
             Thread(target=ble_scanner).start()
         time.sleep(1)
