@@ -27,6 +27,7 @@ import time
 import bluetooth._bluetooth as bluez
 import signal
 import subprocess
+import operators
 
 ##########- CONFIGURE SCRIPT -##########
 
@@ -68,8 +69,8 @@ def socket_input_process(input_string):
         if scan_beacon_data == True:
             # set operative mode to beacon_data
             mode = 'beacon_data'
-            return str(beacons_detected)
-            #return str(sorted(beacons_detected, key=lambda x: x[1], reverse=True))
+            #return str(beacons_detected)
+            return str(sorted(beacons_detected.items(), operator.itemgetter(1)))
 
 
     ###- TRANSMIT BATTERY LEVEL -###
