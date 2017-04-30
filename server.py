@@ -170,7 +170,7 @@ def start_server():
     #print('Socket created')
 
     try:
-        soc.bind(("10.50.0.55", 12345))
+        soc.bind(("localhost", 12345))
     #    print('Socket bind complete')
     except socket.error as msg:
     #    print('Bind failed. Error : ' + str(sys.exc_info()))
