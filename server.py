@@ -27,7 +27,7 @@ import time
 import bluetooth._bluetooth as bluez
 import signal
 import subprocess
-import operators
+import operator
 
 ##########- CONFIGURE SCRIPT -##########
 
