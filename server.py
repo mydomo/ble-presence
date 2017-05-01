@@ -69,7 +69,7 @@ def socket_input_process(input_string):
         if scan_beacon_data == True:
             # set operative mode to beacon_data
             mode = 'beacon_data'
-            #return str(beacons_detected)
+            # return beacons_detected ordered by timestamp ASC (tnx to: JkShaw - http://stackoverflow.com/questions/43715921/python3-ordering-a-complex-dict)
             return str(sorted(beacons_detected.items(), key=lambda x: x[1][1], reverse=True))
 
 
