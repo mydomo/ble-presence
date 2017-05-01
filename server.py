@@ -70,7 +70,7 @@ def socket_input_process(input_string):
             # set operative mode to beacon_data
             mode = 'beacon_data'
             # return beacons_detected ordered by timestamp ASC (tnx to: JkShaw - http://stackoverflow.com/questions/43715921/python3-ordering-a-complex-dict)
-            return str(sorted(beacons_detected.items(), key=lambda x: x[1][1], reverse=True)[:5])
+            return str(beacons_detected)
 
 
     ###- TRANSMIT BATTERY LEVEL -###
@@ -152,6 +152,7 @@ def ble_scanner():
                 MAC, RSSI, LASTSEEN = beacon.split(',')
                 beacons_detected[MAC] = [RSSI,LASTSEEN]
             time.sleep(1)
+            beacons_detected = sorted(beacons_detected.items(), key=lambda x: x[1][1], reverse=True)[:100]
         except:
             print ("failed restarting device…")
             os.system("sudo hciconfig hci0 down")
