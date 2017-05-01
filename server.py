@@ -70,7 +70,7 @@ def socket_input_process(input_string):
             # set operative mode to beacon_data
             mode = 'beacon_data'
             #return str(beacons_detected)
-            return str(OrderedDict(sorted(beacons_detected.items(), key=lambda x: x[1][1])))
+            return str(sorted(beacons_detected.items(), key=lambda x: x[1][1], reverse=True))
 
 
     ###- TRANSMIT BATTERY LEVEL -###
