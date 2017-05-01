@@ -71,7 +71,7 @@ def socket_input_process(input_string):
             mode = 'beacon_data'
             # return beacons_detected ordered by timestamp ASC (tnx to: JkShaw - http://stackoverflow.com/questions/43715921/python3-ordering-a-complex-dict)
             # return "just" the last 300 results to prevent the end of the socket buffer (each beacon data is about 45 bytes)
-            return str(sorted(beacons_detected.items(), key=lambda x: x[1][1], reverse=True)[:300])
+            return str(sorted(beacons_detected.items(), key=lambda x: x[0][0], reverse=True)[:300])
 
 
     ###- TRANSMIT BATTERY LEVEL -###
