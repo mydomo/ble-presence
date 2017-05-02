@@ -181,6 +181,8 @@ def read_battery_level():
             for device in devices_to_analize:
                 device_to_connect = device
                 print ("Analizzo dispositivo: " + str(device))
+                #i'm reading the value stored
+                print ("Value : %s" %  batt_lev_detected.get(device, "Never"))
                 uuid_to_check = '0x2a19'
                 scan_beacon_data = False
                 process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
