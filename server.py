@@ -177,25 +177,29 @@ def read_battery_level():
     while True:
         if mode == 'battery_level' and read_value_lock == False:
             read_value_lock = True
-            print (devices_to_analize)
+            print ("Dispositivi da analizzare: " + str(devices_to_analize))
             for device in devices_to_analize:
                 device_to_connect = device
-                print ("Dispositivi da analizzare: " + str(devices_to_analize))
                 print ("Analizzo dispositivo: " + str(device))
                 uuid_to_check = '0x2a19'
                 scan_beacon_data = False
-                os.system("sudo hciconfig hci0 down")
-                time.sleep(1)
-                os.system("sudo hciconfig hci0 reset")
-                os.system("sudo /etc/init.d/bluetooth restart")
-                time.sleep(1)
-                os.system("sudo hciconfig hci0 up")
+                process0 = subprocess.Popen("sudo hciconfig hci0 down")
+                process0.wait()
+                process1 = subprocess.Popen("sudo hciconfig hci0 reset")
+                process1.wait()
+                process2 = ("sudo /etc/init.d/bluetooth restart")
+                process2.wait()
+                process3 = ("sudo hciconfig hci0 up")
+                process3.wait()
                 #PUT HERE THE CODE TO READ THE BATTERY LEVEL
                 try:
                     handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                    handle_ble.wait()
                     handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                    handle_ble_connect.wait()
                     #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
                     ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                    ble_value.wait()
                 except:
                     ble_value = 'nd'
 
