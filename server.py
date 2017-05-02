@@ -184,22 +184,15 @@ def read_battery_level():
                 uuid_to_check = '0x2a19'
                 scan_beacon_data = False
                 process0 = os.popen("sudo hciconfig hci0 down")
-                process0.wait()
                 process1 = os.popen("sudo hciconfig hci0 reset")
-                process1.wait()
                 process2 = os.popen("sudo /etc/init.d/bluetooth restart")
-                process2.wait()
                 process3 = os.popen("sudo hciconfig hci0 up")
-                process3.wait()
                 #PUT HERE THE CODE TO READ THE BATTERY LEVEL
                 try:
                     handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
-                    handle_ble.wait()
                     handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
-                    handle_ble_connect.wait()
                     #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
                     ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
-                    ble_value.wait()
                 except:
                     ble_value = 'nd'
 
