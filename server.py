@@ -264,7 +264,6 @@ def start_server():
     # this will make an infinite loop needed for 
     # not reseting server for every client
     while True:
-        print (killer.kill_now)
         if killer.kill_now:
             break
         conn, addr = soc.accept()
@@ -277,7 +276,6 @@ def start_server():
             import traceback
             traceback.print_exc()
     soc.close()
-    sys.exit()
 
 ### MAIN PROGRAM ###
 class GracefulKiller:
@@ -289,6 +287,7 @@ class GracefulKiller:
   def exit_gracefully(self,signum, frame):
     self.kill_now = True
     print ('Program stopping...')
+    sys.exit()
 
 if __name__ == '__main__':
     killer = GracefulKiller()
