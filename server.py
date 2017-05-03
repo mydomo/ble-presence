@@ -241,7 +241,7 @@ def read_battery_level():
 
 
 def start_server():
-	global soc
+    global soc
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # this is for easy starting/killing the app
     soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
