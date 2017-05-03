@@ -282,7 +282,7 @@ class GracefulKiller:
     signal.signal(signal.SIGTERM, self.exit_gracefully)
 
   def exit_gracefully(self,signum, frame):
-  	global soc
+    global soc
     self.kill_now = True
     soc.close()
     print ('Program stopping...')
