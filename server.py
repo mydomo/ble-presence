@@ -186,6 +186,7 @@ def read_battery_level():
                 # cleaning the value stored
                 cleaned_battery_level_moderator = str(battery_level_moderator.replace("[", "").replace("]", "").replace(" ", "").replace("'", ""))
                 # assign the battery level and the timestamp to different variables
+                print (cleaned_battery_level_moderator)
                 stored_batterylevel, stored_timestamp = cleaned_battery_level_moderator.split(',')
                 print (stored_batterylevel)
                 print (stored_timestamp)
