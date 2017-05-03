@@ -194,7 +194,7 @@ def read_battery_level():
                     stored_batterylevel, stored_timestamp = cleaned_battery_level_moderator.split(',')
                     time_difference = int(time.time()) - int(stored_timestamp)
                 
-                if (int(min_inval_between_batt_level_readings) >= int(time_difference)) or (str(cleaned_battery_level_moderator) == "Never"):
+                if (int(min_inval_between_batt_level_readings) <= int(time_difference)) or (str(cleaned_battery_level_moderator) == "Never"):
                     scan_beacon_data = False
                     process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
                     process0.communicate()
