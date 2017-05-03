@@ -276,6 +276,7 @@ def start_server():
             import traceback
             traceback.print_exc()
     soc.close()
+    sys.exit()
 
 ### MAIN PROGRAM ###
 class GracefulKiller:
