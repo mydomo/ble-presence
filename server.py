@@ -181,11 +181,14 @@ def read_battery_level():
             for device in devices_to_analize:
                 device_to_connect = device
                 print ("Analizzo dispositivo: " + str(device))
-                #i'm reading the value stored
+                # i'm reading the value stored
                 battery_level_moderator =  str(batt_lev_detected.get(device, "Never"))
-                #cleaning the value stored
+                # cleaning the value stored
                 cleaned_battery_level_moderator = battery_level_moderator.replace("[", "").replace("]", "").replace(" ", "").replace("'", "")
-                print (cleaned_battery_level_moderator)
+                # assign the battery level and the timestamp to different variables
+                stored_batterylevel, stored_timestamp = cleaned_battery_level_moderator.split(',')
+                print (stored_batterylevel)
+                print (stored_timestamp)
                 uuid_to_check = '0x2a19'
                 scan_beacon_data = False
                 process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
