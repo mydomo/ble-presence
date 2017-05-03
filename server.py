@@ -287,7 +287,7 @@ class GracefulKiller:
   def exit_gracefully(self,signum, frame):
     self.kill_now = True
     print ('Program stopping...')
-    sys.exit()
+    sys.exit(0)
 
 if __name__ == '__main__':
     killer = GracefulKiller()
