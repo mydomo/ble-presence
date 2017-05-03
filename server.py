@@ -30,6 +30,7 @@ import subprocess
 from collections import OrderedDict
 
 ##########- CONFIGURE SCRIPT -##########
+min_inval_between_batt_level_readings = 3600
 
 ##########- CONFIGURE TRANSLATIONS -##########
 lang_SCAN_STOPPED = 'Scanning stopped by other function'
@@ -174,6 +175,8 @@ def read_battery_level():
     global mode
     global batt_lev_detected
     global read_value_lock
+    global min_inval_between_batt_level_readings
+    uuid_to_check = '0x2a19'
     while True:
         if mode == 'battery_level' and read_value_lock == False:
             read_value_lock = True
@@ -188,38 +191,36 @@ def read_battery_level():
                 # assign the battery level and the timestamp to different variables
                 if cleaned_battery_level_moderator != "Never":
                     stored_batterylevel, stored_timestamp = cleaned_battery_level_moderator.split(',')
-                    print (stored_batterylevel)
-                    print (stored_timestamp)
                     time_difference = int(time.time()) - int(stored_timestamp)
-                    print (str(time_difference))
-                uuid_to_check = '0x2a19'
-                scan_beacon_data = False
-                process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
-                process0.communicate()
-                process1 = subprocess.Popen("sudo hciconfig hci0 reset", stdout=subprocess.PIPE, shell=True)
-                process1.communicate()
-                process2 = subprocess.Popen("sudo /etc/init.d/bluetooth restart", stdout=subprocess.PIPE, shell=True)
-                process2.communicate()
-                process3 = subprocess.Popen("sudo hciconfig hci0 up", stdout=subprocess.PIPE, shell=True)
-                process3.communicate()
-                #PUT HERE THE CODE TO READ THE BATTERY LEVEL
-                try:
-                    handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
-                    handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
-                    #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
-                    ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
-                except:
-                    ble_value = 'nd'
+                
+                if (int(min_inval_between_batt_level_readings) >= int(time_difference)) or (str(cleaned_battery_level_moderator) == "Never"):
+                    scan_beacon_data = False
+                    process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
+                    process0.communicate()
+                    process1 = subprocess.Popen("sudo hciconfig hci0 reset", stdout=subprocess.PIPE, shell=True)
+                    process1.communicate()
+                    process2 = subprocess.Popen("sudo /etc/init.d/bluetooth restart", stdout=subprocess.PIPE, shell=True)
+                    process2.communicate()
+                    process3 = subprocess.Popen("sudo hciconfig hci0 up", stdout=subprocess.PIPE, shell=True)
+                    process3.communicate()
+                    #PUT HERE THE CODE TO READ THE BATTERY LEVEL
+                    try:
+                        handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                        handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                        #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
+                        ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                    except:
+                        ble_value = 'nd'
 
-                if ble_value != '':
-                    ble_value = int(ble_value ,16)
+                    if ble_value != '':
+                        ble_value = int(ble_value ,16)
 
-                if ble_value == '':
-                    ble_value = '255'    
-                time_checked = str(int(time.time()))
-                batt_lev_detected[device] = [ble_value,time_checked]
-                read_value_lock = False
-                print (batt_lev_detected)
+                    if ble_value == '':
+                        ble_value = '255'    
+                    time_checked = str(int(time.time()))
+                    batt_lev_detected[device] = [ble_value,time_checked]
+                    read_value_lock = False
+                    print (batt_lev_detected)
                 
             #AS SOON AS IT FINISH RESTART THE scan_beacon_data PROCESS
             scan_beacon_data = True
