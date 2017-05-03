@@ -30,6 +30,8 @@ import subprocess
 from collections import OrderedDict
 
 ##########- CONFIGURE SCRIPT -##########
+socket_ip = '0.0.0.0'
+socket_port = 12345
 min_inval_between_batt_level_readings = 3600
 
 ##########- CONFIGURE TRANSLATIONS -##########
@@ -191,10 +193,10 @@ def read_battery_level():
     while True:
         if mode == 'battery_level' and read_value_lock == False:
             read_value_lock = True
-            print ("Dispositivi da analizzare: " + str(devices_to_analize))
+            #print ("Dispositivi da analizzare: " + str(devices_to_analize))
             for device in devices_to_analize:
                 device_to_connect = device
-                print ("Analizzo dispositivo: " + str(device))
+                #print ("Analizzo dispositivo: " + str(device))
                 # i'm reading the value stored
                 battery_level_moderator =  str(batt_lev_detected.get(device, "Never"))
                 # cleaning the value stored
@@ -231,7 +233,7 @@ def read_battery_level():
                     time_checked = str(int(time.time()))
                     batt_lev_detected[device] = [ble_value,time_checked]
                     read_value_lock = False
-                    print (batt_lev_detected)
+                    #print (batt_lev_detected)
                 
             #AS SOON AS IT FINISH RESTART THE scan_beacon_data PROCESS
             scan_beacon_data = True
@@ -246,7 +248,7 @@ def start_server():
     soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     #print('Socket created')
     try:
-        soc.bind(('0.0.0.0', 12345))
+        soc.bind((socket_ip, socket_port))
     #    print('Socket bind complete')
     except socket.error as msg:
     #    print('Bind failed. Error : ' + str(sys.exc_info()))
