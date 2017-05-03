@@ -107,7 +107,7 @@ def socket_input_process(input_string):
 
 ##########- START FUNCTION THAT HANDLE SOCKET'S TRANSMISSION -##########
 def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 32768):
-
+    print ("test")
     # the input is in bytes, so decode it
     input_from_client_bytes = conn.recv(MAX_BUFFER_SIZE)
 
@@ -284,8 +284,6 @@ class GracefulKiller:
   def exit_gracefully(self,signum, frame):
     global soc
     self.kill_now = True
-    soc.shutdown(socket.SHUT_RDWR)
-    soc.close()
     print ('Program stopping...')
 
 if __name__ == '__main__':
