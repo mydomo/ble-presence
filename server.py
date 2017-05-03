@@ -286,6 +286,7 @@ class GracefulKiller:
 
   def exit_gracefully(self,signum, frame):
     self.kill_now = True
+    print ('Stop pressing the CTRL+C!')
 
 if __name__ == '__main__':
     killer = GracefulKiller()
