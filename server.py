@@ -190,6 +190,8 @@ def read_battery_level():
                     stored_batterylevel, stored_timestamp = cleaned_battery_level_moderator.split(',')
                     print (stored_batterylevel)
                     print (stored_timestamp)
+                    time_difference = int(time.time()) - int(stored_timestamp)
+                    print (str(time_difference))
                 uuid_to_check = '0x2a19'
                 scan_beacon_data = False
                 process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
