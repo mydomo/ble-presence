@@ -284,6 +284,7 @@ class GracefulKiller:
   def exit_gracefully(self,signum, frame):
     global soc
     self.kill_now = True
+    soc.shutdown()
     soc.close()
     print ('Program stopping...')
 
