@@ -129,9 +129,14 @@ def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 32768):
 def ble_scanner():
     global beacons_detected
     dev_id = 0
-    os.system("sudo /etc/init.d/bluetooth restart")
-    time.sleep(1)
-    os.system("sudo hciconfig hci0 up")
+    process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
+    process0.communicate()
+    process1 = subprocess.Popen("sudo hciconfig hci0 reset", stdout=subprocess.PIPE, shell=True)
+    process1.communicate()
+    process2 = subprocess.Popen("sudo /etc/init.d/bluetooth restart", stdout=subprocess.PIPE, shell=True)
+    process2.communicate()
+    process3 = subprocess.Popen("sudo hciconfig hci0 up", stdout=subprocess.PIPE, shell=True)
+    process3.communicate()
 
     try:
         sock = bluez.hci_open_dev(dev_id)
@@ -139,9 +144,14 @@ def ble_scanner():
     except:
         print ("error accessing bluetooth device…")
         print ("riavvio in corso...")
-        os.system("sudo /etc/init.d/bluetooth restart")
-        time.sleep(1)
-        os.system("sudo hciconfig hci0 up")
+        process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
+        process0.communicate()
+        process1 = subprocess.Popen("sudo hciconfig hci0 reset", stdout=subprocess.PIPE, shell=True)
+        process1.communicate()
+        process2 = subprocess.Popen("sudo /etc/init.d/bluetooth restart", stdout=subprocess.PIPE, shell=True)
+        process2.communicate()
+        process3 = subprocess.Popen("sudo hciconfig hci0 up", stdout=subprocess.PIPE, shell=True)
+        process3.communicate()
     ble_scan.hci_le_set_scan_parameters(sock)
     ble_scan.hci_enable_le_scan(sock)
     beacons_detected = {}
@@ -156,19 +166,19 @@ def ble_scanner():
             time.sleep(1)
         except:
             print ("failed restarting device…")
-            os.system("sudo hciconfig hci0 down")
-            os.system("sudo hciconfig hci0 reset")
-            print (ble_value)
-            print (mode)
-            print (scan_beacon_data)
+            process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
+            process0.communicate()
+            process1 = subprocess.Popen("sudo hciconfig hci0 reset", stdout=subprocess.PIPE, shell=True)
+            process1.communicate()
+            process2 = subprocess.Popen("sudo /etc/init.d/bluetooth restart", stdout=subprocess.PIPE, shell=True)
+            process2.communicate()
+            process3 = subprocess.Popen("sudo hciconfig hci0 up", stdout=subprocess.PIPE, shell=True)
+            process3.communicate()            
             dev_id = 0
-            os.system("sudo /etc/init.d/bluetooth restart")
-            time.sleep(1)
-            os.system("sudo hciconfig hci0 up")
             sock = bluez.hci_open_dev(dev_id)
             ble_scan.hci_le_set_scan_parameters(sock)
             ble_scan.hci_enable_le_scan(sock)
-            time.sleep(2)
+            time.sleep(1)
 
 def read_battery_level():
     global scan_beacon_data
