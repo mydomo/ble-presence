@@ -264,6 +264,7 @@ def start_server():
     # this will make an infinite loop needed for 
     # not reseting server for every client
     while True:
+    	print (killer.kill_now)
         if killer.kill_now:
             break
         conn, addr = soc.accept()
