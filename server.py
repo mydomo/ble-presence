@@ -241,6 +241,7 @@ def read_battery_level():
 
 
 def start_server():
+	global soc
     soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # this is for easy starting/killing the app
     soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -281,7 +282,9 @@ class GracefulKiller:
     signal.signal(signal.SIGTERM, self.exit_gracefully)
 
   def exit_gracefully(self,signum, frame):
+  	global soc
     self.kill_now = True
+    soc.close()
     print ('Program stopping...')
 
 if __name__ == '__main__':
