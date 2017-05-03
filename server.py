@@ -157,9 +157,7 @@ def ble_scanner():
     ble_scan.hci_le_set_scan_parameters(sock)
     ble_scan.hci_enable_le_scan(sock)
     beacons_detected = {}
-    while scan_beacon_data == True:
-        if killer.kill_now:
-            break
+    while (scan_beacon_data == True) and (not killer.kill_now):
         try:
             returnedList = ble_scan.parse_events(sock, 25)
             for beacon in returnedList:
@@ -190,7 +188,7 @@ def read_battery_level():
     global min_inval_between_batt_level_readings
     uuid_to_check = '0x2a19'
     time_difference = 0
-    while True:
+    while (not killer.kill_now):
         if mode == 'battery_level' and read_value_lock == False:
             read_value_lock = True
             #print ("Dispositivi da analizzare: " + str(devices_to_analize))
@@ -263,9 +261,7 @@ def start_server():
 
     # this will make an infinite loop needed for 
     # not reseting server for every client
-    while True:
-        if killer.kill_now:
-            break
+    while (not killer.kill_now):
         conn, addr = soc.accept()
         ip, port = str(addr[0]), str(addr[1])
         #print('Accepting connection from ' + ip + ':' + port)
@@ -287,7 +283,6 @@ class GracefulKiller:
   def exit_gracefully(self,signum, frame):
     self.kill_now = True
     print ('Program stopping...')
-    sys.exit(0)
 
 if __name__ == '__main__':
     killer = GracefulKiller()
