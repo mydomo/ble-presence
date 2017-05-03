@@ -284,7 +284,7 @@ class GracefulKiller:
   def exit_gracefully(self,signum, frame):
     global soc
     self.kill_now = True
-    soc.shutdown()
+    soc.shutdown(socket.SHUT_RDWR)
     soc.close()
     print ('Program stopping...')
 
