@@ -275,7 +275,7 @@ def start_server():
             traceback.print_exc()
     soc.close()
 
-def kill_socket:
+def kill_socket():
     global soc
     if killer.kill_now:
         print ("KILL_SOCKET PROVA A CHIUDERE IL SOCKET")
