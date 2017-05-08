@@ -282,9 +282,9 @@ def kill_socket():
     while (not kill_socket_switch):
         if killer.kill_now:
             print ("KILL_SOCKET PROVA A CHIUDERE IL SOCKET")
-            soc.shutdown()
             soc.close()
             kill_socket_switch = True
+            exit(0)
         time.sleep(1)
 
 ### MAIN PROGRAM ###
