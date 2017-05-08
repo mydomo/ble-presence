@@ -56,7 +56,6 @@ read_value_lock = False
 def socket_input_process(input_string):
     global mode
     global devices_to_analize
-
     global lang_SCAN_STOPPED
     global lang_READING_LOCK
     global lang_READING_START
@@ -128,9 +127,7 @@ def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 32768):
     conn.close()  # close connection
 ##########- END FUNCTION THAT HANDLE SOCKET'S TRANSMISSION -##########
 
-def ble_scanner():
-    global beacons_detected
-    dev_id = 0
+def usb_dongle_reset():
     process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
     process0.communicate()
     process1 = subprocess.Popen("sudo hciconfig hci0 reset", stdout=subprocess.PIPE, shell=True)
@@ -139,6 +136,12 @@ def ble_scanner():
     process2.communicate()
     process3 = subprocess.Popen("sudo hciconfig hci0 up", stdout=subprocess.PIPE, shell=True)
     process3.communicate()
+    print ("RESETTING YOUR DONGLE")
+
+def ble_scanner():
+    global beacons_detected
+    dev_id = 0
+    usb_dongle_reset()
 
     try:
         sock = bluez.hci_open_dev(dev_id)
@@ -146,14 +149,8 @@ def ble_scanner():
     except:
         print ("error accessing bluetooth device…")
         print ("riavvio in corso...")
-        process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
-        process0.communicate()
-        process1 = subprocess.Popen("sudo hciconfig hci0 reset", stdout=subprocess.PIPE, shell=True)
-        process1.communicate()
-        process2 = subprocess.Popen("sudo /etc/init.d/bluetooth restart", stdout=subprocess.PIPE, shell=True)
-        process2.communicate()
-        process3 = subprocess.Popen("sudo hciconfig hci0 up", stdout=subprocess.PIPE, shell=True)
-        process3.communicate()
+        usb_dongle_reset()
+
     ble_scan.hci_le_set_scan_parameters(sock)
     ble_scan.hci_enable_le_scan(sock)
     beacons_detected = {}
@@ -166,14 +163,7 @@ def ble_scanner():
             time.sleep(1)
         except:
             print ("failed restarting device…")
-            process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
-            process0.communicate()
-            process1 = subprocess.Popen("sudo hciconfig hci0 reset", stdout=subprocess.PIPE, shell=True)
-            process1.communicate()
-            process2 = subprocess.Popen("sudo /etc/init.d/bluetooth restart", stdout=subprocess.PIPE, shell=True)
-            process2.communicate()
-            process3 = subprocess.Popen("sudo hciconfig hci0 up", stdout=subprocess.PIPE, shell=True)
-            process3.communicate()            
+            usb_dongle_reset()         
             dev_id = 0
             sock = bluez.hci_open_dev(dev_id)
             ble_scan.hci_le_set_scan_parameters(sock)
@@ -206,14 +196,7 @@ def read_battery_level():
                 
                 if (int(min_inval_between_batt_level_readings) <= int(time_difference)) or (str(cleaned_battery_level_moderator) == "Never") or (str(stored_batterylevel) == '255'):
                     scan_beacon_data = False
-                    process0 = subprocess.Popen("sudo hciconfig hci0 down", stdout=subprocess.PIPE, shell=True)
-                    process0.communicate()
-                    process1 = subprocess.Popen("sudo hciconfig hci0 reset", stdout=subprocess.PIPE, shell=True)
-                    process1.communicate()
-                    process2 = subprocess.Popen("sudo /etc/init.d/bluetooth restart", stdout=subprocess.PIPE, shell=True)
-                    process2.communicate()
-                    process3 = subprocess.Popen("sudo hciconfig hci0 up", stdout=subprocess.PIPE, shell=True)
-                    process3.communicate()
+                    usb_dongle_reset()
                     #PUT HERE THE CODE TO READ THE BATTERY LEVEL
                     try:
                         handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
