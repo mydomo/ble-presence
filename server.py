@@ -245,7 +245,6 @@ def start_server():
     # this will make an infinite loop needed for 
     # not reseting server for every client
     while (not killer.kill_now):
-        print (killer.kill_now)
         conn, addr = soc.accept()
         ip, port = str(addr[0]), str(addr[1])
         #print('Accepting connection from ' + ip + ':' + port)
@@ -264,6 +263,7 @@ def kill_socket():
     while (not kill_socket_switch):
         if killer.kill_now:
             print ("KILL_SOCKET PROVA A CHIUDERE IL SOCKET")
+            time.sleep(1)
             soc.shutdown(socket.SHUT_RDWR)
             soc.close()
             kill_socket_switch = True
