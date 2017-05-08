@@ -277,7 +277,8 @@ def start_server():
 
 def kill_socket():
     global soc
-    if kill_now:
+    global kill_now
+    if killer.kill_now:
         print ("KILL_SOCKET PROVA A CHIUDERE IL SOCKET")
         soc.close()
     time.sleep(1)
