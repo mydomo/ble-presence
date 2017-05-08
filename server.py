@@ -275,6 +275,13 @@ def start_server():
             traceback.print_exc()
     soc.close()
 
+def kill_socket
+    global soc
+    if killer.kill_now:
+        print ("KILL_SOCKET PROVA A CHIUDERE IL SOCKET")
+        soc.close()
+    time.sleep(1)
+
 ### MAIN PROGRAM ###
 class GracefulKiller:
   kill_now = False
@@ -292,4 +299,5 @@ if __name__ == '__main__':
     Thread(target=start_server).start()
     Thread(target=ble_scanner).start()
     Thread(target=read_battery_level).start()
+    Thread(target=kill_socket).start()
 #  print ("End of the program. I was killed gracefully :)")
