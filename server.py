@@ -107,7 +107,6 @@ def socket_input_process(input_string):
 
 ##########- START FUNCTION THAT HANDLE SOCKET'S TRANSMISSION -##########
 def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 32768):
-    print ("test")
     # the input is in bytes, so decode it
     input_from_client_bytes = conn.recv(MAX_BUFFER_SIZE)
 
@@ -252,6 +251,10 @@ def start_server():
     except socket.error as msg:
     #    print('Bind failed. Error : ' + str(sys.exc_info()))
         sys.exit()
+    except killer.kill_now:
+        print ("CLOSING THE SOCKET")
+        soc.close()
+
 
     #Start listening on socket
     soc.listen(10)
