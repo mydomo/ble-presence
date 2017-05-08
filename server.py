@@ -136,7 +136,6 @@ def usb_dongle_reset():
     process2.communicate()
     process3 = subprocess.Popen("sudo hciconfig hci0 up", stdout=subprocess.PIPE, shell=True)
     process3.communicate()
-    print ("RESETTING YOUR DONGLE")
 
 def ble_scanner():
     global beacons_detected
@@ -265,8 +264,11 @@ def kill_socket():
     while (not kill_socket_switch):
         if killer.kill_now:
             print ("KILL_SOCKET PROVA A CHIUDERE IL SOCKET")
-            soc.shutdown(socket.SHUT_RDWR)
-            soc.close()
+            try:
+                soc.shutdown(socket.SHUT_RDWR)
+                soc.close()
+            except:
+                print("CLOSED")
             kill_socket_switch = True
         time.sleep(1)
 
