@@ -146,8 +146,7 @@ def ble_scanner():
         sock = bluez.hci_open_dev(dev_id)
         #print ("ble thread started")
     except:
-        print ("error accessing bluetooth device…")
-        print ("riavvio in corso...")
+        print ("error accessing bluetooth device... restart in progress!")
         usb_dongle_reset()
 
     ble_scan.hci_le_set_scan_parameters(sock)
@@ -161,7 +160,7 @@ def ble_scanner():
                 beacons_detected[MAC] = [RSSI,LASTSEEN]
             time.sleep(1)
         except:
-            print ("failed restarting device…")
+            print ("failed restarting device... let's try again!")
             usb_dongle_reset()         
             dev_id = 0
             sock = bluez.hci_open_dev(dev_id)
@@ -246,6 +245,7 @@ def start_server():
     # this will make an infinite loop needed for 
     # not reseting server for every client
     while (not killer.kill_now):
+        print (killer.kill_now)
         conn, addr = soc.accept()
         ip, port = str(addr[0]), str(addr[1])
         #print('Accepting connection from ' + ip + ':' + port)
@@ -264,11 +264,8 @@ def kill_socket():
     while (not kill_socket_switch):
         if killer.kill_now:
             print ("KILL_SOCKET PROVA A CHIUDERE IL SOCKET")
-            try:
-                soc.shutdown(socket.SHUT_RDWR)
-                soc.close()
-            except:
-                print("CLOSED")
+            soc.shutdown(socket.SHUT_RDWR)
+            soc.close()
             kill_socket_switch = True
         time.sleep(1)
 
