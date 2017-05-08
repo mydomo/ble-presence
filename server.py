@@ -101,8 +101,9 @@ def socket_input_process(input_string):
 
     ###- STOP RUNNING SERVICES -###
     if input_string == 'stop':
-        killer.kill_now = True
         return str('Service stopping')
+        killer.kill_now = True
+        print ()
 ##########- END FUNCTION THAT HANDLE CLIENT INPUT -##########
 
 ##########- START FUNCTION THAT HANDLE SOCKET'S TRANSMISSION -##########
@@ -251,9 +252,6 @@ def start_server():
     except socket.error as msg:
     #    print('Bind failed. Error : ' + str(sys.exc_info()))
         sys.exit()
-    except killer.kill_now:
-        print ("CLOSING THE SOCKET")
-        soc.close()
 
 
     #Start listening on socket
