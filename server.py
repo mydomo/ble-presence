@@ -278,11 +278,12 @@ def start_server():
 def kill_socket():
     global soc
     global kill_now
-    while True:
-        print (killer.kill_now)
+    kill_socket_switch = False
+    while (not kill_socket_switch):
         if killer.kill_now:
             print ("KILL_SOCKET PROVA A CHIUDERE IL SOCKET")
             soc.close()
+            kill_socket_switch = True
         time.sleep(1)
 
 ### MAIN PROGRAM ###
