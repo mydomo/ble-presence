@@ -103,7 +103,7 @@ def socket_input_process(input_string):
     if input_string == 'stop':
         return str('Service stopping')
         killer.kill_now = True
-        print ()
+        print ('service stopping')
 ##########- END FUNCTION THAT HANDLE CLIENT INPUT -##########
 
 ##########- START FUNCTION THAT HANDLE SOCKET'S TRANSMISSION -##########
