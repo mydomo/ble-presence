@@ -22,6 +22,7 @@ if result_string.startswith('[') and result_string.endswith(']'):
     print (result_string)
 print("ORA DIVIDO LA PRIMA VOLTA")
 print(result_string.split("), "))
-items = result_string.split("), ").replace(")", "")
+items = result_string.split("), ")
 for item in items:
-    print(item)
+    item.replace("'", "")
+    print (item)
