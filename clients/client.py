@@ -21,6 +21,7 @@ if result_string.startswith('[') and result_string.endswith(']'):
 items = result_string.split("), ")
 for item in items:
     bucket = item.split("', ['")
-    for data in bucket:
-    	print(data)
+#    for data in bucket:
+#    	print(data)
+    print (bucket[0])
     print ("----------")
