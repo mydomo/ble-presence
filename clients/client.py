@@ -19,7 +19,7 @@ if result_string.startswith('[') and result_string.endswith(']'):
     print (result_string)
     print ("Elimino le tonde di inizio:")
     result_string = result_string.replace("(", "")
-    print ("result_string")
+    print (result_string)
 print("ORA DIVIDO LA PRIMA VOLTA")
 print(result_string.split("), "))
 
