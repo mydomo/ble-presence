@@ -13,13 +13,11 @@ result_string = result_bytes.decode("utf8") # the return will be in bytes, so de
 #print("Result from server is {}".format(result_string))
 
 
-#START THE INPUT CLEANING FOR BEACONING DATA:
-#REMOVE '[' AND ']' FROM THE RECEIVED STRING
+# START THE INPUT CLEANING FOR BEACONING DATA:
+# REMOVE '[', ']' AND '(' FROM THE RECEIVED STRING
 if result_string.startswith('[') and result_string.endswith(']'):
     result_string = result_string[1:-1].replace("(", "")
-    print (result_string)
-print("ORA DIVIDO LA PRIMA VOLTA")
-print(result_string.split("), "))
+# RECURSIVE SPLIT THE STRING TO GET THE DATA:
 items = result_string.split("), ")
 for item in items:
     bucket = item.split("', ['")
