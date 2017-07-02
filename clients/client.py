@@ -24,4 +24,7 @@ print("ORA DIVIDO LA PRIMA VOLTA")
 print(result_string.split("), "))
 items = result_string.split("), ")
 for item in items:
-    print (item)
+	bucket = result_string.split("', ['")
+    for data in bucket:
+    	print(data)
+    print ("----------")
