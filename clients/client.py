@@ -21,7 +21,8 @@ if result_string.startswith('[') and result_string.endswith(']'):
 items = result_string.split("), ")
 for item in items:
     bucket = item.split("', ['")
-#    for data in bucket:
-#    	print(data)
-    print (bucket[0])
+    BLE_MAC = bucket[0].replace("'", "")
+    OTHER_DATA = bucket[1]
+    print (BLE_MAC)
+    print (OTHER_DATA)
     print ("----------")
