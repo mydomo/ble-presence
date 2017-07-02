@@ -26,5 +26,5 @@ items = result_string.split("), ")
 for item in items:
     bucket = item.split("', ['")
     for data in bucket:
-    	print(data[1])
+    	print(data)
     print ("----------")
