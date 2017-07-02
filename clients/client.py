@@ -1,3 +1,5 @@
+#!/usr/local/bin/python3
+
 # client.py
 
 import socket
@@ -24,7 +26,7 @@ for item in items:
     BLE_MAC = bucket[0].replace("'", "")
     ble_data = bucket[1].split("', '")
     BLE_RSSI = ble_data[0]
-    BLE_TIME = ble_data[1].replace("'])", "")
+    BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
     print (BLE_MAC)
     print (BLE_RSSI)
