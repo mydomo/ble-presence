@@ -17,3 +17,6 @@ print("ELIMINO LE PARENTESI QUADRE DI INIZIO E FINE")
 if result_string.startswith('[') and result_string.endswith(']'):
     result_string = result_string[1:-1]
     print (result_string)
+print("ORA DIVIDO LA PRIMA VOLTA")
+print(result_string.split(str="), "))
+
