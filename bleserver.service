@@ -1,6 +1,21 @@
-# REFERENCE: https://www.reddit.com/r/raspberry_pi/comments/4vhofs/creating_a_systemd_daemon_so_you_can_run_a_python/
 #
+# TO INSTALL:
+# sudo /etc/systemd/system/bleserver.service
+# systemctl enable bleserver.service
+#
+# TO MANUAL START:
+# systemctl start bleserver.service
+#
+# TO MANUAL STOP:
+# systemctl stop bleserver.service
+#
+# TO REMOVE:
+# systemctl disable bleserver.service
+# REFERENCE: https://www.reddit.com/r/raspberry_pi/comments/4vhofs/creating_a_systemd_daemon_so_you_can_run_a_python/
+# 
 ***bleserver.service***
+REMOVE ALL IN ORDER TO WORK!!!
+
 [Unit]
 Description=BLE Python Socket Server
 After=multi-user.target
