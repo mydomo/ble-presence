@@ -22,7 +22,11 @@ items = result_string.split("), ")
 for item in items:
     bucket = item.split("', ['")
     BLE_MAC = bucket[0].replace("'", "")
-    OTHER_DATA = bucket[1]
+    ble_data = bucket[1].split("', '")
+    BLE_RSSI = ble_data[0]
+    BLE_TIME = ble_data[1].replace("'])", "")
+
     print (BLE_MAC)
-    print (OTHER_DATA)
+    print (BLE_RSSI)
+    print (BLE_TIME)
     print ("----------")
