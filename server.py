@@ -38,6 +38,7 @@ min_inval_between_batt_level_readings = 3600
 lang_SCAN_STOPPED = 'Scanning stopped by other function'
 lang_READING_LOCK = 'Reading in progress...'
 lang_READING_START = 'Reading started'
+lang_SERVICE_STOP = 'Service stopping...'
 
 
 ##########- START VARIABLE INITIALIZATION -##########
@@ -52,13 +53,13 @@ read_value_lock = False
 ##########- END VARIABLE INITIALIZATION -##########
 
 ##########- START FUNCTION THAT HANDLE CLIENT INPUT -##########
-
 def socket_input_process(input_string):
     global mode
     global devices_to_analize
     global lang_SCAN_STOPPED
     global lang_READING_LOCK
     global lang_READING_START
+    global lang_SERVICE_STOP
 
     ###- TRANSMIT BEACON DATA -###
     # check if client requested "beacon_data"
@@ -101,8 +102,8 @@ def socket_input_process(input_string):
     ###- STOP RUNNING SERVICES -###
     if input_string == 'stop':
         killer.kill_now = True
-        print ('service stopping')
-        return str('Service stopping')
+        return str(lang_SERVICE_STOP)
+
 ##########- END FUNCTION THAT HANDLE CLIENT INPUT -##########
 
 ##########- START FUNCTION THAT HANDLE SOCKET'S TRANSMISSION -##########
