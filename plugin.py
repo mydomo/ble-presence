@@ -61,6 +61,7 @@ class BasePlugin:
     def BLE_ONLY_devices(self):
         if not self.error:
             try:
+                Domoticz.Log("provo a connettermi")
                 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
                 soc.connect((Parameters["Address"], Parameters["Port"]))
 
@@ -68,6 +69,7 @@ class BasePlugin:
                 soc.send(clients_input.encode()) # we must encode the string to bytes  
                 result_bytes = soc.recv(32768) # the number means how the response can be in bytes  
                 result_string = result_bytes.decode("utf8") # the return will be in bytes, so decode
+
 
             except:
                 self.error = True
