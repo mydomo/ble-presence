@@ -33,6 +33,13 @@ class BasePlugin:
         self.mode = ""
         return
 
+    def search(values, searchFor):
+    for k in values:
+        for v in values[k]:
+            if searchFor in v:
+                return k
+    return None
+
     def onStart(self):
         Domoticz.Log("CIAO!")
         Domoticz.Debug("onStart called")
@@ -93,9 +100,9 @@ class BasePlugin:
 
                     if (len(Devices) == 0):
                         UNIT_GENERATED = len(Devices) + 1
-                        Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, TypeName="Switch", DeviceID=BLE_MAC.replace(":", "")).Create()
+                        Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, TypeName="Switch").Create()
                         Domoticz.Log("Devices created.")
-                    Domoticz.Log(str(Devices.DeviceID))
+                    Domoticz.Log(str(search(Devices, BLE_MAC)))
 
 
                     #TO BE CONTINUED
