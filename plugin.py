@@ -56,6 +56,21 @@ class BasePlugin:
             self.BLE_ONLY_devices()
  #       if self.mode == 'BLE_BATT':
  #           self.BLE_BATT_devices()
+
+ global _plugin
+_plugin = BasePlugin()
+
+def onStart():
+    global _plugin
+    _plugin.onStart()
+
+def onStop():
+    global _plugin
+    _plugin.onStop()
+
+def onHeartbeat():
+    global _plugin
+    _plugin.onHeartbeat()
         
     #BLE-PRESENCE SPECIFIC METHODS
     def BLE_ONLY_devices(self):
