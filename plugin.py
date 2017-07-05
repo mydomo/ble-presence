@@ -95,7 +95,7 @@ class BasePlugin:
                         UNIT_GENERATED = len(Devices) + 1
                         Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, TypeName="Switch", DeviceID=BLE_MAC.replace(":", "")).Create()
                         Domoticz.Log("Devices created.")
-                    Domoticz.Log(Devices)
+                    Domoticz.Log(str(Devices.DeviceID))
 
 
                     #TO BE CONTINUED
