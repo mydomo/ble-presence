@@ -55,7 +55,7 @@ class BasePlugin:
             self.BLE_BATT_devices()
         
     #BLE-PRESENCE SPECIFIC METHODS
-    def BLE_ONLY_devices(self)
+    def BLE_ONLY_devices(self):
         if not self.error:
             try:
                 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
