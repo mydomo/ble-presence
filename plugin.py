@@ -115,8 +115,8 @@ def onHeartbeat():
     _plugin.onHeartbeat()
 
 def search(values, searchFor):
-for k in values:
-    for v in values[k]:
-        if searchFor in v:
-            return k
-return None
+    for k in values:
+        for v in values[k]:
+            if searchFor in v:
+                return k
+    return None
