@@ -34,7 +34,7 @@ class BasePlugin:
         return
 
     def onStart(self):
-        #global icons
+        Domoticz.Log("CIAO!")
         Domoticz.Debug("onStart called")
 #        if Parameters["Mode6"] == 'ADD_DEVICE':
 #            self.mode = 'ADD_DEVICE'
