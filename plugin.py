@@ -55,7 +55,6 @@ class BasePlugin:
             self.BLE_BATT_devices()
         
     #BLE-PRESENCE SPECIFIC METHODS
-
     def BLE_ONLY_devices(self)
         if not self.error:
             try:
