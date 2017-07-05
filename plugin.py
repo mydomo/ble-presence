@@ -42,6 +42,8 @@ class BasePlugin:
             self.mode = 'BLE_ONLY'
         if Parameters["Mode6"] == 'BLE_BATT':
             self.mode = 'BLE_BATT'
+        Domoticz.Log("CIAO!")
+
 
     def onStop(self):
         Domoticz.Debug("onStop called")
