@@ -36,12 +36,12 @@ class BasePlugin:
     def onStart(self):
         #global icons
         Domoticz.Debug("onStart called")
-        if Parameters["Mode6"] == 'ADD_DEVICE':
-            self.mode = 'ADD_DEVICE'
+#        if Parameters["Mode6"] == 'ADD_DEVICE':
+#            self.mode = 'ADD_DEVICE'
         if Parameters["Mode6"] == 'BLE_ONLY':
             self.mode = 'BLE_ONLY'
-        if Parameters["Mode6"] == 'BLE_BATT':
-            self.mode = 'BLE_BATT'
+#        if Parameters["Mode6"] == 'BLE_BATT':
+#            self.mode = 'BLE_BATT'
         Domoticz.Log("CIAO!")
 
 
@@ -50,12 +50,12 @@ class BasePlugin:
 
     def onHeartbeat(self):
         Domoticz.Log("CIAO!")
-        if self.mode == 'ADD_DEVICE':
-            self.ADD_DEVICE_devices()
+ #       if self.mode == 'ADD_DEVICE':
+ #           self.ADD_DEVICE_devices()
         if self.mode == 'BLE_ONLY':
             self.BLE_ONLY_devices()
-        if self.mode == 'BLE_BATT':
-            self.BLE_BATT_devices()
+ #       if self.mode == 'BLE_BATT':
+ #           self.BLE_BATT_devices()
         
     #BLE-PRESENCE SPECIFIC METHODS
     def BLE_ONLY_devices(self):
@@ -94,6 +94,3 @@ class BasePlugin:
 
 
                     #TO BE CONTINUED
-        if self.error:
-            self.BatteryNodes = []
-
