@@ -50,6 +50,7 @@ class BasePlugin:
 
     def onHeartbeat(self):
         Domoticz.Log("CIAO!")
+        self.error = False
  #       if self.mode == 'ADD_DEVICE':
  #           self.ADD_DEVICE_devices()
         if self.mode == 'BLE_ONLY':
