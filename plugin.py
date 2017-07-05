@@ -33,13 +33,6 @@ class BasePlugin:
         self.mode = ""
         return
 
-    def search(values, searchFor):
-    for k in values:
-        for v in values[k]:
-            if searchFor in v:
-                return k
-    return None
-
     def onStart(self):
         Domoticz.Log("CIAO!")
         Domoticz.Debug("onStart called")
@@ -120,3 +113,10 @@ def onStop():
 def onHeartbeat():
     global _plugin
     _plugin.onHeartbeat()
+
+def search(values, searchFor):
+for k in values:
+    for v in values[k]:
+        if searchFor in v:
+            return k
+return None
