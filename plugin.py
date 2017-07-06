@@ -93,7 +93,7 @@ class BasePlugin:
                     ADD_THIS_DEVICE = False
                     for x in Devices:
                     	if str(BLE_MAC.replace(":", "")) != str(Devices[x].DeviceID):
-                    	ADD_THIS_DEVICE = True
+                    	    ADD_THIS_DEVICE = True
 
                     if (ADD_THIS_DEVICE == True):
                         UNIT_GENERATED = len(Devices) + 1
