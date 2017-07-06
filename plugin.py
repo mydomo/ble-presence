@@ -98,8 +98,8 @@ class BasePlugin:
                                     SIGNAL_LEVEL = 10
                                 if SIGNAL_LEVEL < 0:
                                     SIGNAL_LEVEL = 0
-                                Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
                                 Domoticz.Log(str(BLE_MAC) + " was updated since seen " + str(time_difference) + "s ago")
+                                Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
                                 break
                     if time_difference > int(Parameters["Mode1"]):
                         Domoticz.Log(str(BLE_MAC) + " ignored since seen " + str(time_difference) + "s ago")
