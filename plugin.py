@@ -94,12 +94,14 @@ class BasePlugin:
                     for x in Devices:
                         DEVICE_UPDATED = False
                         if int(time_difference) <= int(Parameters["Mode1"]):
-                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)) and Devices[x].sValue=="Off":
-                                SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
+                            
+                            SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
                                 if SIGNAL_LEVEL > 10:
                                     SIGNAL_LEVEL = 10
                                 if SIGNAL_LEVEL < 0:
                                     SIGNAL_LEVEL = 0
+
+                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)) and (Devices[x].sValue=="Off" or Devices[x].SignalLevel != SIGNAL_LEVEL):
                                 DEVICE_UPDATED = True
                                 Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
 
