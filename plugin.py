@@ -92,8 +92,11 @@ class BasePlugin:
                     for x in Devices:
                         if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
                             SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
-                            Domoticz.Log(str(SIGNAL_LEVEL))
-                            Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=12)
+                            if SIGNAL_LEVEL > 10:
+                                SIGNAL_LEVEL = 10
+                            if SIGNAL_LEVEL < 0:
+                                SIGNAL_LEVEL = 0
+                            Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
                             break
 
     def ADD_DEVICE_devices(self):
