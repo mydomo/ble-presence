@@ -98,6 +98,12 @@ class BasePlugin:
                     for key, value in Devices.items():
                         Domoticz.Log(str(key))
                         Domoticz.Log(str(value))
+                    for key, value in Devices.items():
+                        Domoticz.Log(str(key))
+                        Domoticz.Log(str(value))
+                    for x in Devices:
+                    Domoticz.Debug("Device:           " + str(x) + " - " + str(Devices[x]))
+                    Domoticz.Debug("External ID:     '" + str(Devices[x].DeviceID) + "'")
 
                     #TO BE CONTINUED
 global _plugin
