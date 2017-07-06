@@ -101,7 +101,7 @@ class BasePlugin:
                             if SIGNAL_LEVEL < 0:
                                 SIGNAL_LEVEL = 0
 
-                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)) and (Devices[x].sValue=="Off" or Devices[x].SignalLevel != SIGNAL_LEVEL):
+                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)) and Devices[x].sValue=="Off":
                                 DEVICE_UPDATED = True
                                 Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
 
