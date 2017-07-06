@@ -91,7 +91,7 @@ class BasePlugin:
                     1
                     for x in Devices:
                         if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
-                        	Domoticz.Log(int(BLE_RSSI))
+                            Domoticz.Log(int(BLE_RSSI))
                             Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=12)
                             break
 
