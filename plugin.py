@@ -101,10 +101,7 @@ class BasePlugin:
                                     SIGNAL_LEVEL = 0
 
                                 Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
-                                Domoticz.Log(str(BLE_MAC) + " was updated")
-
-                    if int(time_difference) > int(Parameters["Mode1"]):
-                        Domoticz.Log(str(BLE_MAC) + " ignored since seen " + str(time_difference) + "s ago")
+                                #Domoticz.Log(str(BLE_MAC) + " was updated")
 
     def ADD_DEVICE_devices(self):
         if not self.error:
@@ -137,14 +134,18 @@ class BasePlugin:
                     ble_data = bucket[1].split("', '")
                     BLE_RSSI = ble_data[0]
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
-                    for x in Devices:
-                        if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
-                            ADD_THIS_DEVICE = False
-                            break
-                    if ADD_THIS_DEVICE == True:
-                        UNIT_GENERATED = len(Devices) + 1
-                        Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, DeviceID=BLE_MAC.replace(":", ""), TypeName="Switch").Create()
-                        Domoticz.Log("New BLE device ADDED: " + str(BLE_MAC))
+
+                    time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
+
+                    if int(time_difference) <= int(Parameters["Mode1"]):
+                        for x in Devices:
+                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
+                                ADD_THIS_DEVICE = False
+                                break
+                        if ADD_THIS_DEVICE == True:
+                            UNIT_GENERATED = len(Devices) + 1
+                            Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, DeviceID=BLE_MAC.replace(":", ""), TypeName="Switch").Create()
+                            Domoticz.Log("New BLE device ADDED: " + str(BLE_MAC))
 
                     #for key, value in Devices.items():
                     #    Domoticz.Log(str(key))
