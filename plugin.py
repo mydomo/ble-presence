@@ -64,7 +64,6 @@ class BasePlugin:
                 SERV_ADDR = str(Parameters["Address"])
                 SERV_PORT = int(Parameters["Port"])
                 soc.connect((SERV_ADDR, SERV_PORT))
-                #soc.connect(("10.50.0.55", 12345))
 
                 clients_input = "beacon_data" 
                 soc.send(clients_input.encode()) # we must encode the string to bytes  
@@ -97,7 +96,6 @@ class BasePlugin:
                         UNIT_GENERATED = len(Devices) + 1
                         Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, DeviceID=BLE_MAC.replace(":", ""), TypeName="Switch").Create()
                         Domoticz.Log("New BLE device ADDED: " + str(BLE_MAC))
-                        break
 
                     #for key, value in Devices.items():
                     #    Domoticz.Log(str(key))
