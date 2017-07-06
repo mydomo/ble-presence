@@ -4,13 +4,14 @@ Author: Marco Baglivo, some parts of the components are fork of other open sourc
 
 Version:    
             0.0.1: pre-alpha
+            0.0.2: pre-alpha added handling of timestamp
 """
 """
-<plugin key="ble-presence" name="BLE-Presence Client" author="MArco Baglivo" version="0.0.1" wikilink="" externallink="https://github.com/mydomo">
+<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.0.2" wikilink="" externallink="https://github.com/mydomo">
     <params>
         <param field="Address" label="BLE-Presence Server IP address" width="200px" required="true" default="127.0.0.1"/>
         <param field="Port" label="Port" width="40px" required="true" default="12345"/>
-        <param field="Mode1" label="BLE-Presence Server name (used as prefix of the device discovered, keep it short.)" width="200px" required="true" default="BLE_1"/>
+        <param field="Mode1" label="Timeout from the last beacon received to pull off the device (in seconds)" width="40px" required="true" default="300"/>
         <param field="Mode6" label="Mode" width="200px" required="true">
             <options>
                 <option label="Discover and Add BLE devices." value="ADD_DEVICE" default="true" />
@@ -87,8 +88,11 @@ class BasePlugin:
                     BLE_MAC = bucket[0].replace("'", "")
                     ble_data = bucket[1].split("', '")
                     BLE_RSSI = ble_data[0]
-                    BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
-                    1
+                    BLE_TIME = datetime.strptime(ble_data[1].replace("']", "").replace(")", ""))
+                    TIME_NOW = datetime.datetime.now()
+                    ELAPSED_TIME = TIME_NOW - BLE_TIME
+                    Domoticz.Log(BLE_MAC + " was seen " + ELAPSED_TIME + "s ago")
+                    if ELAPSED_TIME < datetime.timedelta(seconds=int(Parameters["Mode1"])):
                     for x in Devices:
                         if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
                             SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
