@@ -84,7 +84,7 @@ class BasePlugin:
                 # RECURSIVE SPLIT THE STRING TO GET THE DATA:
                 items = result_string.split("), ")
                 for item in items:
-                	ADD_THIS_DEVICE = False
+                    ADD_THIS_DEVICE = False
                     bucket = item.split("', ['")
                     BLE_MAC = bucket[0].replace("'", "")
                     ble_data = bucket[1].split("', '")
