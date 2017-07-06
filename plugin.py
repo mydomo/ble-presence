@@ -34,12 +34,12 @@ class BasePlugin:
         return
 
     def onStart(self):
-#        if Parameters["Mode6"] == 'ADD_DEVICE':
-#            self.mode = 'ADD_DEVICE'
+        if Parameters["Mode6"] == 'ADD_DEVICE':
+            self.mode = 'ADD_DEVICE'
         if Parameters["Mode6"] == 'BLE_ONLY':
             self.mode = 'BLE_ONLY'
-#        if Parameters["Mode6"] == 'BLE_BATT':
-#            self.mode = 'BLE_BATT'
+        if Parameters["Mode6"] == 'BLE_BATT':
+            self.mode = 'BLE_BATT'
         if 1 not in Devices:
             Domoticz.Device(Name="BLE PRESENCE", Unit=1, TypeName="Switch").Create()
 
@@ -49,15 +49,15 @@ class BasePlugin:
 
     def onHeartbeat(self):
         self.error = False
- #       if self.mode == 'ADD_DEVICE':
- #           self.ADD_DEVICE_devices()
+        if self.mode == 'ADD_DEVICE':
+            self.ADD_DEVICE_devices()
         if self.mode == 'BLE_ONLY':
             self.BLE_ONLY_devices()
- #       if self.mode == 'BLE_BATT':
- #           self.BLE_BATT_devices()
+        if self.mode == 'BLE_BATT':
+            self.BLE_BATT_devices()
         
     #BLE-PRESENCE SPECIFIC METHODS
-    def BLE_ONLY_devices(self):
+    def ADD_DEVICE_devices(self):
         if not self.error:
             try:
                 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
