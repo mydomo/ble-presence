@@ -95,6 +95,7 @@ class BasePlugin:
                         if (str(BLE_MAC.replace(":", ""))) != (str(Devices[x].DeviceID)):
                             UNIT_GENERATED = len(Devices) + 1
                             Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, DeviceID=BLE_MAC.replace(":", ""), TypeName="Switch").Create()
+                            sleep (1)
                             break
                     #for key, value in Devices.items():
                     #    Domoticz.Log(str(key))
