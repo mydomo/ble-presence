@@ -93,6 +93,7 @@ class BasePlugin:
                     time_difference = round(int(time.time())) - round(int(BLE_TIME))
                     Domoticz.Log(str(BLE_MAC) + " was seen " + str(time_difference) + "s ago")
                     if time_difference <= int(Parameters["Mode1"]):
+                        Domoticz.Log(str(BLE_MAC) + " was updated since seen " + str(time_difference) + "s ago")
                         for x in Devices:
                             if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
                                 SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
