@@ -93,15 +93,15 @@ class BasePlugin:
                     ELAPSED_TIME = TIME_NOW - BLE_TIME
                     Domoticz.Log(BLE_MAC + " was seen " + ELAPSED_TIME + "s ago")
                     if ELAPSED_TIME < datetime.timedelta(seconds=int(Parameters["Mode1"])):
-                    for x in Devices:
-                        if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
-                            SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
-                            if SIGNAL_LEVEL > 10:
-                                SIGNAL_LEVEL = 10
-                            if SIGNAL_LEVEL < 0:
-                                SIGNAL_LEVEL = 0
-                            Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
-                            break
+                        for x in Devices:
+                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
+                                SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
+                                if SIGNAL_LEVEL > 10:
+                                    SIGNAL_LEVEL = 10
+                                if SIGNAL_LEVEL < 0:
+                                    SIGNAL_LEVEL = 0
+                                Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
+                                break
 
     def ADD_DEVICE_devices(self):
         if not self.error:
