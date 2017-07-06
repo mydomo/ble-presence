@@ -95,7 +95,7 @@ class BasePlugin:
                         Domoticz.Log(str(Devices[x].DeviceID))
                         if (str(BLE_MAC.replace(":", ""))) != (str(Devices[x].DeviceID)):
                             ADD_THIS_DEVICE = True
-                    if ADD_THIS_DEVICE == True
+                    if ADD_THIS_DEVICE == True:
                         UNIT_GENERATED = len(Devices) + 1
                         Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, DeviceID=BLE_MAC.replace(":", ""), TypeName="Switch").Create()
 
