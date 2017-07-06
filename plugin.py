@@ -25,7 +25,6 @@ Version:
 import Domoticz
 import socket
 import time
-from datetime import datetime, timedelta
 
 class BasePlugin:
 
@@ -91,9 +90,7 @@ class BasePlugin:
                     BLE_RSSI = ble_data[0]
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
                     time_difference = round(int(time.time())) - round(int(BLE_TIME))
-                    Domoticz.Log(str(BLE_MAC) + " was seen " + str(time_difference) + "s ago")
                     if time_difference <= int(Parameters["Mode1"]):
-                        Domoticz.Log(str(BLE_MAC) + " was updated since seen " + str(time_difference) + "s ago")
                         for x in Devices:
                             if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
                                 SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
@@ -102,7 +99,10 @@ class BasePlugin:
                                 if SIGNAL_LEVEL < 0:
                                     SIGNAL_LEVEL = 0
                                 Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
+                                Domoticz.Log(str(BLE_MAC) + " was updated since seen " + str(time_difference) + "s ago")
                                 break
+                    if time_difference > int(Parameters["Mode1"]):
+                        Domoticz.Log(str(BLE_MAC) + " ignored since seen " + str(time_difference) + "s ago")
 
     def ADD_DEVICE_devices(self):
         if not self.error:
