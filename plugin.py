@@ -60,9 +60,9 @@ class BasePlugin:
     def BLE_ONLY_devices(self):
         if not self.error:
             try:
-                #soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
+                soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
                 soc.connect(Parameters["Address"], Parameters["Port"])
-                soc.connect(("10.50.0.55", 12345))
+                #soc.connect(("10.50.0.55", 12345))
 
                 clients_input = "beacon_data" 
                 soc.send(clients_input.encode()) # we must encode the string to bytes  
