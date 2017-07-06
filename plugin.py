@@ -91,7 +91,7 @@ class BasePlugin:
                     BLE_RSSI = ble_data[0]
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
                     time_difference = int(time.time()) - int(BLE_TIME)
-                    Domoticz.Log(BLE_MAC + " was seen " + time_difference + "s ago")
+                    Domoticz.Log(str(BLE_MAC) + " was seen " + str(time_difference) + "s ago")
                     if time_difference <= int(Parameters["Mode1"]):
                         for x in Devices:
                             if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
