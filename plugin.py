@@ -34,8 +34,6 @@ class BasePlugin:
         return
 
     def onStart(self):
-        Domoticz.Log("CIAO!")
-        Domoticz.Debug("onStart called")
 #        if Parameters["Mode6"] == 'ADD_DEVICE':
 #            self.mode = 'ADD_DEVICE'
         if Parameters["Mode6"] == 'BLE_ONLY':
@@ -43,6 +41,8 @@ class BasePlugin:
 #        if Parameters["Mode6"] == 'BLE_BATT':
 #            self.mode = 'BLE_BATT'
         Domoticz.Log("CIAO!")
+        if 1 not in Devices:
+            Domoticz.Device(Name="BLE PRESENCE", Unit=1, TypeName="Switch").Create()
 
 
     def onStop(self):
