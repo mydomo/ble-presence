@@ -91,7 +91,7 @@ class BasePlugin:
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
                     for x in Devices:
                     	if str(BLE_MAC.replace(":", "")) != str(Devices[x].DeviceID):
-                    	    UNIT_GENERATED = len(Devices) + 1
+                            UNIT_GENERATED = len(Devices) + 1
                             Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, DeviceID=BLE_MAC.replace(":", ""), TypeName="Switch").Create()
                             Domoticz.Log("New BLE device found and created:" + str(BLE_MAC))
                     #for key, value in Devices.items():
