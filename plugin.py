@@ -90,8 +90,8 @@ class BasePlugin:
                     BLE_RSSI = ble_data[0]
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
                     for x in Devices:
-                      Domoticz.Log(str(BLE_MAC.replace(":", "")))
-                      Domoticz.Log(str(Devices[x].DeviceID))
+                        Domoticz.Log(str(BLE_MAC.replace(":", "")))
+                        Domoticz.Log(str(Devices[x].DeviceID))
                         if (str(BLE_MAC.replace(":", ""))) != (str(Devices[x].DeviceID)):
                             UNIT_GENERATED = len(Devices) + 1
                             Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, DeviceID=BLE_MAC.replace(":", ""), TypeName="Switch").Create()
