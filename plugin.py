@@ -89,13 +89,12 @@ class BasePlugin:
                     ble_data = bucket[1].split("', '")
                     BLE_RSSI = ble_data[0]
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
-                    Domoticz.Log(BLE_MAC)
                     ADD_THIS_DEVICE = False
                     for x in Devices:
                     	if str(BLE_MAC.replace(":", "")) != str(Devices[x].DeviceID):
                     	    ADD_THIS_DEVICE = True
 
-                    if (ADD_THIS_DEVICE == True):
+                    if (ADD_THIS_DEVICE == True) or (len(Devices) == 0):
                         UNIT_GENERATED = len(Devices) + 1
                         Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, DeviceID=BLE_MAC.replace(":", ""), TypeName="Switch").Create()
                         Domoticz.Log("New BLE device found and created:" + str(BLE_MAC))
