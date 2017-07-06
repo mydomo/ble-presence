@@ -88,7 +88,7 @@ class BasePlugin:
                     BLE_MAC = bucket[0].replace("'", "")
                     ble_data = bucket[1].split("', '")
                     BLE_RSSI = ble_data[0]
-                    BLE_TIME = datetime.strptime(ble_data[1].replace("']", "").replace(")", ""))
+                    BLE_TIME = datetime.strptime(ble_data[1].replace("']", "").replace(")", ""), "%Y-%m-%d %H:%M:%S.%f")
                     TIME_NOW = datetime.datetime.now()
                     ELAPSED_TIME = TIME_NOW - BLE_TIME
                     Domoticz.Log(BLE_MAC + " was seen " + ELAPSED_TIME + "s ago")
