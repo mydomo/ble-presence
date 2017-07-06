@@ -91,6 +91,7 @@ class BasePlugin:
                     for x in Devices:
                         if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
                             THE_UNIT = Devices[x]
+                            Domoticz.Log(THE_UNIT)
                             Devices[THE_UNIT].Update(nValue=1, sValue="On", SignalLevel=50)
                             break
 
