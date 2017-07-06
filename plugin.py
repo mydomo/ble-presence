@@ -98,6 +98,7 @@ class BasePlugin:
                         UNIT_GENERATED = len(Devices) + 1
                         Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, DeviceID=BLE_MAC.replace(":", ""), TypeName="Switch").Create()
                         Domoticz.Log("New BLE device found and created:" + str(BLE_MAC))
+                        ADD_THIS_DEVICE = False
                     #for key, value in Devices.items():
                     #    Domoticz.Log(str(key))
                     #    Domoticz.Log(str(value))
