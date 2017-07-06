@@ -63,7 +63,7 @@ class BasePlugin:
                 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 SERV_ADDR = "10.50.0.55"
                 SERV_PORT = 12345
-                soc.connect(SERV_ADDR, SERV_PORT)
+                soc.connect((SERV_ADDR, SERV_PORT))
                 #soc.connect(("10.50.0.55", 12345))
 
                 clients_input = "beacon_data" 
