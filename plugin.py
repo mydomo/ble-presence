@@ -84,7 +84,7 @@ class BasePlugin:
                 # RECURSIVE SPLIT THE STRING TO GET THE DATA:
                 items = result_string.split("), ")
                 for item in items:
-                	ADD_THIS DEVICE = False
+                	ADD_THIS_DEVICE = False
                     bucket = item.split("', ['")
                     BLE_MAC = bucket[0].replace("'", "")
                     ble_data = bucket[1].split("', '")
@@ -94,8 +94,8 @@ class BasePlugin:
                         Domoticz.Log(str(BLE_MAC.replace(":", "")))
                         Domoticz.Log(str(Devices[x].DeviceID))
                         if (str(BLE_MAC.replace(":", ""))) != (str(Devices[x].DeviceID)):
-                            ADD_THIS DEVICE = True
-                    if ADD_THIS DEVICE == True
+                            ADD_THIS_DEVICE = True
+                    if ADD_THIS_DEVICE == True
                         UNIT_GENERATED = len(Devices) + 1
                         Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, DeviceID=BLE_MAC.replace(":", ""), TypeName="Switch").Create()
 
