@@ -90,7 +90,8 @@ class BasePlugin:
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
                     for x in Devices:
                         if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
-                            Devices[Devices[x]].Update(nValue=1, sValue=str(On), SignalLevel=50)
+                        	THE_UNIT = int(Devices[x].DeviceID)
+                            Devices[THE_UNIT].Update(nValue=1, sValue=str(On), SignalLevel=50)
                             break
 
     def ADD_DEVICE_devices(self):
