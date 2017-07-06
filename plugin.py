@@ -136,6 +136,7 @@ class BasePlugin:
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
                     time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
+                    Domoticz.Log("MAC" + str(BLE_MAC) + "TIME DIFF: " + str(time_difference))
 
                     if int(time_difference) <= int(Parameters["Mode1"]):
                         for x in Devices:
