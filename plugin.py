@@ -95,7 +95,7 @@ class BasePlugin:
                         UNIT_GENERATED = len(Devices) + 1
                         Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, TypeName="Switch").Create()
                         Domoticz.Log("Devices created.")
-                    for key, value in device.items():
+                    for key, value in Devices.items():
                         domoticz.log(Unit)
 
                     #TO BE CONTINUED
