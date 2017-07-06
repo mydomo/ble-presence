@@ -57,6 +57,42 @@ class BasePlugin:
             self.BLE_BATT_devices()
         
     #BLE-PRESENCE SPECIFIC METHODS
+    def BLE_ONLY_devices(self):
+        if not self.error:
+            try:
+                soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                SERV_ADDR = str(Parameters["Address"])
+                SERV_PORT = int(Parameters["Port"])
+                soc.connect((SERV_ADDR, SERV_PORT))
+
+                clients_input = "beacon_data" 
+                soc.send(clients_input.encode()) # we must encode the string to bytes  
+                result_bytes = soc.recv(32768) # the number means how the response can be in bytes  
+                result_string = result_bytes.decode("utf8") # the return will be in bytes, so decode
+
+
+            except:
+                self.error = True
+                Domoticz.Error("Error connecting to BLE-Server: " + Parameters["Address"] + " on port: " + Parameters["Port"])
+            else:
+                # START THE INPUT CLEANING FOR BEACONING DATA:
+                # REMOVE '[', ']' AND '(' FROM THE RECEIVED STRING
+                if result_string.startswith('[') and result_string.endswith(']'):
+                    result_string = result_string[1:-1].replace("(", "")
+                # RECURSIVE SPLIT THE STRING TO GET THE DATA:
+                items = result_string.split("), ")
+                for item in items:
+                    UPDATE_THIS_DEVICE = False
+                    bucket = item.split("', ['")
+                    BLE_MAC = bucket[0].replace("'", "")
+                    ble_data = bucket[1].split("', '")
+                    BLE_RSSI = ble_data[0]
+                    BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
+                    for x in Devices:
+                        if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
+                            Devices[Devices[x]].Update(nValue=1, sValue=str(On), SignalLevel=50)
+                            break
+
     def ADD_DEVICE_devices(self):
         if not self.error:
             try:
