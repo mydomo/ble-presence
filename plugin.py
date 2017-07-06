@@ -94,7 +94,7 @@ class BasePlugin:
                     for x in Devices:
                         DEVICE_UPDATED = False
                         if int(time_difference) <= int(Parameters["Mode1"]):
-                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
+                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)) and Devices[x].sValue=="Off":
                                 SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
                                 if SIGNAL_LEVEL > 10:
                                     SIGNAL_LEVEL = 10
@@ -104,11 +104,11 @@ class BasePlugin:
                                 Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
 
                         if int(time_difference) > int(Parameters["Mode1"]):
-                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
+                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)) and Devices[x].sValue=="On":
                                 Devices[x].Update(nValue=0, sValue="Off")
                                 DEVICE_UPDATED = True
                                 #Domoticz.Log(str(BLE_MAC) + " was updated")
-                    if DEVICE_UPDATED == False:
+                    if DEVICE_UPDATED == False and Devices[x].sValue=="On":
                         Devices[x].Update(nValue=0, sValue="Off")
 
     def ADD_DEVICE_devices(self):
