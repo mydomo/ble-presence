@@ -91,7 +91,7 @@ class BasePlugin:
                     for x in Devices:
                         if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
                             THE_UNIT = Devices[x]
-                            Devices[THE_UNIT].Update(nValue=1, sValue=str(On), SignalLevel=50)
+                            Devices[THE_UNIT].Update(nValue=1, sValue="On", SignalLevel=50)
                             break
 
     def ADD_DEVICE_devices(self):
