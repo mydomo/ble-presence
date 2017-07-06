@@ -88,9 +88,11 @@ class BasePlugin:
                     ble_data = bucket[1].split("', '")
                     BLE_RSSI = ble_data[0]
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
+                    1
                     for x in Devices:
                         if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
-                            Devices[x].Update(nValue=1, sValue="On", BatteryLevel=50, SignalLevel=12)
+                        	Domoticz.Log(int(BLE_RSSI))
+                            Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=12)
                             break
 
     def ADD_DEVICE_devices(self):
