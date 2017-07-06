@@ -61,8 +61,8 @@ class BasePlugin:
         if not self.error:
             try:
                 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                SERV_ADDR = Parameters["Address"]
-                SERV_PORT = Parameters["Port"]
+                SERV_ADDR = str(Parameters["Address"])
+                SERV_PORT = int(Parameters["Port"])
                 soc.connect(SERV_ADDR, SERV_PORT)
                 #soc.connect(("10.50.0.55", 12345))
 
