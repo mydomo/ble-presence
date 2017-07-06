@@ -40,7 +40,6 @@ class BasePlugin:
             self.mode = 'BLE_ONLY'
 #        if Parameters["Mode6"] == 'BLE_BATT':
 #            self.mode = 'BLE_BATT'
-        Domoticz.Log("CIAO!")
         if 1 not in Devices:
             Domoticz.Device(Name="BLE PRESENCE", Unit=1, TypeName="Switch").Create()
 
@@ -49,7 +48,6 @@ class BasePlugin:
         Domoticz.Debug("onStop called")
 
     def onHeartbeat(self):
-        Domoticz.Log("CIAO!")
         self.error = False
  #       if self.mode == 'ADD_DEVICE':
  #           self.ADD_DEVICE_devices()
@@ -62,7 +60,6 @@ class BasePlugin:
     def BLE_ONLY_devices(self):
         if not self.error:
             try:
-                Domoticz.Log("provo a connettermi")
                 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
                 #soc.connect((Parameters["Address"], Parameters["Port"]))
                 soc.connect(("10.50.0.55", 12345))
