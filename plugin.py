@@ -60,8 +60,10 @@ class BasePlugin:
     def BLE_ONLY_devices(self):
         if not self.error:
             try:
-                soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
-                soc.connect(Parameters["Address"], Parameters["Port"])
+                soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                SERV_ADDR = Parameters["Address"]
+                SERV_PORT = Parameters["Port"]
+                soc.connect(SERV_ADDR, SERV_PORT)
                 #soc.connect(("10.50.0.55", 12345))
 
                 clients_input = "beacon_data" 
