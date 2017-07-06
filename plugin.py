@@ -89,9 +89,9 @@ class BasePlugin:
                     BLE_RSSI = ble_data[0]
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
-                    time_difference = round(int(time.time())) - round(int(BLE_TIME))
+                    time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
 
-                    if time_difference <= int(Parameters["Mode1"]):
+                    if int(time_difference) <= int(Parameters["Mode1"]):
                         for x in Devices:
                             if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
                                 SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
@@ -104,7 +104,7 @@ class BasePlugin:
                                 Domoticz.Log(str(BLE_MAC) + " was updated")
                                 break
 
-                    if time_difference > int(Parameters["Mode1"]):
+                    if int(time_difference) > int(Parameters["Mode1"]):
                         Domoticz.Log(str(BLE_MAC) + " ignored since seen " + str(time_difference) + "s ago")
 
     def ADD_DEVICE_devices(self):
