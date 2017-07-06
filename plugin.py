@@ -95,8 +95,8 @@ class BasePlugin:
                         UNIT_GENERATED = len(Devices) + 1
                         Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, TypeName="Switch").Create()
                         Domoticz.Log("Devices created.")
-                    Domoticz.Log(str(search(Devices, BLE_MAC)))
-
+                    for name, device in domoticz.devices.items():
+                        domoticz.log("device", name, "is", "on" if device.is_on() else "off")
 
                     #TO BE CONTINUED
 global _plugin
@@ -113,10 +113,3 @@ def onStop():
 def onHeartbeat():
     global _plugin
     _plugin.onHeartbeat()
-
-def search(values, searchFor):
-    for k in values:
-        for v in values[k]:
-            if searchFor in v:
-                return k
-    return None
