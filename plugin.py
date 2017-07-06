@@ -83,13 +83,14 @@ class BasePlugin:
                 # RECURSIVE SPLIT THE STRING TO GET THE DATA:
                 items = result_string.split("), ")
                 for item in items:
-                    UPDATE_THIS_DEVICE = False
                     bucket = item.split("', ['")
                     BLE_MAC = bucket[0].replace("'", "")
                     ble_data = bucket[1].split("', '")
                     BLE_RSSI = ble_data[0]
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
+
                     time_difference = round(int(time.time())) - round(int(BLE_TIME))
+
                     if time_difference <= int(Parameters["Mode1"]):
                         for x in Devices:
                             if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
@@ -98,9 +99,11 @@ class BasePlugin:
                                     SIGNAL_LEVEL = 10
                                 if SIGNAL_LEVEL < 0:
                                     SIGNAL_LEVEL = 0
-                                Domoticz.Log(str(BLE_MAC) + " was updated since seen " + str(time_difference) + "s ago")
+
                                 Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
+                                Domoticz.Log(str(BLE_MAC) + " was updated")
                                 break
+
                     if time_difference > int(Parameters["Mode1"]):
                         Domoticz.Log(str(BLE_MAC) + " ignored since seen " + str(time_difference) + "s ago")
 
