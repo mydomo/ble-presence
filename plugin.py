@@ -80,46 +80,48 @@ class BasePlugin:
                 # REMOVE '[', ']' AND '(' FROM THE RECEIVED STRING
                 if result_string.startswith('[') and result_string.endswith(']'):
                     result_string = result_string[1:-1].replace("(", "")
-                # RECURSIVE SPLIT THE STRING TO GET THE DATA:
+                # RECURSIVE SPLIT THE STRING TO GET THE DATA, ITEMS CONTAINS ALL THE BTLE DATA:
                 items = result_string.split("), ")
-                for item in items:
-                    bucket = item.split("', ['")
-                    BLE_MAC = bucket[0].replace("'", "")
-                    ble_data = bucket[1].split("', '")
-                    BLE_RSSI = ble_data[0]
-                    BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
-                    #CALCULATE TIME DIFFERENCE
-                    time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
+                #SEARCH THE DATA INSIDE DEVICES
+                for x in Devices:
+                    FOUND_VALUE = False
 
-                    #CALCULATE RSSI AND STORE IN SIGNAL_LEVEL VARIABLE
-                    SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
-                    if SIGNAL_LEVEL > 10:
-                        SIGNAL_LEVEL = 10
-                    if SIGNAL_LEVEL < 0:
-                        SIGNAL_LEVEL = 0
+                    #START SPLITTING ALL THE DATA INSIDE THE BTLE DATA
+                    for item in items:
+                        bucket = item.split("', ['")
+                        BLE_MAC = bucket[0].replace("'", "")
+                        ble_data = bucket[1].split("', '")
+                        BLE_RSSI = ble_data[0]
+                        BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
-                    for x in Devices:
-                        DEVICE_UPDATED = False
+                        #CALCULATE TIME DIFFERENCE
+                        time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
+
+                        #CALCULATE RSSI AND STORE IN SIGNAL_LEVEL VARIABLE
+                        SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
+                        if SIGNAL_LEVEL > 10:
+                            SIGNAL_LEVEL = 10
+                        if SIGNAL_LEVEL < 0:
+                            SIGNAL_LEVEL = 0
+
                         #FIND THE DEVICE
                         if ( str(Devices[x].DeviceID) == (str(BLE_MAC.replace(":", ""))) ):
-                            DEVICE_UPDATED = True
-                            
+                            FOUND_VALUE = True
+
                             #TIME DIFFERENCE IS LESS THAN THE ONE IN THE PARAMETER AND DEVICE IS OFF
                             if (  ( int(time_difference) <= int(Parameters["Mode1"]) ) and (Devices[x].nValue == 0)  ):
                                 Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
-                                Domoticz.Log(str(BLE_MAC) + " ONLINE, TIME DIFFERENCE: " + str(time_difference))
+                                Domoticz.Log(str(Devices[x].Name) + "(" str(BLE_MAC) + ") IS NOW ONLINE")
 
                             #TIME DIFFERENCE IS GREATER THAN THE ONE IN THE PARAMETER AND DEVICE IS ON
                             if (  ( int(time_difference)  > int(Parameters["Mode1"]) ) and (Devices[x].nValue == 1)  ):
                                 Devices[x].Update(nValue=0, sValue="Off")
-                                Domoticz.Log(str(BLE_MAC) + " OFFLINE, TIME DIFFERENCE: " + str(time_difference))
-
-                    # DEVICE NOT PRESENT IN THE LIST        
-                    if ( (DEVICE_UPDATED == False) and (Devices[x].nValue == 1) ):
-                        Devices[x].Update(nValue=0, sValue="Off")
-                        Domoticz.Log(str(BLE_MAC) + " OFFLINE,  NON PRESENTE IN LISTA")
-                        DEVICE_UPDATED = True
+                                Domoticz.Log(str(Devices[x].Name) + "(" str(BLE_MAC) + ") OFFLINE, LAST TIME SEEN: " + time_difference + " seconds")
+                #NOT FOUND                
+                if ( (FOUND_VALUE == False) and (Devices[x].nValue == 1) ):
+                    Devices[x].Update(nValue=0, sValue="Off")
+                    Domoticz.Log(str(Devices[x].Name) + "(" str(BLE_MAC) + ") OFFLINE, NOT PRESENT IN SERVER LIST")
 
     def ADD_DEVICE_devices(self):
         if not self.error:
