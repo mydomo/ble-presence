@@ -112,16 +112,16 @@ class BasePlugin:
                             #TIME DIFFERENCE IS LESS THAN THE ONE IN THE PARAMETER AND DEVICE IS OFF
                             if (  ( int(time_difference) <= int(Parameters["Mode1"]) ) and (Devices[x].nValue == 0)  ):
                                 Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
-                                Domoticz.Log(str(Devices[x].Name) + "(" str(BLE_MAC) + ") IS NOW ONLINE")
+                                Domoticz.Log(str(Devices[x].Name) + "(" + str(BLE_MAC) + ") IS NOW ONLINE")
 
                             #TIME DIFFERENCE IS GREATER THAN THE ONE IN THE PARAMETER AND DEVICE IS ON
                             if (  ( int(time_difference)  > int(Parameters["Mode1"]) ) and (Devices[x].nValue == 1)  ):
                                 Devices[x].Update(nValue=0, sValue="Off")
-                                Domoticz.Log(str(Devices[x].Name) + "(" str(BLE_MAC) + ") OFFLINE, LAST TIME SEEN: " + time_difference + " seconds")
+                                Domoticz.Log(str(Devices[x].Name) + "(" + str(BLE_MAC) + ") OFFLINE, LAST TIME SEEN: " + time_difference + " seconds")
                 #NOT FOUND                
                 if ( (FOUND_VALUE == False) and (Devices[x].nValue == 1) ):
                     Devices[x].Update(nValue=0, sValue="Off")
-                    Domoticz.Log(str(Devices[x].Name) + "(" str(BLE_MAC) + ") OFFLINE, NOT PRESENT IN SERVER LIST")
+                    Domoticz.Log(str(Devices[x].Name) + "(" + str(BLE_MAC) + ") OFFLINE, NOT PRESENT IN SERVER LIST")
 
     def ADD_DEVICE_devices(self):
         if not self.error:
