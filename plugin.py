@@ -90,7 +90,6 @@ class BasePlugin:
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
                     time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
-                    Domoticz.Log(str(BLE_MAC) + " " + time_difference )
 
                     for x in Devices:
                         DEVICE_UPDATED = False
@@ -101,16 +100,19 @@ class BasePlugin:
                                 SIGNAL_LEVEL = 10
                             if SIGNAL_LEVEL < 0:
                                 SIGNAL_LEVEL = 0
-
-                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)) and Devices[x].sValue=="Off":
+                            #Domoticz.Log(str(Devices[x].DeviceID) + " sValue:" + str(Devices[x].sValue) + " nValue" + str(Devices[x].nValue))
+                            #if (str(BLE_MAC.replace(":", "")) == str(Devices[x].DeviceID)) and Devices[x].sValue=="Off":
+                            if (str(BLE_MAC.replace(":", "")) == str(Devices[x].DeviceID)) and Devices[x].nValue == 0:
                                 DEVICE_UPDATED = True
+                                Domoticz.Log(str(BLE_MAC) + " ACCESO " + str(SIGNAL_LEVEL))
                                 Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
 
                         if int(time_difference) > int(Parameters["Mode1"]):
-                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)) and Devices[x].sValue=="On":
+                            #if (str(BLE_MAC.replace(":", "")) == str(Devices[x].DeviceID)) and Devices[x].sValue=="On":
+                            if (str(BLE_MAC.replace(":", "")) == str(Devices[x].DeviceID)) and Devices[x].nValue == 1:
+                                Domoticz.Log(str(BLE_MAC) + " SPENTO " + str(SIGNAL_LEVEL))
                                 Devices[x].Update(nValue=0, sValue="Off")
                                 DEVICE_UPDATED = True
-                                #Domoticz.Log(str(BLE_MAC) + " was updated")
                     if DEVICE_UPDATED == False and Devices[x].sValue=="On":
                         Devices[x].Update(nValue=0, sValue="Off")
 
