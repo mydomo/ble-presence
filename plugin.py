@@ -89,30 +89,37 @@ class BasePlugin:
                     BLE_RSSI = ble_data[0]
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
+                    #CALCULATE TIME DIFFERENCE
                     time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
+
+                    #CALCULATE RSSI AND STORE IN SIGNAL_LEVEL VARIABLE
+                    SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
+                    if SIGNAL_LEVEL > 10:
+                        SIGNAL_LEVEL = 10
+                    if SIGNAL_LEVEL < 0:
+                        SIGNAL_LEVEL = 0
 
                     for x in Devices:
                         DEVICE_UPDATED = False
-                        if int(time_difference) <= int(Parameters["Mode1"]):
-
-                            SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
-                            if SIGNAL_LEVEL > 10:
-                                SIGNAL_LEVEL = 10
-                            if SIGNAL_LEVEL < 0:
-                                SIGNAL_LEVEL = 0
-                            #UPDATE DEVICE IF STATUS BECOME ONLINE
-                            if (str(BLE_MAC.replace(":", "")) == str(Devices[x].DeviceID)) and Devices[x].nValue == 0:
-                                DEVICE_UPDATED = True
-                                Domoticz.Log(str(BLE_MAC) + " E' ORA RILEVATO ")
+                        #FIND THE DEVICE
+                        if ( str(Devices[x].DeviceID) == (str(BLE_MAC.replace(":", ""))) ):
+                            DEVICE_UPDATED = True
+                            
+                            #TIME DIFFERENCE IS LESS THAN THE ONE IN THE PARAMETER AND DEVICE IS OFF
+                            if (  ( int(time_difference) <= int(Parameters["Mode1"]) ) and (Devices[x].nValue == 0)  ):
                                 Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
+                                Domoticz.Log(str(BLE_MAC) + " ONLINE, TIME DIFFERENCE: " + str(time_difference))
 
-                        if int(time_difference) > int(Parameters["Mode1"]):
-                            if (str(BLE_MAC.replace(":", "")) == str(Devices[x].DeviceID)) and Devices[x].nValue == 1:
-                                Domoticz.Log(str(BLE_MAC) + " SPENTO " + str(SIGNAL_LEVEL))
+                            #TIME DIFFERENCE IS GREATER THAN THE ONE IN THE PARAMETER AND DEVICE IS ON
+                            if (  ( int(time_difference)  > int(Parameters["Mode1"]) ) and (Devices[x].nValue == 1)  ):
                                 Devices[x].Update(nValue=0, sValue="Off")
-                                DEVICE_UPDATED = True
-                    if DEVICE_UPDATED == False and Devices[x].sValue=="On":
+                                Domoticz.Log(str(BLE_MAC) + " OFFLINE, TIME DIFFERENCE: " + str(time_difference))
+
+                    # DEVICE NOT PRESENT IN THE LIST        
+                    if ( (DEVICE_UPDATED == False) and (Devices[x].nValue == 1) ):
                         Devices[x].Update(nValue=0, sValue="Off")
+                        Domoticz.Log(str(BLE_MAC) + " OFFLINE,  NON PRESENTE IN LISTA")
+                        DEVICE_UPDATED = True
 
     def ADD_DEVICE_devices(self):
         if not self.error:
