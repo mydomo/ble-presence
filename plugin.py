@@ -90,6 +90,7 @@ class BasePlugin:
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
                     time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
+                    Domoticz.Log(str(BLE_MAC) + " " + time_difference )
 
                     for x in Devices:
                         DEVICE_UPDATED = False
