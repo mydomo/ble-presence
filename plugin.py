@@ -111,7 +111,7 @@ class BasePlugin:
 
                             #TIME DIFFERENCE IS LESS THAN THE ONE IN THE PARAMETER AND DEVICE IS OFF
                             if (  ( int(time_difference) <= int(Parameters["Mode1"]) ) and (Devices[x].nValue == 0)  ):
-                                Devices[x].Update(nValue=1, sValue="On", BatteryLevel=100, SignalLevel=SIGNAL_LEVEL)
+                                Devices[x].Update(nValue=1, sValue="On")
                                 Domoticz.Log(str(Devices[x].Name) + "(" + str(BLE_MAC) + ") IS NOW ONLINE")
 
                             #TIME DIFFERENCE IS GREATER THAN THE ONE IN THE PARAMETER AND DEVICE IS ON
@@ -148,24 +148,56 @@ class BasePlugin:
                 # RECURSIVE SPLIT THE STRING TO GET THE DATA:
                 items = result_string.split("), ")
                 for item in items:
-                    ADD_THIS_DEVICE = True
                     bucket = item.split("', ['")
                     BLE_MAC = bucket[0].replace("'", "")
                     ble_data = bucket[1].split("', '")
                     BLE_RSSI = ble_data[0]
                     BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
+                    #VARABLES FOR DEVICE ADDING
+                    NAME_BLE = BLE_MAC
+                    DEV_ID_BLE = str(BLE_MAC.replace(":", ""))
+                    DEV_ID_BLE_PRESENT = True
+                    # SIGNAL VARIABLES
+                    NAME_S_DATA = "SIGNAL " + BLE_MAC
+                    DEV_ID_S_DATA = str("S-" + BLE_MAC.replace(":", ""))
+                    DEV_ID_S_DATA_PRESENT = True
+                    SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*100)/74)
+                    if SIGNAL_LEVEL > 100:
+                        SIGNAL_LEVEL = 100
+                    if SIGNAL_LEVEL < 0:
+                        SIGNAL_LEVEL = 0
+
                     time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
 
                     if int(time_difference) <= int(Parameters["Mode1"]):
                         for x in Devices:
-                            if (str(BLE_MAC.replace(":", ""))) == (str(Devices[x].DeviceID)):
-                                ADD_THIS_DEVICE = False
+                            if ( str(DEV_ID_BLE) == str(Devices[x].DeviceID) ):
+                                DEV_ID_BLE_PRESENT = True
+                                #ALREADY EXIST SO UPDATE IT
+                                if ( (Devices[x].nValue != 1) ):
+                                    Devices[x].Update(nValue=1, sValue="On")
                                 break
-                        if ADD_THIS_DEVICE == True:
+                        else:
+                            DEV_ID_BLE_PRESENT = False
                             UNIT_GENERATED = len(Devices) + 1
-                            Domoticz.Device(Name=BLE_MAC, Unit=UNIT_GENERATED, DeviceID=BLE_MAC.replace(":", ""), TypeName="Switch").Create()
-                            Domoticz.Log("New BLE device ADDED: " + str(BLE_MAC))
+                            if not (UNIT_GENERATED in Devices):
+                                Domoticz.Device(Name=NAME_BLE, Unit=UNIT_GENERATED, DeviceID=DEV_ID_BLE, TypeName="Switch").Create()
+                                Domoticz.Log("BLE device ADDED: " + str(DEV_ID_BLE))
+
+                        for y in Devices:
+                            if ( str(DEV_ID_S_DATA) == str(Devices[y].DeviceID) ):
+                                DEV_ID_DATA_S_PRESENT = True
+                                #ALREADY EXIST SO UPDATE IT
+                                if ( (Devices[y].sValue != SIGNAL_LEVEL) ):
+                                    Devices[y].Update(nValue=SIGNAL_LEVEL, sValue=str(SIGNAL_LEVEL), SignalLevel=round(SIGNAL_LEVEL/10), BatteryLevel=100)
+                                break
+                        else:
+                            DEV_ID_DATA_S_PRESENT = False
+                            UNIT_GENERATED_S = len(Devices) + 1
+                            if not (UNIT_GENERATED_S in Devices):
+                                Domoticz.Device(Name=NAME_S_DATA, Unit=UNIT_GENERATED_S, DeviceID=DEV_ID_S_DATA, TypeName="Custom", Options={"Custom": "1;%"}).Create()
+                                Domoticz.Log("DATA device ADDED: " + str(DEV_ID_S_DATA))
 
                     #for key, value in Devices.items():
                     #    Domoticz.Log(str(key))
