@@ -6,6 +6,7 @@ Version:
             0.0.1: pre-alpha
             0.0.2: pre-alpha added handling of timestamp
             0.0.3: pre-alpha something is working
+            0.1.0: beta, Domoticz Plugin working... must be fixed the server
 """
 """
 <plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.0.3" wikilink="" externallink="https://github.com/mydomo">
@@ -13,11 +14,12 @@ Version:
         <param field="Address" label="BLE-Presence Server IP address" width="200px" required="true" default="127.0.0.1"/>
         <param field="Port" label="Port" width="40px" required="true" default="12345"/>
         <param field="Mode1" label="Timeout from the last beacon received to pull off the device (in seconds)" width="40px" required="true" default="300"/>
+        <param field="Mode2" label="Mac addresses (coma "," separated) for manual adding of BLE devices. (optional)" width="100px" required="true" default="XX:XX:XX:XX:XX:XX"/>
         <param field="Mode6" label="Mode" width="200px" required="true">
             <options>
-                <option label="Discover BLE devices and update." value="ADD_DEVICE" default="true" />
-                <option label="BLE scanner only" value="BLE_ONLY" />
-                <option label="BLE scanner + Battery" value="BLE_BATT" />
+                <option label="Auto add discovered BLE devices." value="AUTO_ADD_DEVICE" default="true" />
+                <option label="Manual add BLE devices. (no scan)" value="MANUAL_ADD_DEVICE" />
+                <option label="BLE scanner" value="BLE_SCAN" />
             </options>
         </param>
     </params>
@@ -28,6 +30,8 @@ import socket
 import time
 
 SCAN_STOPPED = False
+UPDATE_BLE = False
+UPDATE_SIGNAL = False
 
 class BasePlugin:
 
@@ -38,29 +42,32 @@ class BasePlugin:
         return
 
     def onStart(self):
-        if Parameters["Mode6"] == 'ADD_DEVICE':
-            self.mode = 'ADD_DEVICE'
-        if Parameters["Mode6"] == 'BLE_ONLY':
-            self.mode = 'BLE_ONLY'
-        if Parameters["Mode6"] == 'BLE_BATT':
-            self.mode = 'BLE_BATT'
+        if Parameters["Mode6"] == 'AUTO_ADD_DEVICE':
+            self.mode = 'AUTO_ADD_DEVICE'
+        if Parameters["Mode6"] == 'BLE_SCAN':
+            self.mode = 'BLE_SCAN'
+        if Parameters["Mode6"] == 'MANUAL_ADD_DEVICE':
+            self.mode = 'MANUAL_ADD_DEVICE'
         if 1 not in Devices:
             Domoticz.Device(Name="BLE PRESENCE", Unit=1, TypeName="Switch").Create()
+        return
 
     def onStop(self):
         Domoticz.Debug("onStop called")
+        return
 
     def onHeartbeat(self):
         self.error = False
-        if self.mode == 'ADD_DEVICE':
-            self.ADD_DEVICE_devices()
-        if self.mode == 'BLE_ONLY':
-            self.BLE_ONLY_devices()
-        if self.mode == 'BLE_BATT':
-            self.BLE_BATT_devices()
-        
+        if self.mode == 'AUTO_ADD_DEVICE':
+            self.AUTO_ADD_DEVICE_devices()
+        if self.mode == 'BLE_SCAN':
+            self.BLE_SCAN_devices()
+        if self.mode == 'MANUAL_ADD_DEVICE':
+            self.MANUAL_ADD_DEVICE_devices()
+        return
+
     #BLE-PRESENCE SPECIFIC METHODS
-    def BLE_ONLY_devices(self):
+    def BLE_SCAN_devices(self):
         if not self.error:
             try:
                 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -97,36 +104,63 @@ class BasePlugin:
                         BLE_RSSI = ble_data[0]
                         BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
-                        #CALCULATE TIME DIFFERENCE
-                        time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
-
-                        #CALCULATE RSSI AND STORE IN SIGNAL_LEVEL VARIABLE
-                        SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*10)/74)
-                        if SIGNAL_LEVEL > 10:
-                            SIGNAL_LEVEL = 10
+                        # VARABLES FOR DEVICE ADDING
+                        NAME_BLE = BLE_MAC
+                        DEV_ID_BLE = str(BLE_MAC.replace(":", ""))
+                        # SIGNAL VARIABLES
+                        NAME_S_DATA = "SIGNAL " + BLE_MAC
+                        DEV_ID_S_DATA = str("S-" + BLE_MAC.replace(":", ""))
+                        SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*100)/74)
+                        if SIGNAL_LEVEL > 100:
+                            SIGNAL_LEVEL = 100
                         if SIGNAL_LEVEL < 0:
                             SIGNAL_LEVEL = 0
+                        # BATTERY VARIABLES
+                        NAME_B_DATA = "BATTERY " + BLE_MAC
+                        DEV_ID_B_DATA = str("B-" + BLE_MAC.replace(":", ""))
+                        BATTERY_LEVEL = 0
+
+                        #CALCULATE TIME DIFFERENCE
+                        time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
 
                         #FIND THE DEVICE
                         if ( str(Devices[x].DeviceID) == (str(BLE_MAC.replace(":", ""))) ):
                             FOUND_VALUE = True
 
-                            #TIME DIFFERENCE IS LESS THAN THE ONE IN THE PARAMETER AND DEVICE IS OFF
-                            if (  ( int(time_difference) <= int(Parameters["Mode1"]) ) and (Devices[x].nValue == 0)  ):
-                                Devices[x].Update(nValue=1, sValue="On")
+                            #TIME DIFFERENCE IS LESS THAN THE ONE IN THE PARAMETER 
+                            if ( int(time_difference) <= int(Parameters["Mode1"]) ):
+                                if (isDEVICEIDinDB(DEV_ID_BLE) == True):
+                                    UpdateDevice_by_DEV_ID(DEV_ID_BLE, 1, str("On"))
+                                
+                                if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
+                                    UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
+
                                 Domoticz.Log(str(Devices[x].Name) + "(" + str(BLE_MAC) + ") IS NOW ONLINE")
 
-                            #TIME DIFFERENCE IS GREATER THAN THE ONE IN THE PARAMETER AND DEVICE IS ON
-                            if (  ( int(time_difference)  > int(Parameters["Mode1"]) ) and (Devices[x].nValue == 1)  ):
-                                Devices[x].Update(nValue=0, sValue="Off")
+                            #TIME DIFFERENCE IS GREATER THAN THE ONE IN THE PARAMETER
+                            if ( int(time_difference)  > int(Parameters["Mode1"]) ):
+                                if (isDEVICEIDinDB(DEV_ID_BLE) == True):
+                                    UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
+                                
+                                if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
+                                    UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
+
                                 Domoticz.Log(str(Devices[x].Name) + "(" + str(BLE_MAC) + ") OFFLINE, LAST TIME SEEN: " + time_difference + " seconds")
                 #NOT FOUND                
-                if ( (FOUND_VALUE == False) and (Devices[x].nValue == 1) ):
-                    Devices[x].Update(nValue=0, sValue="Off")
-                    Domoticz.Log(str(Devices[x].Name) + "(" + str(BLE_MAC) + ") OFFLINE, NOT PRESENT IN SERVER LIST")
+                if (FOUND_VALUE == False):
+                    if (isDEVICEIDinDB(DEV_ID_BLE) == True):
+                        UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
+                                
+                    if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
+                        UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
 
-    def ADD_DEVICE_devices(self):
+                    Domoticz.Log(str(Devices[x].Name) + "(" + str(BLE_MAC) + ") OFFLINE, NOT PRESENT IN SERVER LIST")
+        return
+
+    def AUTO_ADD_DEVICE_devices(self):
         global SCAN_STOPPED
+        global UPDATE_BLE
+        global UPDATE_SIGNAL
         if not self.error:
             try:
                 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -174,80 +208,47 @@ class BasePlugin:
                             SIGNAL_LEVEL = 100
                         if SIGNAL_LEVEL < 0:
                             SIGNAL_LEVEL = 0
+                        # BATTERY VARIABLES
+                        NAME_B_DATA = "BATTERY " + BLE_MAC
+                        DEV_ID_B_DATA = str("B-" + BLE_MAC.replace(":", ""))
+                        BATTERY_LEVEL = 0
+
 
                         # CALCULATE THE TIME DIFFERENCE BETWEEN THE SCAN AND NOW
                         time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
 
-                        # DEVICE HAS BEING SEEN RECENTLY, ADD OR UPDATE IT
                         if int(time_difference) <= int(Parameters["Mode1"]):
-                            for x in Devices:
-                                if ( str(DEV_ID_BLE) == str(Devices[x].DeviceID) ):
-                                    #ALREADY EXIST SO UPDATE IT
-                                    UpdateDevice(Devices[x].ID, 1, "On")
-                                    break
-                            else:
-                                # DEVICE NOT PRESENT, GENERATE THE NEW DEVICE ID AND CHECK IF ALREADY PRESENT
-                                UNIT_GENERATED = len(Devices) + 1
-                                if not ( (UNIT_GENERATED in Devices) and (UNIT_GENERATED > 255) ):
-                                    # NOT PRESENT, CREATE IT
-                                    Domoticz.Device(Name=NAME_BLE, Unit=UNIT_GENERATED, DeviceID=DEV_ID_BLE, TypeName="Switch").Create()
-                                    Domoticz.Log("BLE device CREATED: " + str(DEV_ID_BLE))
-                                    break
-                                else:
-                                    if (UNIT_GENERATED > 255):
-                                        # INSERT IN LOG THAT THE MAXIMUM DEVICES HAS BEING REACHED
-                                        Domoticz.Log("NEW BLE device FOUND: " + str(DEV_ID_BLE) + "cannot be added because of MAX DEVICES reached")
-                                        break
-                                    if (UNIT_GENERATED in Devices):
-                                        # THERE MUST BE A PROBLEM HERE, TRY DELETE THE DEVICE.
-                                         Devices[UNIT_GENERATED].Delete()
-                                         Domoticz.Log("BLE device: " + str(UNIT_GENERATED) + " deleted")
-                                         break
+                        # DEVICE HAS BEING SEEN RECENTLY, ADD OR UPDATE IT
 
-                            for y in Devices:
-                                if ( str(DEV_ID_S_DATA) == str(Devices[y].DeviceID) ):
-                                    # ALREADY EXIST SO UPDATE IT
-                                    UpdateDevice(Devices[y].ID, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
-                                    break
-                            else:
-                                # DEVICE NOT PRESENT, GENERATE THE NEW DEVICE ID AND CHECK IF ALREADY PRESENT
-                                UNIT_GENERATED_S = len(Devices) + 1
-                                if not ( (UNIT_GENERATED_S in Devices) and (UNIT_GENERATED_S > 255) ):
-                                    # NOT PRESENT, CREATE IT
-                                    Domoticz.Device(Name=NAME_S_DATA, Unit=UNIT_GENERATED_S, DeviceID=DEV_ID_S_DATA, TypeName="Custom", Options={"Custom": "1;%"}).Create()
-                                    Domoticz.Log("DATA device CREATED: " + str(DEV_ID_S_DATA))
-                                    break
-                                else:
-                                    if (UNIT_GENERATED_S > 255):
-                                        # INSERT IN LOG THAT THE MAXIMUM DEVICES HAS BEING REACHED
-                                        Domoticz.Log("NEW BLE device FOUND: " + str(DEV_ID_S_DATA) + "cannot be added because of MAX DEVICES reached")
-                                        break
-                                    if (UNIT_GENERATED_S in Devices):
-                                        # THERE MUST BE A PROBLEM HERE, TRY DELETE THE DEVICE.
-                                         Devices[UNIT_GENERATED_S].Delete()
-                                         Domoticz.Log("BLE device: " + str(DEV_ID_S_DATA) + " deleted")
-                                         break
+                            if (isDEVICEIDinDB(DEV_ID_BLE) == True):
+                                # DEVICE PRESENT, UPDATE IT
+                                UpdateDevice_by_DEV_ID(DEV_ID_BLE, 1, str("On"))
 
-                        
-                        # DEVICE HAS NOT BEING SEEN RECENTLY, UPDATE THE STATUS ACCORDINGLY.
+                            if (isDEVICEIDinDB(DEV_ID_BLE) == False):
+                                # DEVICE NOT PRESENT, CREATE IT
+                                createSwitch(NAME_BLE, DEV_ID_BLE)
+
+                            if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
+                                # DEVICE PRESENT, UPDATE IT
+                                UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
+
+                            if (isDEVICEIDinDB(DEV_ID_S_DATA) == False):
+                                # DEVICE NOT PRESENT, CREATE IT
+                                createCustomSwitch(NAME_S_DATA, DEV_ID_S_DATA)
+
+                            # BATTERY DEVICE CANNOT BE UPDATED FROM DISCOVERY MODE BUT JUST BY SCANNER MODE
+                            if (isDEVICEIDinDB(DEV_ID_B_DATA) == False):
+                                # DEVICE NOT PRESENT, CREATE IT
+                                createCustomSwitch(NAME_B_DATA, DEV_ID_B_DATA)
+
                         else:
-                            for x in Devices:
-                                if ( str(DEV_ID_BLE) == str(Devices[x].DeviceID) ):
-                                    #ALREADY EXIST SO UPDATE IT
-                                    UpdateDevice(Devices[x].ID, 0, "Off")
-                                    break
-                            for y in Devices:
-                                if ( str(DEV_ID_S_DATA) == str(Devices[y].DeviceID) ):
-                                    #ALREADY EXIST SO UPDATE IT
-                                    UpdateDevice(Devices[y].ID, 0, str("0"))
-                                    break
+                        # DEVICE HAS NOT BEING SEEN RECENTLY, UPDATE THE STATUS ACCORDINGLY.
 
-                        #for key, value in Devices.items():
-                        #    Domoticz.Log(str(key))
-                        #    Domoticz.Log(str(value))
-                        #for x in Devices:
-                        #    Domoticz.Log("Device:           " + str(x) + " - " + str(Devices[x]))
-                        #    Domoticz.Log("External ID:     '" + str(Devices[x].DeviceID) + "'")
+                            if (isDEVICEIDinDB(DEV_ID_BLE) == True):
+                                UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
+
+                            if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
+                                UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
 
                 # THE DATA FROM THE SOCKET ARE NOT A REGULAR SCANNING PROCESS, IDENTIFY IT AND ACT ACCORDINGLY
                 else:
@@ -262,6 +263,40 @@ class BasePlugin:
                         Domoticz.Log("BLE SCANNING unexpected syntax in SOCKET REPLY")
                         #CREATE A VARIABLE TO KNOW THAT THE SCANNING HAS BEING STOPPED
                         SCAN_STOPPED = True
+        return
+
+    def MANUAL_ADD_DEVICE_devices(self):
+        global SCAN_STOPPED
+        if not self.error:
+
+            clean_manual_items = Parameters["Mode2"].replace(" ", "")
+            manual_items = clean_manual_items.split("), ")
+            for manual_item in manual_items:
+                BLE_MAC = manual_item[0]
+                NAME_BLE = BLE_MAC
+                DEV_ID_BLE = str(BLE_MAC.replace(":", ""))
+                # SIGNAL VARIABLES
+                NAME_S_DATA = "SIGNAL " + BLE_MAC
+                DEV_ID_S_DATA = str("S-" + BLE_MAC.replace(":", ""))
+
+                # BATTERY VARIABLES
+                NAME_B_DATA = "BATTERY " + BLE_MAC
+                DEV_ID_B_DATA = str("B-" + BLE_MAC.replace(":", ""))
+                BATTERY_LEVEL = 0
+
+                if (isDEVICEIDinDB(DEV_ID_BLE) == False):
+                    # DEVICE NOT PRESENT, CREATE IT
+                    createSwitch(NAME_BLE, DEV_ID_BLE)
+
+                if (isDEVICEIDinDB(DEV_ID_S_DATA) == False):
+                    # DEVICE NOT PRESENT, CREATE IT
+                    createCustomSwitch(NAME_S_DATA, DEV_ID_S_DATA)
+
+                # BATTERY DEVICE CANNOT BE UPDATED FROM DISCOVERY MODE BUT JUST BY SCANNER MODE
+                if (isDEVICEIDinDB(DEV_ID_B_DATA) == False):
+                    # DEVICE NOT PRESENT, CREATE IT
+                    createCustomSwitch(NAME_B_DATA, DEV_ID_B_DATA)
+        return
 
 global _plugin
 _plugin = BasePlugin()
@@ -278,10 +313,47 @@ def onHeartbeat():
     global _plugin
     _plugin.onHeartbeat()
 
-def UpdateDevice(Unit, nValue, sValue):
+def UpdateDevice_by_UNIT(Unit, nValue, sValue):
     # Make sure that the Domoticz device still exists (they can be deleted) before updating it 
     if (Unit in Devices):
         if (Devices[Unit].nValue != nValue) or (Devices[Unit].sValue != sValue):
             Devices[Unit].Update(nValue=nValue, sValue=str(sValue))
             #Domoticz.Log("Update "+str(nValue)+":'"+str(sValue)+"' ("+Devices[Unit].Name+")")
+    return
+
+def UpdateDevice_by_DEV_ID(DEV_ID, nValue, sValue):
+    # Make sure that the Domoticz device still exists (they can be deleted) before updating it 
+    for x in Devices:
+        if ( str(DEV_ID) == str(Devices[x].DeviceID) ):
+            Unit = Devices[x].ID
+            if (Unit in Devices):
+                if (Devices[Unit].nValue != nValue) or (Devices[Unit].sValue != sValue):
+                    Devices[Unit].Update(nValue=nValue, sValue=str(sValue))
+            #Domoticz.Log("Update "+str(nValue)+":'"+str(sValue)+"' ("+Devices[Unit].Name+")")
+    return
+
+def isDEVICEIDinDB(DEV_ID):
+    # Check if a BLE device is already in the database
+    for x in Devices:
+        if ( str(DEV_ID) == str(Devices[x].DeviceID) ):
+            if (Devices[x].ID in Devices):
+                #ALREADY EXIST
+                FOUND = True
+                break
+        else:
+            FOUND = False
+    return FOUND
+
+def createSwitch(NAME, DEV_ID):
+    # Check if a BLE device is already in the database
+    UNIT_GENERATED = len(Devices) + 1
+    Domoticz.Device(Name=NAME, Unit=UNIT_GENERATED, DeviceID=DEV_ID, TypeName="Switch").Create()
+    Domoticz.Log("Device " + str(NAME)+ " CREATED")
+    return
+
+def createCustomSwitch(NAME, DEV_ID):
+    # Check if a BLE device is already in the database
+    UNIT_GENERATED = len(Devices) + 1
+    Domoticz.Device(Name=NAME, Unit=UNIT_GENERATED, DeviceID=DEV_ID, TypeName="Custom", Options={"Custom": "1;%"}).Create()
+    Domoticz.Log("Device " + str(NAME)+ " CREATED")
     return
