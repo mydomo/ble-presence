@@ -124,7 +124,7 @@ class BasePlugin:
                         time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
 
                         #FIND THE DEVICE
-                        if ( str(Devices[x].DeviceID) == (str(BLE_MAC.replace(":", ""))) ):
+                        if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
                             FOUND_VALUE = True
 
                             #TIME DIFFERENCE IS LESS THAN THE ONE IN THE PARAMETER 
@@ -135,7 +135,7 @@ class BasePlugin:
                                 if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
                                     UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
 
-                                Domoticz.Log(str(Devices[x].Name) + "(" + str(BLE_MAC) + ") IS NOW ONLINE")
+                                Domoticz.Log(str(Devices[x].DeviceID) + "(" + str(DEV_ID_BLE) + ") IS NOW ONLINE")
 
                             #TIME DIFFERENCE IS GREATER THAN THE ONE IN THE PARAMETER
                             if ( int(time_difference)  > int(Parameters["Mode1"]) ):
@@ -145,7 +145,7 @@ class BasePlugin:
                                 if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
                                     UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
 
-                                Domoticz.Log(str(Devices[x].Name) + "(" + str(BLE_MAC) + ") OFFLINE, LAST TIME SEEN: " + time_difference + " seconds")
+                                Domoticz.Log(str(Devices[x].DeviceID) + "(" + str(DEV_ID_BLE) + ") OFFLINE, LAST TIME SEEN: " + time_difference + " seconds")
                 #NOT FOUND                
                 if (FOUND_VALUE == False):
                     if (isDEVICEIDinDB(DEV_ID_BLE) == True):
@@ -296,7 +296,7 @@ class BasePlugin:
                 if (isDEVICEIDinDB(DEV_ID_B_DATA) == False):
                     # DEVICE NOT PRESENT, CREATE IT
                     createCustomSwitch(NAME_B_DATA, DEV_ID_B_DATA)
-                    
+
                 self.mode = 'BLE_SCAN'
         return
 
