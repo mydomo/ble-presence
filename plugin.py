@@ -14,7 +14,7 @@ Version:
         <param field="Address" label="BLE-Presence Server IP address" width="200px" required="true" default="127.0.0.1"/>
         <param field="Port" label="Port" width="40px" required="true" default="12345"/>
         <param field="Mode1" label="Timeout from the last beacon received to pull off the device (in seconds)" width="40px" required="true" default="300"/>
-        <param field="Mode2" label="Mac addresses (coma "," separated) for manual adding of BLE devices. (optional)" width="100px" required="true" default="XX:XX:XX:XX:XX:XX"/>
+        <param field="Mode2" label="Mac addresses (coma ',' separated) for manual adding of BLE devices. (optional)" width="100px" required="true" default="XX:XX:XX:XX:XX:XX"/>
         <param field="Mode6" label="Mode" width="200px" required="true">
             <options>
                 <option label="Auto add discovered BLE devices." value="AUTO_ADD_DEVICE" default="true" />
