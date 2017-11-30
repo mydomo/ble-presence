@@ -296,7 +296,8 @@ class BasePlugin:
                 if (isDEVICEIDinDB(DEV_ID_B_DATA) == False):
                     # DEVICE NOT PRESENT, CREATE IT
                     createCustomSwitch(NAME_B_DATA, DEV_ID_B_DATA)
-                break
+                    
+                self.mode = 'BLE_SCAN'
         return
 
 global _plugin
