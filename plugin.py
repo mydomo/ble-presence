@@ -270,7 +270,7 @@ class BasePlugin:
         if not self.error:
 
             clean_manual_items = Parameters["Mode2"].replace(" ", "")
-            manual_items = clean_manual_items.split("), ")
+            manual_items = clean_manual_items.split(",")
             for manual_item in manual_items:
                 BLE_MAC = manual_item[0]
                 NAME_BLE = BLE_MAC
