@@ -141,64 +141,91 @@ class BasePlugin:
                 self.error = True
                 Domoticz.Error("Error connecting to BLE-Server: " + Parameters["Address"] + " on port: " + Parameters["Port"])
             else:
-                # START THE INPUT CLEANING FOR BEACONING DATA:
+
+                # CHECK IF THE SCANNING HAS THE EXPECTED RESULTS, THAN
+                # START THE INPUT CLEANING FOR BEACONING DATA
                 # REMOVE '[', ']' AND '(' FROM THE RECEIVED STRING
                 if result_string.startswith('[') and result_string.endswith(']'):
                     result_string = result_string[1:-1].replace("(", "")
-                # RECURSIVE SPLIT THE STRING TO GET THE DATA:
-                items = result_string.split("), ")
-                for item in items:
-                    bucket = item.split("', ['")
-                    BLE_MAC = bucket[0].replace("'", "")
-                    ble_data = bucket[1].split("', '")
-                    BLE_RSSI = ble_data[0]
-                    BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
+                    # RECURSIVE SPLIT THE STRING TO GET THE DATA:
+                    items = result_string.split("), ")
+                    for item in items:
+                        bucket = item.split("', ['")
+                        BLE_MAC = bucket[0].replace("'", "")
+                        ble_data = bucket[1].split("', '")
+                        BLE_RSSI = ble_data[0]
+                        BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
-                    #VARABLES FOR DEVICE ADDING
-                    NAME_BLE = BLE_MAC
-                    DEV_ID_BLE = str(BLE_MAC.replace(":", ""))
-                    # SIGNAL VARIABLES
-                    NAME_S_DATA = "SIGNAL " + BLE_MAC
-                    DEV_ID_S_DATA = str("S-" + BLE_MAC.replace(":", ""))
-                    SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*100)/74)
-                    if SIGNAL_LEVEL > 100:
-                        SIGNAL_LEVEL = 100
-                    if SIGNAL_LEVEL < 0:
-                        SIGNAL_LEVEL = 0
+                        # VARABLES FOR DEVICE ADDING
+                        NAME_BLE = BLE_MAC
+                        DEV_ID_BLE = str(BLE_MAC.replace(":", ""))
+                        # SIGNAL VARIABLES
+                        NAME_S_DATA = "SIGNAL " + BLE_MAC
+                        DEV_ID_S_DATA = str("S-" + BLE_MAC.replace(":", ""))
+                        SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*100)/74)
+                        if SIGNAL_LEVEL > 100:
+                            SIGNAL_LEVEL = 100
+                        if SIGNAL_LEVEL < 0:
+                            SIGNAL_LEVEL = 0
 
-                    time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
+                        # CALCULATE THE TIME DIFFERENCE BETWEEN THE SCAN AND NOW
+                        time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
 
-                    if int(time_difference) <= int(Parameters["Mode1"]):
-                        for x in Devices:
-                            if ( str(DEV_ID_BLE) == str(Devices[x].DeviceID) ):
-                                #ALREADY EXIST SO UPDATE IT
-                                UpdateDevice(Devices[x].ID, 1, "On")
-                                break
+                        # DEVICE HAS BEING SEEN RECENTLY, ADD OR UPDATE IT
+                        if int(time_difference) <= int(Parameters["Mode1"]):
+                            for x in Devices:
+                                if ( str(DEV_ID_BLE) == str(Devices[x].DeviceID) ):
+                                    #ALREADY EXIST SO UPDATE IT
+                                    UpdateDevice(Devices[x].ID, 1, "On")
+                                    break
+                            else:
+                                UNIT_GENERATED = len(Devices) + 1
+                                if not (UNIT_GENERATED in Devices):
+                                    #NOT EXIST, CREATE IT
+                                    Domoticz.Device(Name=NAME_BLE, Unit=UNIT_GENERATED, DeviceID=DEV_ID_BLE, TypeName="Switch").Create()
+                                    Domoticz.Log("BLE device CREATED: " + str(DEV_ID_BLE))
+
+                            for y in Devices:
+                                if ( str(DEV_ID_S_DATA) == str(Devices[y].DeviceID) ):
+                                    #ALREADY EXIST SO UPDATE IT
+                                    UpdateDevice(Devices[y].ID, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
+                                    break
+                            else:
+                                UNIT_GENERATED_S = len(Devices) + 1
+                                if not (UNIT_GENERATED_S in Devices):
+                                    #NOT EXIST, CREATE IT
+                                    Domoticz.Device(Name=NAME_S_DATA, Unit=UNIT_GENERATED_S, DeviceID=DEV_ID_S_DATA, TypeName="Custom", Options={"Custom": "1;%"}).Create()
+                                    Domoticz.Log("DATA device CREATED: " + str(DEV_ID_S_DATA))
+                        
+                        # DEVICE HAS NOT BEING SEEN RECENTLY, UPDATE THE STATUS ACCORDINGLY.
                         else:
-                            UNIT_GENERATED = len(Devices) + 1
-                            if not (UNIT_GENERATED in Devices):
-                                #NOT EXIST, CREATE IT
-                                Domoticz.Device(Name=NAME_BLE, Unit=UNIT_GENERATED, DeviceID=DEV_ID_BLE, TypeName="Switch").Create()
-                                Domoticz.Log("BLE device CREATED: " + str(DEV_ID_BLE))
+                            for x in Devices:
+                                if ( str(DEV_ID_BLE) == str(Devices[x].DeviceID) ):
+                                    #ALREADY EXIST SO UPDATE IT
+                                    UpdateDevice(Devices[x].ID, 0, "Off")
+                                    break
+                            for y in Devices:
+                                if ( str(DEV_ID_S_DATA) == str(Devices[y].DeviceID) ):
+                                    #ALREADY EXIST SO UPDATE IT
+                                    UpdateDevice(Devices[y].ID, 0, str("0"))
+                                    break
 
-                        for y in Devices:
-                            if ( str(DEV_ID_S_DATA) == str(Devices[y].DeviceID) ):
-                                #ALREADY EXIST SO UPDATE IT
-                                UpdateDevice(Devices[y].ID, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
-                                break
-                        else:
-                            UNIT_GENERATED_S = len(Devices) + 1
-                            if not (UNIT_GENERATED_S in Devices):
-                                #NOT EXIST, CREATE IT
-                                Domoticz.Device(Name=NAME_S_DATA, Unit=UNIT_GENERATED_S, DeviceID=DEV_ID_S_DATA, TypeName="Custom", Options={"Custom": "1;%"}).Create()
-                                Domoticz.Log("DATA device CREATED: " + str(DEV_ID_S_DATA))
+                        #for key, value in Devices.items():
+                        #    Domoticz.Log(str(key))
+                        #    Domoticz.Log(str(value))
+                        #for x in Devices:
+                        #    Domoticz.Log("Device:           " + str(x) + " - " + str(Devices[x]))
+                        #    Domoticz.Log("External ID:     '" + str(Devices[x].DeviceID) + "'")
 
-                    #for key, value in Devices.items():
-                    #    Domoticz.Log(str(key))
-                    #    Domoticz.Log(str(value))
-                    #for x in Devices:
-                    #    Domoticz.Log("Device:           " + str(x) + " - " + str(Devices[x]))
-                    #    Domoticz.Log("External ID:     '" + str(Devices[x].DeviceID) + "'")
+                # THE DATA FROM THE SOCKET ARE NOT A REGULAR SCANNING PROCESS, IDENTIFY IT AND ACT ACCORDINGLY
+                else:
+
+                	# DATA FROM THE SOCKET IS NOT A REGULAR SCANNING PROCESS, IDENTIFY IT AND ACT ACCORDINGLY
+                	# CHECK IF THE SYSTEM IS BUSY WITH OTHER THINGS:
+                	if result_string != "Scanning stopped by other function":
+                		Domoticz.Log("BLE SCANNING stopped by other function, devices not updated...")
+                	else:
+                		Domoticz.Log("BLE SCANNING unexpected syntax in SOCKET REPLY")
 
 global _plugin
 _plugin = BasePlugin()
