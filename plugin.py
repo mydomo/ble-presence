@@ -27,6 +27,8 @@ import Domoticz
 import socket
 import time
 
+SCAN_STOPPED = False
+
 class BasePlugin:
 
     def __init__(self):
@@ -124,6 +126,7 @@ class BasePlugin:
                     Domoticz.Log(str(Devices[x].Name) + "(" + str(BLE_MAC) + ") OFFLINE, NOT PRESENT IN SERVER LIST")
 
     def ADD_DEVICE_devices(self):
+        global SCAN_STOPPED
         if not self.error:
             try:
                 soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -146,6 +149,10 @@ class BasePlugin:
                 # START THE INPUT CLEANING FOR BEACONING DATA
                 # REMOVE '[', ']' AND '(' FROM THE RECEIVED STRING
                 if result_string.startswith('[') and result_string.endswith(']'):
+                    if SCAN_STOPPED == True:
+                        SCAN_STOPPED = False
+                        Domoticz.Log("BLE SCANNING reasumed correctly")
+
                     result_string = result_string[1:-1].replace("(", "")
                     # RECURSIVE SPLIT THE STRING TO GET THE DATA:
                     items = result_string.split("), ")
@@ -179,23 +186,48 @@ class BasePlugin:
                                     UpdateDevice(Devices[x].ID, 1, "On")
                                     break
                             else:
+                                # DEVICE NOT PRESENT, GENERATE THE NEW DEVICE ID AND CHECK IF ALREADY PRESENT
                                 UNIT_GENERATED = len(Devices) + 1
-                                if not (UNIT_GENERATED in Devices):
-                                    #NOT EXIST, CREATE IT
+                                if not ( (UNIT_GENERATED in Devices) and (UNIT_GENERATED > 255) ):
+                                    # NOT PRESENT, CREATE IT
                                     Domoticz.Device(Name=NAME_BLE, Unit=UNIT_GENERATED, DeviceID=DEV_ID_BLE, TypeName="Switch").Create()
                                     Domoticz.Log("BLE device CREATED: " + str(DEV_ID_BLE))
+                                    break
+                                else:
+                                    if (UNIT_GENERATED > 255):
+                                        # INSERT IN LOG THAT THE MAXIMUM DEVICES HAS BEING REACHED
+                                        Domoticz.Log("NEW BLE device FOUND: " + str(DEV_ID_BLE) + "cannot be added because of MAX DEVICES reached")
+                                        break
+                                    if (UNIT_GENERATED in Devices):
+                                        # THERE MUST BE A PROBLEM HERE, TRY DELETE THE DEVICE.
+                                         Devices[UNIT_GENERATED].Delete()
+                                         Domoticz.Log("BLE device: " + str(UNIT_GENERATED) + " deleted")
+                                         break
 
                             for y in Devices:
                                 if ( str(DEV_ID_S_DATA) == str(Devices[y].DeviceID) ):
-                                    #ALREADY EXIST SO UPDATE IT
+                                    # ALREADY EXIST SO UPDATE IT
                                     UpdateDevice(Devices[y].ID, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
                                     break
                             else:
+                                # DEVICE NOT PRESENT, GENERATE THE NEW DEVICE ID AND CHECK IF ALREADY PRESENT
                                 UNIT_GENERATED_S = len(Devices) + 1
-                                if not (UNIT_GENERATED_S in Devices):
-                                    #NOT EXIST, CREATE IT
+                                if not ( (UNIT_GENERATED_S in Devices) and (UNIT_GENERATED_S > 255) ):
+                                    # NOT PRESENT, CREATE IT
                                     Domoticz.Device(Name=NAME_S_DATA, Unit=UNIT_GENERATED_S, DeviceID=DEV_ID_S_DATA, TypeName="Custom", Options={"Custom": "1;%"}).Create()
                                     Domoticz.Log("DATA device CREATED: " + str(DEV_ID_S_DATA))
+                                    break
+                                else:
+                                    if (UNIT_GENERATED_S > 255):
+                                        # INSERT IN LOG THAT THE MAXIMUM DEVICES HAS BEING REACHED
+                                        Domoticz.Log("NEW BLE device FOUND: " + str(DEV_ID_S_DATA) + "cannot be added because of MAX DEVICES reached")
+                                        break
+                                    if (UNIT_GENERATED_S in Devices):
+                                        # THERE MUST BE A PROBLEM HERE, TRY DELETE THE DEVICE.
+                                         Devices[UNIT_GENERATED_S].Delete()
+                                         Domoticz.Log("BLE device: " + str(DEV_ID_S_DATA) + " deleted")
+                                         break
+
                         
                         # DEVICE HAS NOT BEING SEEN RECENTLY, UPDATE THE STATUS ACCORDINGLY.
                         else:
@@ -220,12 +252,16 @@ class BasePlugin:
                 # THE DATA FROM THE SOCKET ARE NOT A REGULAR SCANNING PROCESS, IDENTIFY IT AND ACT ACCORDINGLY
                 else:
 
-                	# DATA FROM THE SOCKET IS NOT A REGULAR SCANNING PROCESS, IDENTIFY IT AND ACT ACCORDINGLY
-                	# CHECK IF THE SYSTEM IS BUSY WITH OTHER THINGS:
-                	if result_string == "Scanning stopped by other function":
-                		Domoticz.Log("BLE SCANNING stopped by other function, devices not updated...")
-                	else:
-                		Domoticz.Log("BLE SCANNING unexpected syntax in SOCKET REPLY")
+                    # DATA FROM THE SOCKET IS NOT A REGULAR SCANNING PROCESS, IDENTIFY IT AND ACT ACCORDINGLY
+                    # CHECK IF THE SYSTEM IS BUSY WITH OTHER THINGS:
+                    if result_string == "Scanning stopped by other function":
+                        #CREATE A VARIABLE TO KNOW THAT THE SCANNING HAS BEING STOPPED
+                        SCAN_STOPPED = True
+                        Domoticz.Log("BLE SCANNING stopped by other function, devices not updated...")
+                    else:
+                        Domoticz.Log("BLE SCANNING unexpected syntax in SOCKET REPLY")
+                        #CREATE A VARIABLE TO KNOW THAT THE SCANNING HAS BEING STOPPED
+                        SCAN_STOPPED = True
 
 global _plugin
 _plugin = BasePlugin()
