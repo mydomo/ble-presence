@@ -5,16 +5,17 @@ Author: Marco Baglivo, some parts of the components are fork of other open sourc
 Version:    
             0.0.1: pre-alpha
             0.0.2: pre-alpha added handling of timestamp
+            0.0.3: pre-alpha something is working
 """
 """
-<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.0.2" wikilink="" externallink="https://github.com/mydomo">
+<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.0.3" wikilink="" externallink="https://github.com/mydomo">
     <params>
         <param field="Address" label="BLE-Presence Server IP address" width="200px" required="true" default="127.0.0.1"/>
         <param field="Port" label="Port" width="40px" required="true" default="12345"/>
         <param field="Mode1" label="Timeout from the last beacon received to pull off the device (in seconds)" width="40px" required="true" default="300"/>
         <param field="Mode6" label="Mode" width="200px" required="true">
             <options>
-                <option label="Discover and Add BLE devices." value="ADD_DEVICE" default="true" />
+                <option label="Discover BLE devices and update." value="ADD_DEVICE" default="true" />
                 <option label="BLE scanner only" value="BLE_ONLY" />
                 <option label="BLE scanner + Battery" value="BLE_BATT" />
             </options>
@@ -43,7 +44,6 @@ class BasePlugin:
             self.mode = 'BLE_BATT'
         if 1 not in Devices:
             Domoticz.Device(Name="BLE PRESENCE", Unit=1, TypeName="Switch").Create()
-
 
     def onStop(self):
         Domoticz.Debug("onStop called")
@@ -157,11 +157,9 @@ class BasePlugin:
                     #VARABLES FOR DEVICE ADDING
                     NAME_BLE = BLE_MAC
                     DEV_ID_BLE = str(BLE_MAC.replace(":", ""))
-                    DEV_ID_BLE_PRESENT = True
                     # SIGNAL VARIABLES
                     NAME_S_DATA = "SIGNAL " + BLE_MAC
                     DEV_ID_S_DATA = str("S-" + BLE_MAC.replace(":", ""))
-                    DEV_ID_S_DATA_PRESENT = True
                     SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*100)/74)
                     if SIGNAL_LEVEL > 100:
                         SIGNAL_LEVEL = 100
@@ -173,31 +171,27 @@ class BasePlugin:
                     if int(time_difference) <= int(Parameters["Mode1"]):
                         for x in Devices:
                             if ( str(DEV_ID_BLE) == str(Devices[x].DeviceID) ):
-                                DEV_ID_BLE_PRESENT = True
                                 #ALREADY EXIST SO UPDATE IT
-                                if ( (Devices[x].nValue != 1) ):
-                                    Devices[x].Update(nValue=1, sValue="On")
+                                UpdateDevice(Devices[x].ID, 1, "On")
                                 break
                         else:
-                            DEV_ID_BLE_PRESENT = False
                             UNIT_GENERATED = len(Devices) + 1
                             if not (UNIT_GENERATED in Devices):
+                                #NOT EXIST, CREATE IT
                                 Domoticz.Device(Name=NAME_BLE, Unit=UNIT_GENERATED, DeviceID=DEV_ID_BLE, TypeName="Switch").Create()
-                                Domoticz.Log("BLE device ADDED: " + str(DEV_ID_BLE))
+                                Domoticz.Log("BLE device CREATED: " + str(DEV_ID_BLE))
 
                         for y in Devices:
                             if ( str(DEV_ID_S_DATA) == str(Devices[y].DeviceID) ):
-                                DEV_ID_DATA_S_PRESENT = True
                                 #ALREADY EXIST SO UPDATE IT
-                                if ( (Devices[y].sValue != SIGNAL_LEVEL) ):
-                                    Devices[y].Update(nValue=SIGNAL_LEVEL, sValue=str(SIGNAL_LEVEL), SignalLevel=round(SIGNAL_LEVEL/10), BatteryLevel=100)
+                                UpdateDevice(Devices[y].ID, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
                                 break
                         else:
-                            DEV_ID_DATA_S_PRESENT = False
                             UNIT_GENERATED_S = len(Devices) + 1
                             if not (UNIT_GENERATED_S in Devices):
+                                #NOT EXIST, CREATE IT
                                 Domoticz.Device(Name=NAME_S_DATA, Unit=UNIT_GENERATED_S, DeviceID=DEV_ID_S_DATA, TypeName="Custom", Options={"Custom": "1;%"}).Create()
-                                Domoticz.Log("DATA device ADDED: " + str(DEV_ID_S_DATA))
+                                Domoticz.Log("DATA device CREATED: " + str(DEV_ID_S_DATA))
 
                     #for key, value in Devices.items():
                     #    Domoticz.Log(str(key))
@@ -205,6 +199,7 @@ class BasePlugin:
                     #for x in Devices:
                     #    Domoticz.Log("Device:           " + str(x) + " - " + str(Devices[x]))
                     #    Domoticz.Log("External ID:     '" + str(Devices[x].DeviceID) + "'")
+
 global _plugin
 _plugin = BasePlugin()
 
@@ -219,3 +214,11 @@ def onStop():
 def onHeartbeat():
     global _plugin
     _plugin.onHeartbeat()
+
+def UpdateDevice(Unit, nValue, sValue):
+    # Make sure that the Domoticz device still exists (they can be deleted) before updating it 
+    if (Unit in Devices):
+        if (Devices[Unit].nValue != nValue) or (Devices[Unit].sValue != sValue):
+            Devices[Unit].Update(nValue=nValue, sValue=str(sValue))
+            #Domoticz.Log("Update "+str(nValue)+":'"+str(sValue)+"' ("+Devices[Unit].Name+")")
+    return
