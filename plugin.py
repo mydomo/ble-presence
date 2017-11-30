@@ -222,7 +222,7 @@ class BasePlugin:
 
                 	# DATA FROM THE SOCKET IS NOT A REGULAR SCANNING PROCESS, IDENTIFY IT AND ACT ACCORDINGLY
                 	# CHECK IF THE SYSTEM IS BUSY WITH OTHER THINGS:
-                	if result_string != "Scanning stopped by other function":
+                	if result_string == "Scanning stopped by other function":
                 		Domoticz.Log("BLE SCANNING stopped by other function, devices not updated...")
                 	else:
                 		Domoticz.Log("BLE SCANNING unexpected syntax in SOCKET REPLY")
