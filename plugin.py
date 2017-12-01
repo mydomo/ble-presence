@@ -94,8 +94,6 @@ class BasePlugin:
 
                 #SEARCH THE DATA INSIDE DEVICES
                 for x in Devices:
-                    FOUND_VALUE = False
-
                     #START SPLITTING ALL THE DATA INSIDE THE BTLE DATA
                     for item in items:
                         bucket = item.split("', ['")
@@ -125,8 +123,6 @@ class BasePlugin:
 
                         #FIND THE DEVICE
                         if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
-                            FOUND_VALUE = True
-
                             #TIME DIFFERENCE IS LESS THAN THE ONE IN THE PARAMETER 
                             if ( int(time_difference) <= int(Parameters["Mode1"]) ):
                                 if (isDEVICEIDinDB(DEV_ID_BLE) == True):
@@ -134,27 +130,20 @@ class BasePlugin:
                                 
                                 if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
                                     UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
-
-                                Domoticz.Log(str(Devices[x].DeviceID) + "(" + str(DEV_ID_BLE) + ") IS NOW ONLINE")
-
+                            else:        
                             #TIME DIFFERENCE IS GREATER THAN THE ONE IN THE PARAMETER
-                            if ( int(time_difference)  > int(Parameters["Mode1"]) ):
                                 if (isDEVICEIDinDB(DEV_ID_BLE) == True):
                                     UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
                                 
                                 if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
                                     UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
+                        else:
+                        #NOT FOUND
+                        if (isDEVICEIDinDB(DEV_ID_BLE) == True):
+                            UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
 
-                                Domoticz.Log(str(Devices[x].DeviceID) + "(" + str(DEV_ID_BLE) + ") OFFLINE, LAST TIME SEEN: " + time_difference + " seconds")
-                #NOT FOUND                
-                if (FOUND_VALUE == False):
-                    if (isDEVICEIDinDB(DEV_ID_BLE) == True):
-                        UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
-                                
-                    if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
-                        UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
-
-                    Domoticz.Log(str(Devices[x].Name) + "(" + str(BLE_MAC) + ") OFFLINE, NOT PRESENT IN SERVER LIST")
+                        if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
+                            UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
         return
 
     def AUTO_ADD_DEVICE_devices(self):
