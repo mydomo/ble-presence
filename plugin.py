@@ -334,13 +334,16 @@ def UpdateDevice_by_DEV_ID(DEV_ID, nValue, sValue):
 def isDEVICEIDinDB(DEV_ID):
     # Check if a BLE device is already in the database
     for x in Devices:
+        Domoticz.Log("FNC Looking for: "+str(DEV_ID))
         if ( str(DEV_ID) == str(Devices[x].DeviceID) ):
             if (Devices[x].ID in Devices):
                 #ALREADY EXIST
+                Domoticz.Log("FNC: "+str(DEV_ID) + " found")
                 FOUND = True
                 break
         else:
             FOUND = False
+            Domoticz.Log("FNC: "+str(DEV_ID) + " not found")
     return FOUND
 
 def createSwitch(NAME, DEV_ID):
