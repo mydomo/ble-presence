@@ -89,61 +89,61 @@ class BasePlugin:
                 # REMOVE '[', ']' AND '(' FROM THE RECEIVED STRING
                 if result_string.startswith('[') and result_string.endswith(']'):
                     result_string = result_string[1:-1].replace("(", "")
-                # RECURSIVE SPLIT THE STRING TO GET THE DATA, ITEMS CONTAINS ALL THE BTLE DATA:
-                items = result_string.split("), ")
+                    # RECURSIVE SPLIT THE STRING TO GET THE DATA, ITEMS CONTAINS ALL THE BTLE DATA:
+                    items = result_string.split("), ")
 
-                #SEARCH THE DATA INSIDE DEVICES
-                for x in Devices:
-                    #START SPLITTING ALL THE DATA INSIDE THE BTLE DATA
-                    for item in items:
-                        bucket = item.split("', ['")
-                        BLE_MAC = bucket[0].replace("'", "")
-                        ble_data = bucket[1].split("', '")
-                        BLE_RSSI = ble_data[0]
-                        BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
+                    #SEARCH THE DATA INSIDE DEVICES
+                    for x in Devices:
+                        #START SPLITTING ALL THE DATA INSIDE THE BTLE DATA
+                        for item in items:
+                            bucket = item.split("', ['")
+                            BLE_MAC = bucket[0].replace("'", "")
+                            ble_data = bucket[1].split("', '")
+                            BLE_RSSI = ble_data[0]
+                            BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
-                        # VARABLES FOR DEVICE ADDING
-                        NAME_BLE = BLE_MAC
-                        DEV_ID_BLE = str(BLE_MAC.replace(":", ""))
-                        # SIGNAL VARIABLES
-                        NAME_S_DATA = "SIGNAL " + BLE_MAC
-                        DEV_ID_S_DATA = str("S-" + BLE_MAC.replace(":", ""))
-                        SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*100)/74)
-                        if SIGNAL_LEVEL > 100:
-                            SIGNAL_LEVEL = 100
-                        if SIGNAL_LEVEL < 0:
-                            SIGNAL_LEVEL = 0
-                        # BATTERY VARIABLES
-                        NAME_B_DATA = "BATTERY " + BLE_MAC
-                        DEV_ID_B_DATA = str("B-" + BLE_MAC.replace(":", ""))
-                        BATTERY_LEVEL = 0
+                            # VARABLES FOR DEVICE ADDING
+                            NAME_BLE = BLE_MAC
+                            DEV_ID_BLE = str(BLE_MAC.replace(":", ""))
+                            # SIGNAL VARIABLES
+                            NAME_S_DATA = "SIGNAL " + BLE_MAC
+                            DEV_ID_S_DATA = str("S-" + BLE_MAC.replace(":", ""))
+                            SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*100)/74)
+                            if SIGNAL_LEVEL > 100:
+                                SIGNAL_LEVEL = 100
+                            if SIGNAL_LEVEL < 0:
+                                SIGNAL_LEVEL = 0
+                            # BATTERY VARIABLES
+                            NAME_B_DATA = "BATTERY " + BLE_MAC
+                            DEV_ID_B_DATA = str("B-" + BLE_MAC.replace(":", ""))
+                            BATTERY_LEVEL = 0
 
-                        #CALCULATE TIME DIFFERENCE
-                        time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
+                            #CALCULATE TIME DIFFERENCE
+                            time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
 
-                        #FIND THE DEVICE
-                        if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
-                            #TIME DIFFERENCE IS LESS THAN THE ONE IN THE PARAMETER 
-                            if ( int(time_difference) <= int(Parameters["Mode1"]) ):
-                                if (isDEVICEIDinDB(DEV_ID_BLE) == True):
-                                    UpdateDevice_by_DEV_ID(DEV_ID_BLE, 1, str("On"))
-                                
-                                if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
-                                    UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
-                            else:        
-                            #TIME DIFFERENCE IS GREATER THAN THE ONE IN THE PARAMETER
+                            #FIND THE DEVICE
+                            if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
+                                #TIME DIFFERENCE IS LESS THAN THE ONE IN THE PARAMETER 
+                                if ( int(time_difference) <= int(Parameters["Mode1"]) ):
+                                    if (isDEVICEIDinDB(DEV_ID_BLE) == True):
+                                        UpdateDevice_by_DEV_ID(DEV_ID_BLE, 1, str("On"))
+                                    
+                                    if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
+                                        UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
+                                else:        
+                                #TIME DIFFERENCE IS GREATER THAN THE ONE IN THE PARAMETER
+                                    if (isDEVICEIDinDB(DEV_ID_BLE) == True):
+                                        UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
+                                    
+                                    if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
+                                        UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
+                            else:
+                                #NOT FOUND
                                 if (isDEVICEIDinDB(DEV_ID_BLE) == True):
                                     UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
-                                
+
                                 if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
                                     UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
-                        else:
-                        #NOT FOUND
-                        if (isDEVICEIDinDB(DEV_ID_BLE) == True):
-                            UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
-
-                        if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
-                            UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
         return
 
     def AUTO_ADD_DEVICE_devices(self):
