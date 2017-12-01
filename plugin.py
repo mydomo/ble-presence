@@ -135,10 +135,12 @@ class BasePlugin:
                             if int(time_difference) <= int(Parameters["Mode1"]):
                             # DEVICE HAS BEING SEEN RECENTLY, ADD OR UPDATE IT
                                 if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
+                                    Domoticz.Log("Asking update for: " + str(DEV_ID_BLE))
                                     UpdateDevice_by_DEV_ID(DEV_ID_BLE, 1, str("On"))
                                     DEVICE_FOUND = True
 
                                 if ( str(Devices[x].DeviceID) == DEV_ID_S_DATA ):
+                                    Domoticz.Log("Asking update for: " + str(DEV_ID_S_DATA))
                                     UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
                                     DEVICE_FOUND = True
                             else:
