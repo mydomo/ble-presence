@@ -128,10 +128,14 @@ class BasePlugin:
                                     if (isDEVICEIDinDB(DEV_ID_BLE) == True):
                                         Domoticz.Log("DEVICE "+str(DEV_ID_BLE) + " is in the database")
                                         UpdateDevice_by_DEV_ID(DEV_ID_BLE, 1, str("On"))
+                                    else:
+                                        Domoticz.Log("DEVICE "+str(DEV_ID_BLE) + " is NOT in the database")
                                     
                                     if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
                                         Domoticz.Log("DEVICE "+str(DEV_ID_S_DATA) + " is in the database")
                                         UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
+                                    else:
+                                        Domoticz.Log("DEVICE "+str(DEV_ID_S_DATA) + " is NOT in the database")
                                 else:        
                                 #TIME DIFFERENCE IS GREATER THAN THE ONE IN THE PARAMETER
                                     if (isDEVICEIDinDB(DEV_ID_BLE) == True):
