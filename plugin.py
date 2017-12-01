@@ -331,7 +331,7 @@ def UpdateDevice_by_DEV_ID(DEV_ID, nValue, sValue):
             if (Unit in Devices):
                 if (Devices[Unit].nValue != nValue) or (Devices[Unit].sValue != sValue):
                     Devices[Unit].Update(nValue=nValue, sValue=str(sValue))
-            #Domoticz.Log("Update "+str(nValue)+":'"+str(sValue)+"' ("+Devices[Unit].Name+")")
+            Domoticz.Log("Update "+str(nValue)+":'"+str(sValue)+"' ("+Devices[Unit].Name+")")
     return
 
 def isDEVICEIDinDB(DEV_ID):
