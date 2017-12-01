@@ -106,57 +106,57 @@ class BasePlugin:
 
                         Domoticz.Log("Looking for: " + str(Devices[x].DeviceID) + " in BLE SCAN")
                         for item in items:
-                        bucket = item.split("', ['")
-                        BLE_MAC = bucket[0].replace("'", "")
-                        ble_data = bucket[1].split("', '")
-                        BLE_RSSI = ble_data[0]
-                        BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
+                            bucket = item.split("', ['")
+                            BLE_MAC = bucket[0].replace("'", "")
+                            ble_data = bucket[1].split("', '")
+                            BLE_RSSI = ble_data[0]
+                            BLE_TIME = ble_data[1].replace("']", "").replace(")", "")
 
-                        # VARABLES FOR DEVICE ADDING
-                        NAME_BLE = BLE_MAC
-                        DEV_ID_BLE = str(BLE_MAC.replace(":", ""))
-                        # SIGNAL VARIABLES
-                        NAME_S_DATA = "SIGNAL " + BLE_MAC
-                        DEV_ID_S_DATA = str("S-" + BLE_MAC.replace(":", ""))
-                        SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*100)/74)
-                        if SIGNAL_LEVEL > 100:
-                            SIGNAL_LEVEL = 100
-                        if SIGNAL_LEVEL < 0:
-                            SIGNAL_LEVEL = 0
-                        # BATTERY VARIABLES
-                        NAME_B_DATA = "BATTERY " + BLE_MAC
-                        DEV_ID_B_DATA = str("B-" + BLE_MAC.replace(":", ""))
-                        BATTERY_LEVEL = 0
+                            # VARABLES FOR DEVICE ADDING
+                            NAME_BLE = BLE_MAC
+                            DEV_ID_BLE = str(BLE_MAC.replace(":", ""))
+                            # SIGNAL VARIABLES
+                            NAME_S_DATA = "SIGNAL " + BLE_MAC
+                            DEV_ID_S_DATA = str("S-" + BLE_MAC.replace(":", ""))
+                            SIGNAL_LEVEL = round(((100 - abs(int(BLE_RSSI)))*100)/74)
+                            if SIGNAL_LEVEL > 100:
+                                SIGNAL_LEVEL = 100
+                            if SIGNAL_LEVEL < 0:
+                                SIGNAL_LEVEL = 0
+                            # BATTERY VARIABLES
+                            NAME_B_DATA = "BATTERY " + BLE_MAC
+                            DEV_ID_B_DATA = str("B-" + BLE_MAC.replace(":", ""))
+                            BATTERY_LEVEL = 0
 
 
-                        # CALCULATE THE TIME DIFFERENCE BETWEEN THE SCAN AND NOW
-                        time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
+                            # CALCULATE THE TIME DIFFERENCE BETWEEN THE SCAN AND NOW
+                            time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
 
-                        if int(time_difference) <= int(Parameters["Mode1"]):
-                        # DEVICE HAS BEING SEEN RECENTLY, ADD OR UPDATE IT
-                            if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
-                                UpdateDevice_by_DEV_ID(DEV_ID_BLE, 1, str("On"))
-                                DEVICE_FOUND = True
+                            if int(time_difference) <= int(Parameters["Mode1"]):
+                            # DEVICE HAS BEING SEEN RECENTLY, ADD OR UPDATE IT
+                                if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
+                                    UpdateDevice_by_DEV_ID(DEV_ID_BLE, 1, str("On"))
+                                    DEVICE_FOUND = True
 
-                            if ( str(Devices[x].DeviceID) == DEV_ID_S_DATA ):
-                                UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
-                                DEVICE_FOUND = True
-                        else:
-                        # DEVICE HAS NOT BEING SEEN RECENTLY, UPDATE THE STATUS ACCORDINGLY.
+                                if ( str(Devices[x].DeviceID) == DEV_ID_S_DATA ):
+                                    UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
+                                    DEVICE_FOUND = True
+                            else:
+                            # DEVICE HAS NOT BEING SEEN RECENTLY, UPDATE THE STATUS ACCORDINGLY.
 
-                            if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
-                                UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
+                                if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
+                                    UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
 
-                            if ( str(Devices[x].DeviceID) == DEV_ID_S_DATA ):
-                                UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
+                                if ( str(Devices[x].DeviceID) == DEV_ID_S_DATA ):
+                                    UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
 
-                        if DEVICE_FOUND == False:
+                            if DEVICE_FOUND == False:
 
-                            if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
-                                UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
+                                if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
+                                    UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
 
-                            if ( str(Devices[x].DeviceID) == DEV_ID_S_DATA ):
-                                UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
+                                if ( str(Devices[x].DeviceID) == DEV_ID_S_DATA ):
+                                    UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
 
                 # THE DATA FROM THE SOCKET ARE NOT A REGULAR SCANNING PROCESS, IDENTIFY IT AND ACT ACCORDINGLY
                 else:
@@ -169,8 +169,6 @@ class BasePlugin:
                         Domoticz.Log("BLE SCANNING stopped by other function, devices not updated...")
                     else:
                         Domoticz.Log("BLE SCANNING unexpected syntax in SOCKET REPLY")
-                        UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
-                        UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
                         #CREATE A VARIABLE TO KNOW THAT THE SCANNING HAS BEING STOPPED
                         SCAN_STOPPED = True
         return
