@@ -126,16 +126,20 @@ class BasePlugin:
                                 #TIME DIFFERENCE IS LESS THAN THE ONE IN THE PARAMETER 
                                 if ( int(time_difference) <= int(Parameters["Mode1"]) ):
                                     if (isDEVICEIDinDB(DEV_ID_BLE) == True):
+                                        Domoticz.Log("DEVICE "+str(DEV_ID_BLE) + " is in the database")
                                         UpdateDevice_by_DEV_ID(DEV_ID_BLE, 1, str("On"))
                                     
                                     if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
+                                        Domoticz.Log("DEVICE "+str(DEV_ID_S_DATA) + " is in the database")
                                         UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
                                 else:        
                                 #TIME DIFFERENCE IS GREATER THAN THE ONE IN THE PARAMETER
                                     if (isDEVICEIDinDB(DEV_ID_BLE) == True):
+                                        Domoticz.Log("DEVICE "+str(DEV_ID_BLE) + " is in the database")
                                         UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
                                     
                                     if (isDEVICEIDinDB(DEV_ID_S_DATA) == True):
+                                        Domoticz.Log("DEVICE "+str(DEV_ID_S_DATA) + " is in the database")
                                         UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
                             else:
                                 #NOT FOUND
