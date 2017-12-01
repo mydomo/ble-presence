@@ -346,8 +346,8 @@ def UpdateDevice_by_DEV_ID(DEV_ID, nValue, sValue):
     Domoticz.Log("Requested to find "+ str(DEV_ID)) 
     for y in Devices:
         if ( str(DEV_ID) == str(Devices[y].DeviceID) ):
-            Domoticz.Log("found "+ str(DEV_ID) + "with Unit key: " + str(Devices[y].ID)) 
-            Unit = Devices[y].ID
+            Domoticz.Log("found "+ str(DEV_ID) + "with Unit key: " + str(Devices[y])) 
+            Unit = Devices[y]
             if (Unit in Devices):
                 if (Devices[Unit].nValue != nValue) or (Devices[Unit].sValue != sValue):
                     Devices[Unit].Update(nValue=nValue, sValue=str(sValue))
