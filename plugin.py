@@ -343,9 +343,9 @@ def UpdateDevice_by_UNIT(Unit, nValue, sValue):
 
 def UpdateDevice_by_DEV_ID(DEV_ID, nValue, sValue):
     # Make sure that the Domoticz device still exists (they can be deleted) before updating it 
-    for x in Devices:
-        if ( str(DEV_ID) == str(Devices[x].DeviceID) ):
-            Unit = Devices[x].ID
+    for y in Devices:
+        if ( str(DEV_ID) == str(Devices[y].DeviceID) ):
+            Unit = Devices[y].ID
             if (Unit in Devices):
                 if (Devices[Unit].nValue != nValue) or (Devices[Unit].sValue != sValue):
                     Devices[Unit].Update(nValue=nValue, sValue=str(sValue))
@@ -355,16 +355,13 @@ def UpdateDevice_by_DEV_ID(DEV_ID, nValue, sValue):
 def isDEVICEIDinDB(DEV_ID):
     # Check if a BLE device is already in the database
     for x in Devices:
-        Domoticz.Log("FNC Looking for: "+str(DEV_ID))
         if ( str(DEV_ID) == str(Devices[x].DeviceID) ):
             if (Devices[x].ID in Devices):
                 #ALREADY EXIST
-                Domoticz.Log("FNC: "+str(DEV_ID) + " found")
                 FOUND = True
                 break
         else:
             FOUND = False
-            Domoticz.Log("FNC: "+str(DEV_ID) + " not found")
     return FOUND
 
 def createSwitch(NAME, DEV_ID):
