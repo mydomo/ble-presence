@@ -9,7 +9,7 @@ Version:
             0.1.0: beta, Domoticz Plugin working... must be fixed the server
 """
 """
-<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.0.3" wikilink="" externallink="https://github.com/mydomo">
+<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.1.0" wikilink="" externallink="https://github.com/mydomo">
     <params>
         <param field="Address" label="BLE-Presence Server IP address" width="200px" required="true" default="127.0.0.1"/>
         <param field="Port" label="Port" width="40px" required="true" default="12345"/>
@@ -18,7 +18,7 @@ Version:
         <param field="Mode6" label="Mode" width="200px" required="true">
             <options>
                 <option label="Auto add discovered BLE devices." value="AUTO_ADD_DEVICE" default="true" />
-                <option label="Manual add BLE devices. (no scan)" value="MANUAL_ADD_DEVICE" />
+                <option label="Scan only manually added BLE devices" value="MANUAL_ADD_DEVICE" />
                 <option label="BLE scanner" value="BLE_SCAN" />
             </options>
         </param>
@@ -104,7 +104,7 @@ class BasePlugin:
                     for x in Devices:
                         DEVICE_FOUND = False
 
-                        Domoticz.Log("Looking for: " + str(Devices[x].DeviceID) + " in BLE SCAN")
+                        #Domoticz.Log("Looking for: " + str(Devices[x].DeviceID) + " in BLE SCAN")
                         for item in items:
                             bucket = item.split("', ['")
                             BLE_MAC = bucket[0].replace("'", "")
@@ -132,33 +132,37 @@ class BasePlugin:
                             # CALCULATE THE TIME DIFFERENCE BETWEEN THE SCAN AND NOW
                             time_difference = (round(int(time.time())) - round(int(BLE_TIME)))
 
-                            if int(time_difference) <= int(Parameters["Mode1"]):
-                            # DEVICE HAS BEING SEEN RECENTLY, ADD OR UPDATE IT
-                                if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
-                                    Domoticz.Log("Asking update for: " + str(DEV_ID_BLE))
+                            if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
+                                DEVICE_FOUND = True
+                                Domoticz.Log( str(Devices[x].DeviceID) + " has being found on the BLE Server output")
+
+                                if int(time_difference) <= int(Parameters["Mode1"]):
+                                    Domoticz.Log( str(Devices[x].DeviceID) + " will be updated, last seen: " + str(time_difference) + "seconds ago")
                                     UpdateDevice_by_DEV_ID(DEV_ID_BLE, 1, str("On"))
-                                    DEVICE_FOUND = True
+                                else:
+                                    Domoticz.Log( str(Devices[x].DeviceID) + " will be turned OFF, last seen: " + str(time_difference) + "seconds ago")
+                                    UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
 
-                                if ( str(Devices[x].DeviceID) == DEV_ID_S_DATA ):
-                                    Domoticz.Log("Asking update for: " + str(DEV_ID_S_DATA))
+                            elif ( str(Devices[x].DeviceID) == DEV_ID_S_DATA ):
+                                Domoticz.Log( str(Devices[x].DeviceID) + " has being found on the BLE Server output")
+                                DEVICE_FOUND = True
+
+                                if int(time_difference) <= int(Parameters["Mode1"]):
+                                    Domoticz.Log( str(Devices[x].DeviceID) + " will be updated, last seen: " + str(time_difference) + "seconds ago")
                                     UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, SIGNAL_LEVEL, str(SIGNAL_LEVEL))
-                                    DEVICE_FOUND = True
-                            else:
-                            # DEVICE HAS NOT BEING SEEN RECENTLY, UPDATE THE STATUS ACCORDINGLY.
-
-                                if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
-                                    UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
-
-                                if ( str(Devices[x].DeviceID) == DEV_ID_S_DATA ):
+                                else:
+                                    Domoticz.Log( str(Devices[x].DeviceID) + " will be turned OFF, last seen: " + str(time_difference) + "seconds ago")
                                     UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
 
-                            if DEVICE_FOUND == False:
+                        if DEVICE_FOUND == False:
 
-                                if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
-                                    UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
+                            if ( str(Devices[x].DeviceID) == DEV_ID_BLE ):
+                                #Domoticz.Log( str(Devices[x].DeviceID) + " NOT FOUND on the BLE Server output (updating as OFF)")
+                                UpdateDevice_by_DEV_ID(DEV_ID_BLE, 0, str("Off"))
 
-                                if ( str(Devices[x].DeviceID) == DEV_ID_S_DATA ):
-                                    UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
+                            elif ( str(Devices[x].DeviceID) == DEV_ID_S_DATA ):
+                                #Domoticz.Log( str(Devices[x].DeviceID) + " NOT FOUND on the BLE Server output (updating as OFF)")
+                                UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
 
                 # THE DATA FROM THE SOCKET ARE NOT A REGULAR SCANNING PROCESS, IDENTIFY IT AND ACT ACCORDINGLY
                 else:
@@ -338,27 +342,26 @@ def UpdateDevice_by_UNIT(Unit, nValue, sValue):
     if (Unit in Devices):
         if (Devices[Unit].nValue != nValue) or (Devices[Unit].sValue != sValue):
             Devices[Unit].Update(nValue=nValue, sValue=str(sValue))
-            #Domoticz.Log("Update "+str(nValue)+":'"+str(sValue)+"' ("+Devices[Unit].Name+")")
+            Domoticz.Log("Device: " + str(Devices[Unit].Name) + " updated. (" + str(sValue) + ")")
     return
 
 def UpdateDevice_by_DEV_ID(DEV_ID, nValue, sValue):
     # Make sure that the Domoticz device still exists (they can be deleted) before updating it
-    Domoticz.Log("Requested to find "+ str(DEV_ID)) 
+    #Domoticz.Log("Requested to update "+ str(DEV_ID)) 
     for y in Devices:
         if ( str(DEV_ID) == str(Devices[y].DeviceID) ):
-            Unit = Devices[y].ID
-            Devices[Unit].Update(nValue=nValue, sValue=str(sValue))
-            Domoticz.Log("Update "+str(nValue)+":'"+str(sValue)+"' ("+Devices[Unit].Name+")")
+            #Domoticz.Log("UPDATING "+ str(DEV_ID) + "with Unit: " + str(y)) 
+            Unit = y
+            UpdateDevice_by_UNIT(Unit, nValue, sValue)
     return
 
 def isDEVICEIDinDB(DEV_ID):
     # Check if a BLE device is already in the database
     for x in Devices:
         if ( str(DEV_ID) == str(Devices[x].DeviceID) ):
-            if (Devices[x].ID in Devices):
-                #ALREADY EXIST
-                FOUND = True
-                break
+            #ALREADY EXIST
+            FOUND = True
+            break
         else:
             FOUND = False
     return FOUND
