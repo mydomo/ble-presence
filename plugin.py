@@ -175,8 +175,7 @@ class BasePlugin:
                                     LASTUPDATE_BATT = time.mktime(datetime.datetime.strptime(Devices[x].LastUpdate, "%Y-%m-%d %H:%M:%S").timetuple())
                                     time_difference_BATT = (round(int(time.time())) - round(int(LASTUPDATE_BATT)))
                                     #Domoticz.Log("Time difference = " + str(time_difference_BATT) + " s")
-                                    #if (time_difference_BATT >= 86400):
-                                    if (time_difference_BATT >= 10):
+                                    if (time_difference_BATT >= 86400):
                                         
                                         DELETE_PREFIX_DEVICE = str(Devices[x].DeviceID).replace("B-", "").replace("S-", "")
                                         DEVICE_FOR_BATTERY = str(DELETE_PREFIX_DEVICE[0:2]) + ":" + str(DELETE_PREFIX_DEVICE[2:4]) + ":" + str(DELETE_PREFIX_DEVICE[4:6]) + ":" + str(DELETE_PREFIX_DEVICE[6:8]) + ":" + str(DELETE_PREFIX_DEVICE[8:10]) + ":" + str(DELETE_PREFIX_DEVICE[10:12])
