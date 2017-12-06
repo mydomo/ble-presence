@@ -172,6 +172,7 @@ def ble_scanner():
 def read_battery_level():
     global scan_beacon_data
     global mode
+    global devices_to_analize
     global batt_lev_detected
     global read_value_lock
     global min_inval_between_batt_level_readings
