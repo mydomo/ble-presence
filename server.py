@@ -97,6 +97,7 @@ def socket_input_process(input_string):
 
         # if is present a battery data send it
         else:
+            read_value_lock = False
             return str(batt_lev_detected)
 
     ###- STOP RUNNING SERVICES -###
