@@ -6,7 +6,8 @@
 #  AUTHOR: MARCO BAGLIVO (ITALY) (https://github.com/mydomo)                    #
 #                                                                               #
 #################################################################################
-# BLE_SCAN LIBRARY IS A FORK OF https://github.com/flyinactor91/RasPi-iBeacons  #
+#                    PLEASE READ THE README FILE FOR COMPLETE                   # 
+#                     INSTALLATION INSTRUCTIONS AND LICENSE                     #
 #################################################################################
 
 #################################################################################

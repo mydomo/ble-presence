@@ -1,0 +1,13 @@
+[Unit]
+Description=BLE Python Socket Server
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/home/test/ble-presence/server.py
+User=root
+WorkingDirectory=/home/test/ble-presence
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

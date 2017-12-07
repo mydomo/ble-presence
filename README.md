@@ -92,13 +92,14 @@ BLE-Presence is currently extended with the following clients.
 
 | Client | Location | How to install |
 | ------ | ------ | ------ |
-| Domoticz | /plugin.py | coming soon |
+| Domoticz | /clients/DOMOTICZ | coming soon |
 | PHP | /clients/PHP | coming soon |
 | PYTHON | /clients/PYTHON | coming soon |
 
 ## Todos
 
  - Pythonize and clean the code
+ - Sending Encrypted data thru socket and authentication.
  - Create different repository for server only/client only installs.
 
 License
