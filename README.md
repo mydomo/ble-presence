@@ -1,7 +1,7 @@
 If this project help you reduce time to develop, you can give me a cup of coffee :)
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/marcobag)
 
-# BLE-Presence (Server + Client version)
+# BLE Presence - All in One version (Server + Client)
 
 BLE-Presence it's Client/Server software that allow to scan all the BLE beacons/request battery level using one or more servers (a small Raspberry Pi v1 is more than enought ) and read the results thru multiple clients.
 Due to the architecture the **Server part can be installed on Linux only** (tested Ubuntu & Raspian Stretch).
