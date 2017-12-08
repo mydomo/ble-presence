@@ -102,6 +102,8 @@ Copy and paste the following, **but remember to EDIT IT in order to match your c
 $ sudo ln -s /home/pi/ble-presence/clients/DOMOTICZ/ble-presence /home/pi/domoticz/plugins
 $ chmod +x /home/pi/ble-presence/clients/DOMOTICZ/ble-presenceplugin.py
 ```
+Since you created a Symbolic Link you will not need to update the Domoticz Plugin folder for each release, it will follow the content on the main Git repository.
+
 ## Todos
 
  - Pythonize and clean the code
