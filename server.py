@@ -87,7 +87,7 @@ def socket_input_process(input_string):
         devices_to_analize = string_devices_to_analize.split(',')
         # set operative mode to battery_level
         mode = 'battery_level'
-        
+
         # if the reading has already requested and there is no result ask to wait
         if not batt_lev_detected and read_value_lock == True:
             return str(lang_READING_LOCK)
@@ -171,7 +171,7 @@ def ble_scanner():
             time.sleep(1)
         except:
             print ("failed restarting device... let's try again!")
-            usb_dongle_reset()         
+            usb_dongle_reset()
             dev_id = 0
             sock = bluez.hci_open_dev(dev_id)
             ble_scan.hci_le_set_scan_parameters(sock)
@@ -202,7 +202,7 @@ def read_battery_level():
                 if cleaned_battery_level_moderator != "Never":
                     stored_batterylevel, stored_timestamp = cleaned_battery_level_moderator.split(',')
                     time_difference = int(time.time()) - int(stored_timestamp)
-                
+
                 if (int(min_inval_between_batt_level_readings) <= int(time_difference)) or (str(cleaned_battery_level_moderator) == "Never") or (str(stored_batterylevel) == '255'):
                     scan_beacon_data = False
                     usb_dongle_reset()
@@ -219,12 +219,12 @@ def read_battery_level():
                         ble_value = int(ble_value ,16)
 
                     if ble_value == '':
-                        ble_value = '255'    
+                        ble_value = '255'
                     time_checked = str(int(time.time()))
                     batt_lev_detected[device] = [ble_value,time_checked]
                     read_value_lock = False
                     #print (batt_lev_detected)
-                
+
             #AS SOON AS IT FINISH RESTART THE scan_beacon_data PROCESS
             scan_beacon_data = True
             mode = 'beacon_data'
@@ -253,7 +253,7 @@ def start_server():
     # for handling task in separate jobs we need threading
     #from threading import Thread
 
-    # this will make an infinite loop needed for 
+    # this will make an infinite loop needed for
     # not reseting server for every client
     while (not killer.kill_now):
         conn, addr = soc.accept()
@@ -298,4 +298,4 @@ if __name__ == '__main__':
     Thread(target=ble_scanner).start()
     Thread(target=read_battery_level).start()
     Thread(target=kill_socket).start()
-#  print ("End of the program. I was killed gracefully :)")
+#  print ("End of the program. I was killed gracefully")
