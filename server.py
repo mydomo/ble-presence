@@ -33,7 +33,7 @@ from collections import OrderedDict
 ##########- CONFIGURE SCRIPT -##########
 socket_ip = '0.0.0.0'
 socket_port = 12345
-min_inval_between_batt_level_readings = 1
+min_inval_between_batt_level_readings = 3600
 
 ##########- CONFIGURE TRANSLATIONS -##########
 lang_SCAN_STOPPED = 'Scanning stopped by other function'
@@ -159,10 +159,10 @@ def ble_scanner():
     SCANNING_FINISHED = False
     while (scan_beacon_data == True) and (not killer.kill_now):
         try:
-            returnedList = ble_scan.parse_events(sock, 25)
-            #Tryng to fix the issue were partial result are transmitted.
             if SCANNING_FINISHED == True:
                 beacons_detected = beacons_detected_scanned
+            returnedList = ble_scan.parse_events(sock, 25)
+            #Tryng to fix the issue were partial result are transmitted.
             for beacon in returnedList:
                 SCANNING_FINISHED = False
                 MAC, RSSI, LASTSEEN = beacon.split(',')
@@ -176,6 +176,7 @@ def ble_scanner():
             sock = bluez.hci_open_dev(dev_id)
             ble_scan.hci_le_set_scan_parameters(sock)
             ble_scan.hci_enable_le_scan(sock)
+            SCANNING_FINISHED = False
             time.sleep(1)
 
 def read_battery_level():
