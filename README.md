@@ -123,4 +123,4 @@ If this project help you reduce time to develop, you can give me a cup of coffee
    [RasPi-iBeacons]: <https://github.com/flyinactor91/RasPi-iBeacons>
    [Reddit Community]: <https://www.reddit.com/r/raspberry_pi/comments/4vhofs/creating_a_systemd_daemon_so_you_can_run_a_python/>
    [public repository]: <https://github.com/mydomo/ble-presence>
-   [Install Domoticz]: <#Install-Domoticz-Plugin>
+   [Install Domoticz]: <#install-domoticz-plugin>
