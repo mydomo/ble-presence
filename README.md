@@ -92,10 +92,16 @@ BLE-Presence is currently extended with the following clients.
 
 | Client | Location | How to install |
 | ------ | ------ | ------ |
-| Domoticz | /clients/DOMOTICZ | coming soon |
+| Domoticz | /clients/DOMOTICZ | [Install Domoticz] |
 | PHP | /clients/PHP | coming soon |
 | PYTHON | /clients/PYTHON | coming soon |
 
+## Install Domoticz Plugin
+Copy and paste the following, **but remember to EDIT IT in order to match your current home folder and the installation path of Domoticz**. (in this case my home is "/home/pi", the installation path of Domoticz is "/home/pi/domoticz/")
+```sh
+$ sudo ln -s /home/pi/ble-presence/clients/DOMOTICZ/ble-presence /home/pi/domoticz/plugins
+$ chmod +x /home/pi/ble-presence/clients/DOMOTICZ/ble-presenceplugin.py
+```
 ## Todos
 
  - Pythonize and clean the code
@@ -117,3 +123,4 @@ If this project help you reduce time to develop, you can give me a cup of coffee
    [RasPi-iBeacons]: <https://github.com/flyinactor91/RasPi-iBeacons>
    [Reddit Community]: <https://www.reddit.com/r/raspberry_pi/comments/4vhofs/creating_a_systemd_daemon_so_you_can_run_a_python/>
    [public repository]: <https://github.com/mydomo/ble-presence>
+   [Install Domoticz]: <#Install-Domoticz-Plugin>
