@@ -155,12 +155,19 @@ def ble_scanner():
     ble_scan.hci_le_set_scan_parameters(sock)
     ble_scan.hci_enable_le_scan(sock)
     beacons_detected = {}
+    beacons_detected_scanned = {}
+    SCANNING_FINISHED = False
     while (scan_beacon_data == True) and (not killer.kill_now):
         try:
             returnedList = ble_scan.parse_events(sock, 25)
+            #Tryng to fix the issue were partial result are transmitted.
+            if SCANNING_FINISHED == True:
+                beacons_detected = beacons_detected_scanned
             for beacon in returnedList:
+                SCANNING_FINISHED = False
                 MAC, RSSI, LASTSEEN = beacon.split(',')
-                beacons_detected[MAC] = [RSSI,LASTSEEN]
+                beacons_detected_scanned[MAC] = [RSSI,LASTSEEN]
+            SCANNING_FINISHED = True
             time.sleep(1)
         except:
             print ("failed restarting device... let's try again!")
