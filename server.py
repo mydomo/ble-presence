@@ -161,6 +161,8 @@ def ble_scanner():
         try:
             if SCANNING_FINISHED == True:
                 beacons_detected = beacons_detected_scanned
+                SCANNING_FINISHED == False
+                
             returnedList = ble_scan.parse_events(sock, 25)
             #Tryng to fix the issue were partial result are transmitted.
             for beacon in returnedList:
