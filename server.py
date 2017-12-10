@@ -73,9 +73,8 @@ def socket_input_process(input_string):
         if scan_beacon_data == True:
             # set operative mode to beacon_data
             mode = 'beacon_data'
-            # return beacons_detected ordered by timestamp ASC (tnx to: JkShaw - http://stackoverflow.com/questions/43715921/python3-ordering-a-complex-dict)
-            # return "just" the last 300 results to prevent the end of the socket buffer (each beacon data is about 45 bytes)
-            return str(sorted(beacons_detected.items(), key=lambda x: x[1][1], reverse=True)[:300])
+            # return beacons detected
+            return str(beacons_detected)
 
 
     ###- TRANSMIT BATTERY LEVEL -###
@@ -156,21 +155,25 @@ def ble_scanner():
     ble_scan.hci_enable_le_scan(sock)
     beacons_detected = {}
     beacons_detected_scanned = {}
+    beacons_detected_scanned_trimmed = {}
     SCANNING_FINISHED = False
     while (scan_beacon_data == True) and (not killer.kill_now):
         try:
             if SCANNING_FINISHED == True:
-                beacons_detected = beacons_detected_scanned
-                SCANNING_FINISHED == False
-                
-            returnedList = ble_scan.parse_events(sock, 25)
-            #Tryng to fix the issue were partial result are transmitted.
-            for beacon in returnedList:
+                beacons_detected = beacons_detected_scanned_trimmed
                 SCANNING_FINISHED = False
-                MAC, RSSI, LASTSEEN = beacon.split(',')
-                beacons_detected_scanned[MAC] = [RSSI,LASTSEEN]
-            SCANNING_FINISHED = True
-            time.sleep(1)
+
+            elif SCANNING_FINISHED == False:
+                returnedList = ble_scan.parse_events(sock, 25)
+                for beacon in returnedList:
+                    MAC, RSSI, LASTSEEN = beacon.split(',')
+                    beacons_detected_scanned[MAC] = [RSSI,LASTSEEN]
+                # return beacons_detected ordered by timestamp ASC (tnx to: JkShaw - http://stackoverflow.com/questions/43715921/python3-ordering-a-complex-dict)
+                # return "just" the last 150 results to prevent the end of the socket buffer (each beacon data is about 45 bytes)
+                beacons_detected_scanned_trimmed = str(sorted(beacons_detected_scanned.items(), key=lambda x: x[1][1], reverse=True)[:150])
+
+                SCANNING_FINISHED = True
+                time.sleep(1)
         except:
             print ("failed restarting device... let's try again!")
             usb_dongle_reset()
