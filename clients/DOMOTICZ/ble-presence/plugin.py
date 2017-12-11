@@ -104,7 +104,8 @@ class BasePlugin:
                 # CHECK IF THE SCANNING HAS THE EXPECTED RESULTS, THAN
                 # START THE INPUT CLEANING FOR BEACONING DATA
                 # REMOVE '[', ']' AND '(' FROM THE RECEIVED STRING
-                if result_string.startswith('[') and result_string.endswith(']'):
+                # WHEN START IN THIS WAY MEANS THAT DATA ARE NOT CORRUPTED.
+                if result_string.startswith("[('") and result_string.endswith("'])]"):
                     if SCAN_STOPPED == True:
                         SCAN_STOPPED = False
                         Domoticz.Log("BLE SCANNING reasumed correctly")
@@ -249,8 +250,8 @@ class BasePlugin:
                         BATTERY_REQUEST = False
 
                 else:
-                    Domoticz.Log("BLE SCANNING unexpected syntax in SOCKET REPLY")
-                    Domoticz.Log(str(result_string))
+                    Domoticz.Error("BLE SCANNING unexpected syntax in SOCKET REPLY")
+                    Domoticz.Error(str(result_string))
                     #CREATE A VARIABLE TO KNOW THAT THE SCANNING HAS BEING STOPPED
                     SCAN_STOPPED = True
         return
@@ -280,7 +281,7 @@ class BasePlugin:
                 # CHECK IF THE SCANNING HAS THE EXPECTED RESULTS, THAN
                 # START THE INPUT CLEANING FOR BEACONING DATA
                 # REMOVE '[', ']' AND '(' FROM THE RECEIVED STRING
-                if result_string.startswith('[') and result_string.endswith(']'):
+                if result_string.startswith("[('") and result_string.endswith("')]"):
                     if SCAN_STOPPED == True:
                         SCAN_STOPPED = False
                         Domoticz.Log("BLE SCANNING reasumed correctly")
