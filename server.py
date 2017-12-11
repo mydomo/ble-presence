@@ -108,15 +108,9 @@ def socket_input_process(input_string):
 ##########- END FUNCTION THAT HANDLE CLIENT INPUT -##########
 
 ##########- START FUNCTION THAT HANDLE SOCKET'S TRANSMISSION -##########
-def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 32768):
+def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 8000):
     # the input is in bytes, so decode it
-    input_from_client_bytes = conn.recv(MAX_BUFFER_SIZE)
-
-    # MAX_BUFFER_SIZE is how big the message can be
-    # this is test if it's too big
-    siz = sys.getsizeof(input_from_client_bytes)
-    if  siz >= MAX_BUFFER_SIZE:
-        print("The length of input is probably too long: {}".format(siz))
+    input_from_client_bytes = recv_msg(soc)
 
     # decode input and strip the end of line
     input_from_client = input_from_client_bytes.decode("utf8").rstrip()
@@ -125,8 +119,7 @@ def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 32768):
     #print("Result of processing {} is: {}".format(input_from_client, res))
 
     vysl = res.encode("utf8")  # encode the result string
-    conn.sendall(vysl)  # send it to client
-    conn.close()  # close connection
+    send_msg(vysl)  # send it to client
 ##########- END FUNCTION THAT HANDLE SOCKET'S TRANSMISSION -##########
 
 def usb_dongle_reset():
@@ -285,6 +278,32 @@ def kill_socket():
             soc.close()
             kill_socket_switch = True
         time.sleep(1)
+
+####### PYTHON PROTOCOL ######
+def send_msg(soc, msg):
+    # Prefix each message with a 4-byte length (network byte order)
+    msg = struct.pack('>I', len(msg)) + msg
+    soc.sendall(msg)
+
+def recv_msg(soc):
+    # Read message length and unpack it into an integer
+    raw_msglen = recvall(soc, 4)
+    if not raw_msglen:
+        return None
+    msglen = struct.unpack('>I', raw_msglen)[0]
+    # Read the message data
+    return recvall(soc, msglen)
+
+def recvall(soc, n):
+    # Helper function to recv n bytes or return None if EOF is hit
+    data = b''
+    while len(data) < n:
+        packet = soc.recv(n - len(data))
+        if not packet:
+            return None
+        data += packet
+    return data
+ ####### PYTHON PROTOCOL ######           
 
 ### MAIN PROGRAM ###
 class GracefulKiller:

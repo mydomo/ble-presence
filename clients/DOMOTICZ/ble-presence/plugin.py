@@ -91,8 +91,8 @@ class BasePlugin:
                 else:
                     clients_input = "beacon_data"
 
-                soc.send(clients_input.encode()) # we must encode the string to bytes  
-                result_bytes = soc.recv(32768) # the number means how the response can be in bytes  
+                send_msg(clients_input.encode()) # we must encode the string to bytes  
+                result_bytes = recv_msg(soc) # the number means how the response can be in bytes  
                 result_string = result_bytes.decode("utf8") # the return will be in bytes, so decode
 
 
@@ -475,3 +475,28 @@ def createCustomSwitch(NAME, DEV_ID):
         Domoticz.Device(Name=NAME, Unit=UNIT_GENERATED, DeviceID=DEV_ID, TypeName="Custom", Options={"Custom": "1;%"}).Create()
         Domoticz.Log("Device " + str(NAME)+ " CREATED")
     return
+
+#### PYTHON PROTOCOL
+def send_msg(soc, msg):
+    # Prefix each message with a 4-byte length (network byte order)
+    msg = struct.pack('>I', len(msg)) + msg
+    soc.sendall(msg)
+
+def recv_msg(soc):
+    # Read message length and unpack it into an integer
+    raw_msglen = recvall(soc, 4)
+    if not raw_msglen:
+        return None
+    msglen = struct.unpack('>I', raw_msglen)[0]
+    # Read the message data
+    return recvall(soc, msglen)
+
+def recvall(soc, n):
+    # Helper function to recv n bytes or return None if EOF is hit
+    data = b''
+    while len(data) < n:
+        packet = soc.recv(n - len(data))
+        if not packet:
+            return None
+        data += packet
+    return data
