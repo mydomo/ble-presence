@@ -91,21 +91,21 @@ class BasePlugin:
                 else:
                     clients_input = "beacon_data"
 
-                soc.send(clients_input.encode()) # we must encode the string to bytes 
-                # NEW PROTOCOL 
+                soc.send(clients_input.encode()) # we must encode the string to bytes
+
                 data = b''  # recv() does return bytes
                 while True:
                     try:
-                        chunk = conn.recv(4096)  # some 2^n number
+                        chunk = soc.recv(4096)  # some 2^n number
                         if not chunk:  # chunk == ''
                             break
 
                         data += chunk
 
                     except socket.error:
-                        conn.close()
-                        break
-                # END NEW PROTOCOL
+                        soc.close()
+                        break  
+
                 result_bytes = data # the number means how the response can be in bytes  
                 result_string = result_bytes.decode("utf8") # the return will be in bytes, so decode
 
