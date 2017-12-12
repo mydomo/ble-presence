@@ -108,18 +108,23 @@ def socket_input_process(input_string):
 ##########- END FUNCTION THAT HANDLE CLIENT INPUT -##########
 
 ##########- START FUNCTION THAT HANDLE SOCKET'S TRANSMISSION -##########
-def client_thread(conn, ip, port, MAX_BUFFER_SIZE = 32768):
-    # the input is in bytes, so decode it
-    input_from_client_bytes = conn.recv(MAX_BUFFER_SIZE)
+def client_thread(conn, ip, port):
 
-    # MAX_BUFFER_SIZE is how big the message can be
-    # this is test if it's too big
-    siz = sys.getsizeof(input_from_client_bytes)
-    if  siz >= MAX_BUFFER_SIZE:
-        print("The length of input is probably too long: {}".format(siz))
+    data = b''  # recv() does return bytes
+    while True:
+        try:
+            chunk = conn.recv(4096)  # some 2^n number
+            if not chunk:  # chunk == ''
+                break
+
+            data += chunk
+
+        except socket.error:
+            conn.close()
+            break
 
     # decode input and strip the end of line
-    input_from_client = input_from_client_bytes.decode("utf8").rstrip()
+    input_from_client = data.decode("utf8").rstrip()
 
     res = socket_input_process(input_from_client)
     #print("Result of processing {} is: {}".format(input_from_client, res))

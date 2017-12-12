@@ -81,19 +81,34 @@ class BasePlugin:
 
         if not self.error:
             try:
-                soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                SERV_ADDR = str(Parameters["Address"])
-                SERV_PORT = int(Parameters["Port"])
-                soc.connect((SERV_ADDR, SERV_PORT))
+    soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    SERV_ADDR = str(Parameters["Address"])
+    SERV_PORT = int(Parameters["Port"])
+    soc.connect((SERV_ADDR, SERV_PORT))
 
-                if BATTERY_REQUEST == True:
-                    clients_input = str(BATTERY_DEVICE_REQUEST)
-                else:
-                    clients_input = "beacon_data"
+    if BATTERY_REQUEST == True:
+        clients_input = str(BATTERY_DEVICE_REQUEST)
+    else:
+        clients_input = "beacon_data"
 
-                soc.send(clients_input.encode()) # we must encode the string to bytes  
-                result_bytes = soc.recv(32768) # the number means how the response can be in bytes  
-                result_string = result_bytes.decode("utf8") # the return will be in bytes, so decode
+    soc.send(clients_input.encode()) # we must encode the string to bytes
+
+    data = b''  # recv() does return bytes
+    while True:
+        try:
+            chunk = conn.recv(4096)  # some 2^n number
+            if not chunk:  # chunk == ''
+                break
+
+            data += chunk
+
+        except socket.error:
+            conn.close()
+            break
+
+
+    result_bytes = data # the number means how the response can be in bytes  
+    result_string = result_bytes.decode("utf8") # the return will be in bytes, so decode
 
 
             except:
