@@ -128,6 +128,11 @@ class BasePlugin:
                     result_string = result_string[1:-1].replace("(", "")
                     # RECURSIVE SPLIT THE STRING TO GET THE DATA:
                     items = result_string.split("), ")
+                    
+                    if len(items) == 0:
+                        while len(items) < 1:
+                            result_string = "'xx:xx:xx:xx:xx:xx', ['-90', '1513096870']), " + result_string
+                        items = result_string.split("), ")
 
                     for x in Devices:
                         DEVICE_FOUND = False
