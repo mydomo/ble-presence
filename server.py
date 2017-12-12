@@ -307,7 +307,7 @@ class GracefulKiller:
 if __name__ == '__main__':
     killer = GracefulKiller()
     Thread(target=start_server).start()
-    Thread(target=ble_scanner).start()
+    #Thread(target=ble_scanner).start()
     Thread(target=read_battery_level).start()
     Thread(target=kill_socket).start()
 #  print ("End of the program. I was killed gracefully")
