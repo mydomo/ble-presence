@@ -113,6 +113,7 @@ class BasePlugin:
             except:
                 self.error = True
                 Domoticz.Error("Error connecting to BLE-Server: " + Parameters["Address"] + " on port: " + Parameters["Port"])
+                security_switch()
             else:
 
                 # CHECK IF THE SCANNING HAS THE EXPECTED RESULTS, THAN
