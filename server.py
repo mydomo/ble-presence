@@ -125,6 +125,7 @@ def client_thread(conn, ip, port):
 
     # decode input and strip the end of line
     input_from_client = data.decode("utf8").rstrip()
+    print("Client asked: " + input_from_client)
 
     res = socket_input_process(input_from_client)
     #print("Result of processing {} is: {}".format(input_from_client, res))
@@ -269,7 +270,7 @@ def start_server():
     while (not killer.kill_now):
         conn, addr = soc.accept()
         ip, port = str(addr[0]), str(addr[1])
-        #print('Accepting connection from ' + ip + ':' + port)
+        print('Accepting connection from ' + ip + ':' + port)
         try:
             Thread(target=client_thread, args=(conn, ip, port)).start()
         except:
