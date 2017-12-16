@@ -9,9 +9,13 @@ Version:
             0.1.0: alpha, Domoticz Plugin working... must be fixed the server
             0.2.1  alpha, battery scan now functioning.
             0.2.2  alpha, battery scan removed to see if fix some issues
+            0.2.3  alpha:
+                   FIX a problem where if a BLE device is not found in the BLE and in Domoticz
+                   devices panel "Signal" or "Battery" has bein deleted by the user, the emergency
+                   Kill Switch may not disable the device.
 """
 """
-<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.2.2" wikilink="" externallink="https://github.com/mydomo">
+<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.2.3" wikilink="" externallink="https://github.com/mydomo">
     <params>
         <param field="Address" label="BLE-Presence Server IP address" width="200px" required="true" default="127.0.0.1"/>
         <param field="Port" label="Port" width="40px" required="true" default="12345"/>
@@ -545,7 +549,7 @@ def security_switch():
                 else:
                     ORIGINAL_EXPIRED = False
 
-                if ORIGINAL_FOUND and BATTERY_FOUND and SIGNAL_FOUND:
+                if ORIGINAL_FOUND and (BATTERY_FOUND or SIGNAL_FOUND):
                     if ( ORIGINAL_EXPIRED and (BATTERY_EXPIRED or not BATTERY_FOUND) and (SIGNAL_EXPIRED or not SIGNAL_FOUND) ):
                         # the check of the status is formarly unnecessary but allow us to know if the Security Switch has being used.
                         if Devices[x].nValue == 1:
