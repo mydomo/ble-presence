@@ -228,9 +228,6 @@ class BasePlugin:
                 elif result_string.startswith('{') and result_string.endswith('}'):
                     Domoticz.Log("Socket is sending battery info:" + result_string)
 
-                    # THIS IS ADDED FOR SECURITY, IF TIMEOUT HAS BEING REACHED AND NO INFORMATION FROM THE SERVER TURN OFF THAT DEVICE.
-                    security_switch()
-
                     battery_items = result_string.split("'], '")
                     if len(battery_items) == 1:
                         #Domoticz.Log("Recognized one device")
