@@ -14,9 +14,12 @@ Version:
                    Kill Switch may not disable the device.
             0.2.4  alpha:
                    Battery reading every 24h re-enebled, should be fixed now.
+            0.2.5  alpha:
+                   Started some code refactoring, moreover added a feature where the security switch act even 
+                   if both the optional devices (signal and battery) are deleted by the user.
 """
 """
-<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.2.4" wikilink="" externallink="https://github.com/mydomo">
+<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.2.5" wikilink="" externallink="https://github.com/mydomo">
     <params>
         <param field="Address" label="BLE-Presence Server IP address" width="200px" required="true" default="127.0.0.1"/>
         <param field="Port" label="Port" width="40px" required="true" default="12345"/>
@@ -85,42 +88,12 @@ class BasePlugin:
         global BATTERY_DEVICE_REQUEST
 
         if not self.error:
-            try:
-                soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                SERV_ADDR = str(Parameters["Address"])
-                SERV_PORT = int(Parameters["Port"])
-                soc.connect((SERV_ADDR, SERV_PORT))
-
-                if BATTERY_REQUEST == True:
-                    clients_input = str(BATTERY_DEVICE_REQUEST)
-                else:
-                    clients_input = "beacon_data"
-
-                soc.send(clients_input.encode()) # we must encode the string to bytes
-
-                data = b''  # recv() does return bytes
-                while True:
-                    try:
-                        chunk = soc.recv(4096)  # some 2^n number
-                        if not chunk:  # chunk == ''
-                            break
-
-                        data += chunk
-
-                    except socket.error:
-                        soc.close()
-                        break  
-
-                result_bytes = data # the number means how the response can be in bytes  
-                result_string = result_bytes.decode("utf8") # the return will be in bytes, so decode
-
-
-            except:
+            # Connect to the socket, ask and get the informations
+            result_string = socket_communication()
+            if result_string == "ERROR":
                 self.error = True
-                Domoticz.Error("Error connecting to BLE-Server: " + Parameters["Address"] + " on port: " + Parameters["Port"])
-                security_switch()
-            else:
 
+            else:
                 # CHECK IF THE SCANNING HAS THE EXPECTED RESULTS, THAN
                 # START THE INPUT CLEANING FOR BEACONING DATA
                 # REMOVE '[', ']' AND '(' FROM THE RECEIVED STRING
@@ -216,17 +189,8 @@ class BasePlugin:
                             # DEVICE WAS NOT FOUND, STARTING THE SECURITY MODE
                             security_switch()
 
-                # DATA FROM THE SOCKET IS NOT A REGULAR SCANNING PROCESS, IDENTIFY IT AND ACT ACCORDINGLY
-                # CHECK IF THE SYSTEM IS BUSY WITH OTHER THINGS:
-                elif result_string == "Scanning stopped by other function":
-                    #CREATE A VARIABLE TO KNOW THAT THE SCANNING HAS BEING STOPPED
-                    SCAN_STOPPED = True
-                    Domoticz.Log("BLE SCANNING stopped by other function, devices not updated...")
-
-
-                    # THIS IS ADDED FOR SECURITY, IF TIMEOUT HAS BEING REACHED AND NO INFORMATION FROM THE SERVER TURN OFF THAT DEVICE.
-                    security_switch()
-
+                # DATA FROM THE SOCKET IS NOT A REGULAR SCANNING PROCESS.
+                # IS A BATTERY READ?
                 elif result_string.startswith('{') and result_string.endswith('}'):
                     Domoticz.Log("Socket is sending battery info:" + result_string)
                     
@@ -278,11 +242,10 @@ class BasePlugin:
 
                         BATTERY_REQUEST = False
 
+                # IS NOT A SCANNING AND IS NOT A BATTERY READ, HANDLE SERVER REPLY OUT OF "MAIN SCOPE"
                 else:
-                    Domoticz.Error("BLE SCANNING unexpected syntax in SOCKET REPLY")
-                    Domoticz.Error(str(result_string))
-                    #CREATE A VARIABLE TO KNOW THAT THE SCANNING HAS BEING STOPPED
-                    SCAN_STOPPED = True
+                    # Handle server reply out of our main scope 
+                    handle_server_reply(result_string)
 
                     # THIS IS ADDED FOR SECURITY, IF TIMEOUT HAS BEING REACHED AND NO INFORMATION FROM THE SERVER TURN OFF THAT DEVICE.
                     security_switch()
@@ -294,27 +257,17 @@ class BasePlugin:
         global UPDATE_BLE
         global UPDATE_SIGNAL
         if not self.error:
-            try:
-                soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                SERV_ADDR = str(Parameters["Address"])
-                SERV_PORT = int(Parameters["Port"])
-                soc.connect((SERV_ADDR, SERV_PORT))
-
-                clients_input = "beacon_data" 
-                soc.send(clients_input.encode()) # we must encode the string to bytes  
-                result_bytes = soc.recv(32768) # the number means how the response can be in bytes  
-                result_string = result_bytes.decode("utf8") # the return will be in bytes, so decode
-
-
-            except:
+            
+            result_string = socket_communication()
+            if result_string == "ERROR":
                 self.error = True
-                Domoticz.Error("Error connecting to BLE-Server: " + Parameters["Address"] + " on port: " + Parameters["Port"])
+
             else:
 
                 # CHECK IF THE SCANNING HAS THE EXPECTED RESULTS, THAN
                 # START THE INPUT CLEANING FOR BEACONING DATA
                 # REMOVE '[', ']' AND '(' FROM THE RECEIVED STRING
-                if result_string.startswith("[('") and result_string.endswith("')]"):
+                if result_string.startswith("[('") and result_string.endswith("'])]"):
                     if SCAN_STOPPED == True:
                         SCAN_STOPPED = False
                         Domoticz.Log("BLE SCANNING reasumed correctly")
@@ -384,17 +337,8 @@ class BasePlugin:
 
                 # THE DATA FROM THE SOCKET ARE NOT A REGULAR SCANNING PROCESS, IDENTIFY IT AND ACT ACCORDINGLY
                 else:
-
                     # DATA FROM THE SOCKET IS NOT A REGULAR SCANNING PROCESS, IDENTIFY IT AND ACT ACCORDINGLY
-                    # CHECK IF THE SYSTEM IS BUSY WITH OTHER THINGS:
-                    if result_string == "Scanning stopped by other function":
-                        #CREATE A VARIABLE TO KNOW THAT THE SCANNING HAS BEING STOPPED
-                        SCAN_STOPPED = True
-                        Domoticz.Log("BLE SCANNING stopped by other function, devices not updated...")
-                    else:
-                        Domoticz.Log("BLE SCANNING unexpected syntax in SOCKET REPLY")
-                        #CREATE A VARIABLE TO KNOW THAT THE SCANNING HAS BEING STOPPED
-                        SCAN_STOPPED = True
+                    handle_server_reply(result_string)
         return
 
     def MANUAL_ADD_DEVICE_devices(self):
@@ -563,5 +507,92 @@ def security_switch():
                             UpdateDevice_by_DEV_ID(Devices[x].DeviceID, 0, str("Off"))
                         if SIGNAL_FOUND:
                             UpdateDevice_by_DEV_ID(Devices[s].DeviceID, 0, str("0"))
+                elif ( (ORIGINAL_FOUND and ORIGINAL_EXPIRED) and not (BATTERY_FOUND or SIGNAL_FOUND) ):
+                    # the check of the status is formarly unnecessary but allow us to know if the Security Switch has being used.
+                    if Devices[x].nValue == 1:
+                        Domoticz.Log( "Security Switch: Device " + Devices[x].DeviceID + " cannot be found and reached the timeout, setting as off/no-signal")
+                        UpdateDevice_by_DEV_ID(Devices[x].DeviceID, 0, str("Off"))
+
 
     return
+
+def handle_server_reply(result_string):
+    global SCAN_STOPPED
+    # Domoticz.Log(" ")    > insert something in the log.
+    # Domoticz.Error(" ")  > insert something in the ERROR log.
+    # SCAN_STOPPED = True  > warn the plugin that the scan was not performed
+    if str(result_string).strip() == '':
+        # No results, i guess the server is starting.
+        Domoticz.Log( "Server connected but no BLE devices has being found in the scan. Hang on...")
+
+    elif str(result_string).strip() == 'Scanning stopped by other function':
+        Domoticz.Log( "BLE Server is busy, scan will be reasumed soon.")
+        SCAN_STOPPED = True
+        # ADDED for security
+        security_switch()
+
+    elif str(result_string).strip() == 'Reading started':
+        Domoticz.Log( "BLE Server started reading the battery level for the selected device.")
+        SCAN_STOPPED = True
+        # ADDED for security
+        security_switch()
+
+    elif str(result_string).strip() == 'Reading in progress...':
+        Domoticz.Log( "BLE Server busy reading the battery level for the selected device.")
+        SCAN_STOPPED = True
+        # ADDED for security
+        security_switch()
+
+    elif str(result_string).strip() == 'Service stopping...':
+        Domoticz.Log( "BLE Server turning off.")
+        SCAN_STOPPED = True
+        # ADDED for security
+        security_switch()
+
+    else:
+        Domoticz.Error("BLE Server unexpected reply: " + str(result_string) )
+
+
+    return
+
+def socket_communication():
+    global BATTERY_REQUEST
+    global BATTERY_DEVICE_REQUEST
+
+    try:
+        soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        SERV_ADDR = str(Parameters["Address"])
+        SERV_PORT = int(Parameters["Port"])
+        soc.connect((SERV_ADDR, SERV_PORT))
+
+        if BATTERY_REQUEST == True:
+            clients_input = str(BATTERY_DEVICE_REQUEST)
+        else:
+            clients_input = "beacon_data"
+
+        soc.send(clients_input.encode()) # we must encode the string to bytes
+
+        data = b''  # recv() does return bytes
+        while True:
+            try:
+                chunk = soc.recv(4096)  # some 2^n number
+                if not chunk:  # chunk == ''
+                    break
+
+                data += chunk
+
+            except socket.error:
+                soc.close()
+                break  
+
+        result_bytes = data # the number means how the response can be in bytes  
+        socket_read = result_bytes.decode("utf8") # the return will be in bytes, so decode
+
+    except:
+        Domoticz.Error("Error connecting to BLE-Server: " + Parameters["Address"] + " on port: " + Parameters["Port"])
+        security_switch()
+        # ERROR during the connection
+        return "ERROR"
+    
+    else:
+        return socket_read
