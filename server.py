@@ -115,13 +115,13 @@ def socket_input_process(input_string):
                     if ( (int(time_difference) >= int(min_inval_between_batt_level_readings)) or (str(stored_batterylevel) == '255') ):
                         batt_need_update = True
 
-            if batt_need_update = True and read_value_lock == True:
+            if batt_need_update == True and read_value_lock == True:
                 return str(lang_READING_LOCK)
 
-            if batt_need_update = True and read_value_lock == False:
+            if batt_need_update == True and read_value_lock == False:
                 return str(lang_READING_START)
 
-            if batt_need_update = False:
+            if batt_need_update == False:
                 return str(batt_lev_detected)
 
     ###- STOP RUNNING SERVICES -###
