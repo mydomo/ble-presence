@@ -225,10 +225,6 @@ class BasePlugin:
                     SCAN_STOPPED = True
                     Domoticz.Log("BLE SCANNING stopped by other function, devices not updated...")
 
-
-                    # THIS IS ADDED FOR SECURITY, IF TIMEOUT HAS BEING REACHED AND NO INFORMATION FROM THE SERVER TURN OFF THAT DEVICE.
-                    security_switch()
-
                 elif result_string.startswith('{') and result_string.endswith('}'):
                     Domoticz.Log("Socket is sending battery info:" + result_string)
 
