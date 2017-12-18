@@ -13,9 +13,11 @@ Version:
                    FIX a problem where if a BLE device is not found in the BLE and in Domoticz
                    devices panel "Signal" or "Battery" has bein deleted by the user, the emergency
                    Kill Switch may not disable the device.
+            0.2.4  alpha:
+                   Now the software should read correctly the device's battery every 24h
 """
 """
-<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.2.3" wikilink="" externallink="https://github.com/mydomo">
+<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.2.4" wikilink="" externallink="https://github.com/mydomo">
     <params>
         <param field="Address" label="BLE-Presence Server IP address" width="200px" required="true" default="127.0.0.1"/>
         <param field="Port" label="Port" width="40px" required="true" default="12345"/>
@@ -191,24 +193,26 @@ class BasePlugin:
                                     #Domoticz.Log( str(Devices[x].DeviceID) + " will be turned OFF, last seen: " + str(time_difference) + "seconds ago")
                                     UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
 
-                            # DISABLED TO SEE IF THE HANGING PROBLEM IS DUE TO THE BATTERY REQUEST.
-                            #elif ( str(Devices[x].DeviceID) == DEV_ID_B_DATA ):
+                            #  BATTERY REQUEST.
+                            elif ( str(Devices[x].DeviceID) == DEV_ID_B_DATA ):
                                 #Domoticz.Log( str(Devices[x].DeviceID) + " has being found on the BLE Server output")
-                            #    DEVICE_FOUND = True
+                                DEVICE_FOUND = True
 
-                            #    if int(time_difference) <= int(Parameters["Mode1"]):
+                                if int(time_difference) <= int(Parameters["Mode1"]):
                                     #Domoticz.Log( str(Devices[x].DeviceID) + " will be updated, last seen: " + str(time_difference) + "seconds ago")
                                     #Domoticz.Log(str(Devices[x].DeviceID) + " Devices[x].LastUpdate = " + str(Devices[x].LastUpdate))
-                            #        LASTUPDATE_BATT = time.mktime(datetime.datetime.strptime(Devices[x].LastUpdate, "%Y-%m-%d %H:%M:%S").timetuple())
-                            #        time_difference_BATT = (round(int(time.time())) - round(int(LASTUPDATE_BATT)))
+                                    LASTUPDATE_BATT = time.mktime(datetime.datetime.strptime(Devices[x].LastUpdate, "%Y-%m-%d %H:%M:%S").timetuple())
+                                    time_difference_BATT = (round(int(time.time())) - round(int(LASTUPDATE_BATT)))
                                     #Domoticz.Log("Time difference = " + str(time_difference_BATT) + " s")
-                            #        if (time_difference_BATT >= 86400):
+                                    if (time_difference_BATT >= 86400):
                                         
-                            #            DELETE_PREFIX_DEVICE = str(Devices[x].DeviceID).replace("B-", "").replace("S-", "")
-                            #            DEVICE_FOR_BATTERY = str(DELETE_PREFIX_DEVICE[0:2]) + ":" + str(DELETE_PREFIX_DEVICE[2:4]) + ":" + str(DELETE_PREFIX_DEVICE[4:6]) + ":" + str(DELETE_PREFIX_DEVICE[6:8]) + ":" + str(DELETE_PREFIX_DEVICE[8:10]) + ":" + str(DELETE_PREFIX_DEVICE[10:12])
-                            #            BATTERY_DEVICE_REQUEST = "battery_level: " + str(DEVICE_FOR_BATTERY)
+                                        DELETE_PREFIX_DEVICE = str(Devices[x].DeviceID).replace("B-", "").replace("S-", "")
+                                        DEVICE_FOR_BATTERY = str(DELETE_PREFIX_DEVICE[0:2]) + ":" + str(DELETE_PREFIX_DEVICE[2:4]) + ":" + str(DELETE_PREFIX_DEVICE[4:6]) + ":" + str(DELETE_PREFIX_DEVICE[6:8]) + ":" + str(DELETE_PREFIX_DEVICE[8:10]) + ":" + str(DELETE_PREFIX_DEVICE[10:12])
+                                        BATTERY_DEVICE_REQUEST = "battery_level: " + str(DEVICE_FOR_BATTERY)
 
-                            #            BATTERY_REQUEST = True
+                                        Domoticz.Log("Requested battery level for device: " + str(Devices[x].DeviceID) )
+
+                                        BATTERY_REQUEST = True
 
                         if DEVICE_FOUND == False:
                             # DEVICE WAS NOT FOUND, STARTING THE SECURITY MODE
@@ -227,6 +231,10 @@ class BasePlugin:
 
                 elif result_string.startswith('{') and result_string.endswith('}'):
                     Domoticz.Log("Socket is sending battery info:" + result_string)
+
+                    # THIS IS ADDED FOR SECURITY, IF TIMEOUT HAS BEING REACHED AND NO INFORMATION FROM THE SERVER TURN OFF THAT DEVICE.
+                    security_switch()
+
                     battery_items = result_string.split("'], '")
                     if len(battery_items) == 1:
                         #Domoticz.Log("Recognized one device")
