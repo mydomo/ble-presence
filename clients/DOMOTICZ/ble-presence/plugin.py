@@ -13,11 +13,9 @@ Version:
                    FIX a problem where if a BLE device is not found in the BLE and in Domoticz
                    devices panel "Signal" or "Battery" has bein deleted by the user, the emergency
                    Kill Switch may not disable the device.
-            0.2.4  alpha:
-                   Now the software should read correctly the device's battery every 24h
 """
 """
-<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.2.4" wikilink="" externallink="https://github.com/mydomo">
+<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.2.3" wikilink="" externallink="https://github.com/mydomo">
     <params>
         <param field="Address" label="BLE-Presence Server IP address" width="200px" required="true" default="127.0.0.1"/>
         <param field="Port" label="Port" width="40px" required="true" default="12345"/>
@@ -193,7 +191,11 @@ class BasePlugin:
                                     #Domoticz.Log( str(Devices[x].DeviceID) + " will be turned OFF, last seen: " + str(time_difference) + "seconds ago")
                                     UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
 
+<<<<<<< HEAD
                             #  BATTERY REQUEST.
+=======
+                            # DISABLED TO SEE IF THE HANGING PROBLEM IS DUE TO THE BATTERY REQUEST.
+>>>>>>> parent of bc27a30... 0.2.4 battery reading re-enabled.
                             #elif ( str(Devices[x].DeviceID) == DEV_ID_B_DATA ):
                                 #Domoticz.Log( str(Devices[x].DeviceID) + " has being found on the BLE Server output")
                             #    DEVICE_FOUND = True
@@ -210,9 +212,13 @@ class BasePlugin:
                             #            DEVICE_FOR_BATTERY = str(DELETE_PREFIX_DEVICE[0:2]) + ":" + str(DELETE_PREFIX_DEVICE[2:4]) + ":" + str(DELETE_PREFIX_DEVICE[4:6]) + ":" + str(DELETE_PREFIX_DEVICE[6:8]) + ":" + str(DELETE_PREFIX_DEVICE[8:10]) + ":" + str(DELETE_PREFIX_DEVICE[10:12])
                             #            BATTERY_DEVICE_REQUEST = "battery_level: " + str(DEVICE_FOR_BATTERY)
 
+<<<<<<< HEAD
                             #           Domoticz.Log("Requested battery level for device: " + str(Devices[x].DeviceID) )
 
                             #           BATTERY_REQUEST = True
+=======
+                            #            BATTERY_REQUEST = True
+>>>>>>> parent of bc27a30... 0.2.4 battery reading re-enabled.
 
                         if DEVICE_FOUND == False:
                             # DEVICE WAS NOT FOUND, STARTING THE SECURITY MODE
@@ -227,7 +233,10 @@ class BasePlugin:
 
                 elif result_string.startswith('{') and result_string.endswith('}'):
                     Domoticz.Log("Socket is sending battery info:" + result_string)
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of bc27a30... 0.2.4 battery reading re-enabled.
                     battery_items = result_string.split("'], '")
                     if len(battery_items) == 1:
                         #Domoticz.Log("Recognized one device")
