@@ -81,7 +81,7 @@ def socket_input_process(input_string):
     # check if the request start with battery_level:
     if input_string.startswith('battery_level:'):
         # trim "battery_level:" from the request
-        string_devices_to_analize = input_string.replace("battery_level: ", "")
+        string_devices_to_analize = input_string.replace("battery_level: ", "").strip()
         # split each MAC address in a list in order to be processed
         devices_to_analize = string_devices_to_analize.split(',')
         # set operative mode to battery_level
@@ -95,10 +95,34 @@ def socket_input_process(input_string):
         elif not batt_lev_detected and read_value_lock == False:
             return str(lang_READING_START)
 
-        # if is present a battery data send it
+        # we have some battery data but we have to check if the MAC addresses are the same of the request / timestamp expired / data error.
         else:
-            read_value_lock = False
-            return str(batt_lev_detected)
+            batt_need_update = False
+
+            for device in devices_to_analize:
+
+                battery_level_moderator =  str(batt_lev_detected.get(device, "Never"))
+                # cleaning the value stored
+                cleaned_battery_level_moderator = str(battery_level_moderator.replace("[", "").replace("]", "").replace(" ", "").replace("'", ""))
+                # assign the battery level and the timestamp to different variables
+                if cleaned_battery_level_moderator == "Never":
+                    batt_need_update = True
+
+                if cleaned_battery_level_moderator != "Never":
+                    # DEVICE HAS A PREVIOUS STORED BATTERY LEVEL
+                    stored_batterylevel, stored_timestamp = cleaned_battery_level_moderator.split(',')
+                    time_difference = int(time.time()) - int(stored_timestamp)
+                    if ( (int(time_difference) >= int(min_inval_between_batt_level_readings)) or (str(stored_batterylevel) == '255') ):
+                        batt_need_update = True
+
+            if batt_need_update = True and read_value_lock == True:
+                return str(lang_READING_LOCK)
+
+            if batt_need_update = True and read_value_lock == False:
+                return str(lang_READING_START)
+
+            if batt_need_update = False:
+                return str(batt_lev_detected)
 
     ###- STOP RUNNING SERVICES -###
     if input_string == 'stop':
@@ -206,37 +230,61 @@ def read_battery_level():
                 cleaned_battery_level_moderator = str(battery_level_moderator.replace("[", "").replace("]", "").replace(" ", "").replace("'", ""))
                 # assign the battery level and the timestamp to different variables
                 if cleaned_battery_level_moderator != "Never":
+                    # DEVICE HAS A PREVIOUS STORED BATTERY LEVEL
                     stored_batterylevel, stored_timestamp = cleaned_battery_level_moderator.split(',')
                     time_difference = int(time.time()) - int(stored_timestamp)
 
-                if (int(min_inval_between_batt_level_readings) <= int(time_difference)) or (str(cleaned_battery_level_moderator) == "Never") or (str(stored_batterylevel) == '255'):
-                    scan_beacon_data = False
-                    usb_dongle_reset()
-                    #PUT HERE THE CODE TO READ THE BATTERY LEVEL
-                    try:
-                        handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
-                        handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
-                        #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
-                        ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
-                    except:
-                        ble_value = 'nd'
+                    if ( (int(time_difference) >= int(min_inval_between_batt_level_readings)) or (str(stored_batterylevel) == '255') ):
+                        # THE TIME DIFFERENCE IT'S OVER OR THE BATTERY LEVEL HAS NOT PROPERLY READ
+                        scan_beacon_data = False
+                        usb_dongle_reset()
+                        # CODE TO READ THE BATTERY LEVEL
+                        try:
+                            handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                            handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                            #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
+                            ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                        except:
+                            ble_value = 'nd'
 
-                    if ble_value != '':
-                        ble_value = int(ble_value ,16)
+                        if (ble_value != '') and (ble_value != 'nd'):
+                            ble_value = int(ble_value ,16)
 
-                    if ble_value == '':
-                        ble_value = '255'
-                    time_checked = str(int(time.time()))
-                    batt_lev_detected[device] = [ble_value,time_checked]
-                    read_value_lock = False
-                    #print (batt_lev_detected)
+                        elif (ble_value == '') or (ble_value == 'nd'):
+                            ble_value = '255'
+
+                        time_checked = str(int(time.time()))
+                        batt_lev_detected[device] = [ble_value,time_checked]
+                        read_value_lock = False
+
+                elif cleaned_battery_level_moderator == "Never":
+                    # DEVICE DON'T HAVE A PREVIOUS STORED BATTERY LEVEL
+                        scan_beacon_data = False
+                        usb_dongle_reset()
+                        # CODE TO READ THE BATTERY LEVEL
+                        try:
+                            handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                            handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                            #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
+                            ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                        except:
+                            ble_value = 'nd'
+
+                        if (ble_value != '') and (ble_value != 'nd'):
+                            ble_value = int(ble_value ,16)
+
+                        elif (ble_value == '') or (ble_value == 'nd'):
+                            ble_value = '255'
+                            
+                        time_checked = str(int(time.time()))
+                        batt_lev_detected[device] = [ble_value,time_checked]
+                        read_value_lock = False
 
             #AS SOON AS IT FINISH RESTART THE scan_beacon_data PROCESS
             scan_beacon_data = True
             mode = 'beacon_data'
             Thread(target=ble_scanner).start()
         time.sleep(1)
-
 
 def start_server():
     global soc
