@@ -1,7 +1,6 @@
 """
 BLE-Presence python plugin for Domoticz
 Author: Marco Baglivo, some parts of the components are fork of other open source projects. Read README for more informations.
-
 Version:    
             0.0.1: pre-alpha
             0.0.2: pre-alpha added handling of timestamp
@@ -191,11 +190,7 @@ class BasePlugin:
                                     #Domoticz.Log( str(Devices[x].DeviceID) + " will be turned OFF, last seen: " + str(time_difference) + "seconds ago")
                                     UpdateDevice_by_DEV_ID(DEV_ID_S_DATA, 0, str("0"))
 
-<<<<<<< HEAD
-                            #  BATTERY REQUEST.
-=======
                             # DISABLED TO SEE IF THE HANGING PROBLEM IS DUE TO THE BATTERY REQUEST.
->>>>>>> parent of bc27a30... 0.2.4 battery reading re-enabled.
                             #elif ( str(Devices[x].DeviceID) == DEV_ID_B_DATA ):
                                 #Domoticz.Log( str(Devices[x].DeviceID) + " has being found on the BLE Server output")
                             #    DEVICE_FOUND = True
@@ -212,13 +207,7 @@ class BasePlugin:
                             #            DEVICE_FOR_BATTERY = str(DELETE_PREFIX_DEVICE[0:2]) + ":" + str(DELETE_PREFIX_DEVICE[2:4]) + ":" + str(DELETE_PREFIX_DEVICE[4:6]) + ":" + str(DELETE_PREFIX_DEVICE[6:8]) + ":" + str(DELETE_PREFIX_DEVICE[8:10]) + ":" + str(DELETE_PREFIX_DEVICE[10:12])
                             #            BATTERY_DEVICE_REQUEST = "battery_level: " + str(DEVICE_FOR_BATTERY)
 
-<<<<<<< HEAD
-                            #           Domoticz.Log("Requested battery level for device: " + str(Devices[x].DeviceID) )
-
-                            #           BATTERY_REQUEST = True
-=======
                             #            BATTERY_REQUEST = True
->>>>>>> parent of bc27a30... 0.2.4 battery reading re-enabled.
 
                         if DEVICE_FOUND == False:
                             # DEVICE WAS NOT FOUND, STARTING THE SECURITY MODE
@@ -231,12 +220,12 @@ class BasePlugin:
                     SCAN_STOPPED = True
                     Domoticz.Log("BLE SCANNING stopped by other function, devices not updated...")
 
+
+                    # THIS IS ADDED FOR SECURITY, IF TIMEOUT HAS BEING REACHED AND NO INFORMATION FROM THE SERVER TURN OFF THAT DEVICE.
+                    security_switch()
+
                 elif result_string.startswith('{') and result_string.endswith('}'):
                     Domoticz.Log("Socket is sending battery info:" + result_string)
-<<<<<<< HEAD
-
-=======
->>>>>>> parent of bc27a30... 0.2.4 battery reading re-enabled.
                     battery_items = result_string.split("'], '")
                     if len(battery_items) == 1:
                         #Domoticz.Log("Recognized one device")
