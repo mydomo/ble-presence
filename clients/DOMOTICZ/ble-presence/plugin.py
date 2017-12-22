@@ -20,9 +20,11 @@ Version:
             0.2.6  alpha:
                    Battery request disabled due to a bug where the server is locked requesting the battery level.
                    99% the issue isn't in the plugin but in the server part, but i'm going to disable it here.
+            0.2.7  alpha NEW BRANCH: batteryfix :
+                   Restored code to read battery since problem is not here IMHO.
 """
 """
-<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.2.6" wikilink="" externallink="https://github.com/mydomo">
+<plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.2.7" wikilink="" externallink="https://github.com/mydomo">
     <params>
         <param field="Address" label="BLE-Presence Server IP address" width="200px" required="true" default="127.0.0.1"/>
         <param field="Port" label="Port" width="40px" required="true" default="12345"/>
