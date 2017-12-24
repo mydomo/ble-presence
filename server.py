@@ -61,6 +61,7 @@ def socket_input_process(input_string):
     global lang_READING_LOCK
     global lang_READING_START
     global lang_SERVICE_STOP
+    global batt_need_update
 
     ###- TRANSMIT BEACON DATA -###
     # check if client requested "beacon_data"
