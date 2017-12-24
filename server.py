@@ -33,7 +33,7 @@ from collections import OrderedDict
 ##########- CONFIGURE SCRIPT -##########
 socket_ip = '0.0.0.0'
 socket_port = 12345
-min_inval_between_batt_level_readings = 3600
+min_inval_between_batt_level_readings = 300
 
 ##########- CONFIGURE TRANSLATIONS -##########
 lang_SCAN_STOPPED = 'Scanning stopped by other function'
@@ -87,16 +87,7 @@ def socket_input_process(input_string):
         # set operative mode to battery_level
         mode = 'battery_level'
 
-        # if the reading has already requested and there is no result ask to wait
-        if not batt_lev_detected and read_value_lock == True:
-            return str(lang_READING_LOCK)
-
-        # if the reading is requested for the first time start say that will start
-        elif not batt_lev_detected and read_value_lock == False:
-            return str(lang_READING_START)
-
-        # we have some battery data but we have to check if the MAC addresses are the same of the request / timestamp expired / data error.
-        else:
+        if len(devices_to_analize) >= 1:
             batt_need_update = False
 
             for device in devices_to_analize:
@@ -107,13 +98,16 @@ def socket_input_process(input_string):
                 # assign the battery level and the timestamp to different variables
                 if cleaned_battery_level_moderator == "Never":
                     batt_need_update = True
+                    print("Battery of: " + device + " has not previously scanned, starting now.")
 
                 if cleaned_battery_level_moderator != "Never":
                     # DEVICE HAS A PREVIOUS STORED BATTERY LEVEL
                     stored_batterylevel, stored_timestamp = cleaned_battery_level_moderator.split(',')
                     time_difference = int(time.time()) - int(stored_timestamp)
+                    print("Battery of: " + device + " has being scanned: " + time_difference + " seconds ago.")
                     if ( (int(time_difference) >= int(min_inval_between_batt_level_readings)) or (str(stored_batterylevel) == '255') ):
                         batt_need_update = True
+                        print(device + " battery level need an update! Doing now!")
 
             if batt_need_update == True and read_value_lock == True:
                 return str(lang_READING_LOCK)
@@ -123,6 +117,8 @@ def socket_input_process(input_string):
 
             if batt_need_update == False:
                 return str(batt_lev_detected)
+        else:
+            mode = 'beacon_data'
 
     ###- STOP RUNNING SERVICES -###
     if input_string == 'stop':
@@ -220,10 +216,10 @@ def read_battery_level():
     while (not killer.kill_now):
         if mode == 'battery_level' and read_value_lock == False:
             read_value_lock = True
-            #print ("Dispositivi da analizzare: " + str(devices_to_analize))
+            print ("Dispositivi da analizzare: " + str(devices_to_analize))
             for device in devices_to_analize:
                 device_to_connect = device
-                #print ("Analizzo dispositivo: " + str(device))
+                print ("Analizzo dispositivo: " + str(device))
                 # i'm reading the value stored
                 battery_level_moderator =  str(batt_lev_detected.get(device, "Never"))
                 # cleaning the value stored
@@ -234,8 +230,9 @@ def read_battery_level():
                     stored_batterylevel, stored_timestamp = cleaned_battery_level_moderator.split(',')
                     time_difference = int(time.time()) - int(stored_timestamp)
 
-                    if ( (int(time_difference) >= int(min_inval_between_batt_level_readings)) or (str(stored_batterylevel) == '255') ):
+                    if ( (int(time_difference) >= int(min_inval_between_batt_level_readings)) or (str(stored_batterylevel) == "255") ):
                         # THE TIME DIFFERENCE IT'S OVER OR THE BATTERY LEVEL HAS NOT PROPERLY READ
+                        print ("Device stored but need rescan: last scan: " + str(time_difference) + " seconds ago, stored battery level " + str(stored_batterylevel)) 
                         scan_beacon_data = False
                         usb_dongle_reset()
                         # CODE TO READ THE BATTERY LEVEL
@@ -244,10 +241,11 @@ def read_battery_level():
                             handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
                             #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
                             ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                            print ("Value got from device " + device_to_connect + " is: " + str(ble_value) + "converted: " + int(ble_value ,16))
                         except:
-                            ble_value = 'nd'
+                            ble_value = "nd"
 
-                        if (ble_value != '') and (ble_value != 'nd'):
+                        if (ble_value != '') and (ble_value != "nd"):
                             ble_value = int(ble_value ,16)
 
                         elif (ble_value == '') or (ble_value == 'nd'):
@@ -267,6 +265,7 @@ def read_battery_level():
                             handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
                             #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
                             ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                            print ("Value got from device " + device_to_connect + " is: " + str(ble_value) + "converted: " + int(ble_value ,16))
                         except:
                             ble_value = 'nd'
 
