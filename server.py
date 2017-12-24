@@ -243,7 +243,6 @@ def read_battery_level():
                             handle_ble = os.popen("sudo hcitool lecc " + device_to_connect + " | awk '{print $3}'").read()
                             print (str(handle_ble))
                             handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
-                            print (str(handle_ble_connect))
                             ble_value = os.popen("sudo gatttool --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
                             #NUT handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
                             #NUT #handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
