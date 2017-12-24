@@ -22,6 +22,7 @@ Version:
                    99% the issue isn't in the plugin but in the server part, but i'm going to disable it here.
             0.2.7  alpha NEW BRANCH: batteryfix :
                    Restored code to read battery since problem is not here IMHO.
+                   TO BUGFIX, BATTERY is asked every 15 minutes.
 """
 """
 <plugin key="ble-presence" name="BLE-Presence Client" author="Marco Baglivo" version="0.2.7" wikilink="" externallink="https://github.com/mydomo">
@@ -181,7 +182,7 @@ class BasePlugin:
                                     LASTUPDATE_BATT = time.mktime(datetime.datetime.strptime(Devices[x].LastUpdate, "%Y-%m-%d %H:%M:%S").timetuple())
                                     time_difference_BATT = (round(int(time.time())) - round(int(LASTUPDATE_BATT)))
                                     #Domoticz.Log("Time difference = " + str(time_difference_BATT) + " s")
-                                    if (time_difference_BATT >= 86400):
+                                    if (time_difference_BATT >= 900):
                                         Domoticz.Log("Battery level requested for device: " + str(Devices[x].DeviceID))
                                         
                                         DELETE_PREFIX_DEVICE = str(Devices[x].DeviceID).replace("B-", "").replace("S-", "")
