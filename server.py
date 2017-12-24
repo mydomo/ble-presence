@@ -211,7 +211,8 @@ def read_battery_level():
     global batt_lev_detected
     global read_value_lock
     global min_inval_between_batt_level_readings
-    uuid_to_check = '0x2a19'
+    #uuid_to_check = '0x2a19'
+    uuid_to_check = '0xfffa'
     time_difference = 0
     while (not killer.kill_now):
         if mode == 'battery_level' and read_value_lock == False:
