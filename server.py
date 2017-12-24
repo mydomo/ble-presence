@@ -98,16 +98,16 @@ def socket_input_process(input_string):
                 # assign the battery level and the timestamp to different variables
                 if cleaned_battery_level_moderator == "Never":
                     batt_need_update = True
-                    print("Battery of: " + device + " has not previously scanned, starting now.")
+                    #print("ASK: Battery of: " + device + " has not previously scanned, starting now.")
 
                 if cleaned_battery_level_moderator != "Never":
                     # DEVICE HAS A PREVIOUS STORED BATTERY LEVEL
                     stored_batterylevel, stored_timestamp = cleaned_battery_level_moderator.split(',')
                     time_difference = int(time.time()) - int(stored_timestamp)
-                    print("Battery of: " + str(device) + " has being scanned: " + str(time_difference) + " seconds ago.")
+                    #print("ASK: Battery of: " + str(device) + " has being scanned: " + str(time_difference) + " seconds ago.")
                     if ( (int(time_difference) >= int(min_inval_between_batt_level_readings)) or (str(stored_batterylevel) == '255') ):
                         batt_need_update = True
-                        print(device + " battery level need an update! Doing now!")
+                        #print(device + " battery level need an update! Doing now!")
 
             if batt_need_update == True and read_value_lock == True:
                 return str(lang_READING_LOCK)
@@ -215,7 +215,7 @@ def read_battery_level():
     uuid_to_check = '0xfffa'
     time_difference = 0
     while (not killer.kill_now):
-        if mode == 'battery_level' and read_value_lock == False:
+        if mode == 'battery_level' and read_value_lock == False and batt_need_update == True:
             read_value_lock = True
             print ("Dispositivi da analizzare: " + str(devices_to_analize))
             for device in devices_to_analize:
@@ -238,10 +238,12 @@ def read_battery_level():
                         usb_dongle_reset()
                         # CODE TO READ THE BATTERY LEVEL
                         try:
-                            handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                            handle_ble = os.popen("sudo hcitool lecc " + device_to_connect + " | awk '{print $3}'").read()
                             handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
-                            #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
-                            ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                            ble_value = os.popen("sudo gatttool --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                            #NUT handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                            #NUT #handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                            #NUT #ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
                             print ("Value got from device " + str(device_to_connect) + " is: " + str(ble_value) + "converted: " + int(ble_value ,16))
                         except:
                             ble_value = "nd"
