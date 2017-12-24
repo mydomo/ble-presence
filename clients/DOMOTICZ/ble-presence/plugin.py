@@ -573,6 +573,7 @@ def socket_communication():
 
         if BATTERY_REQUEST == True:
             clients_input = str(BATTERY_DEVICE_REQUEST)
+            Domoticz.Log(clients_input)
         else:
             clients_input = "beacon_data"
 
