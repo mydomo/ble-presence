@@ -225,7 +225,7 @@ def read_battery_level():
                 device_to_connect = device
                 usb_dongle_reset()
 
-                print ("ESEGUO: sudo hcitool lecc " + str(device_to_connect) + " | awk '{print $3}'")
+                print ("ESEGUO: sudo hcitool lecc " + str(device_to_connect))
                 process_get_connection_ID = subprocess.Popen("sudo hcitool lecc " + str(device_to_connect) + " | awk '{print $3}'", stdout=subprocess.PIPE, shell=True)
                 handle_ble, err = process_get_connection_ID.communicate()
 
