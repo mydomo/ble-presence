@@ -229,11 +229,11 @@ def read_battery_level():
                 process_get_connection_ID = subprocess.Popen("sudo hcitool lecc " + str(device_to_connect) + " | awk '{print $3}'", stdout=subprocess.PIPE, shell=True)
                 handle_ble, err = process_get_connection_ID.communicate()
 
-                print("sudo hcitool ledc " + str(handle_ble))
+                print("ESEGUO sudo hcitool ledc " + str(handle_ble))
                 process_connect = subprocess.Popen("sudo hcitool ledc " + str(handle_ble), stdout=subprocess.PIPE, shell=True)
                 handle_ble_connect, err = process_connect.communicate()
 
-                print("sudo gatttool --char-read --uuid " + str(uuid_to_check) + " -b " + str(device_to_connect) + " | awk '{print $4}'")
+                print("ESEGUO sudo gatttool --char-read --uuid " + str(uuid_to_check) + " -b " + str(device_to_connect) + " | awk '{print $4}'")
                 process_ble_value = subprocess.Popen("sudo gatttool --char-read --uuid " + str(uuid_to_check) + " -b " + str(device_to_connect) + " | awk '{print $4}'", stdout=subprocess.PIPE, shell=True)
                 ble_value, err = process_ble_value.communicate()
                 #handle_ble = os.popen("sudo hcitool lecc " + device_to_connect + " | awk '{print $3}'").read()
@@ -243,7 +243,7 @@ def read_battery_level():
                 #NUT handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
                 #NUT #handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
                 #NUT #ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
-                print ("Value got from device " + str(device_to_connect) + " is: " + str(ble_value) + "converted: " + int(ble_value ,16))
+                print ("Value got from device " + str(device_to_connect) + " is: " + str(ble_value))
             read_value_lock = False
             #AS SOON AS IT FINISH RESTART THE scan_beacon_data PROCESS
             scan_beacon_data = True
