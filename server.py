@@ -231,7 +231,7 @@ def read_battery_level():
                 print ("ESEGUO: sudo hcitool lecc " + str(device_to_connect))
                 process_get_connection_ID = subprocess.Popen("sudo hcitool lecc " + str(device_to_connect) + " | awk '{print $3}'", stdout=subprocess.PIPE, shell=True)
                 handle_ble, err = process_get_connection_ID.communicate()
-                hanle_clean = non_decimal.sub('', handle_ble)
+                hanle_clean = non_decimal.sub('', str(handle_ble))
 
                 print("ESEGUO sudo hcitool ledc " + str(hanle_clean) )
                 process_connect = subprocess.Popen("sudo hcitool ledc " + str(hanle_clean), stdout=subprocess.PIPE, shell=True)
