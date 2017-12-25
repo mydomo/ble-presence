@@ -28,6 +28,7 @@ import time
 import bluetooth._bluetooth as bluez
 import signal
 import subprocess
+import re
 from collections import OrderedDict
 
 ##########- CONFIGURE SCRIPT -##########
@@ -216,10 +217,12 @@ def read_battery_level():
     #uuid_to_check = '0x2a19'
     uuid_to_check = '0xfffa'
     time_difference = 0
+    non_decimal = re.compile(r'[^\d.]+')
     while (not killer.kill_now):
         if mode == 'battery_level' and read_value_lock == False and batt_need_update == True:
             read_value_lock = True
             scan_beacon_data = False
+            
             print ("Dispositivi da analizzare: " + str(devices_to_analize))
             for device in devices_to_analize:
                 device_to_connect = device
@@ -229,8 +232,8 @@ def read_battery_level():
                 process_get_connection_ID = subprocess.Popen("sudo hcitool lecc " + str(device_to_connect) + " | awk '{print $3}'", stdout=subprocess.PIPE, shell=True)
                 handle_ble, err = process_get_connection_ID.communicate()
 
-                print("ESEGUO sudo hcitool ledc " + str(handle_ble))
-                process_connect = subprocess.Popen("sudo hcitool ledc " + str(handle_ble), stdout=subprocess.PIPE, shell=True)
+                print("ESEGUO sudo hcitool ledc " + str(non_decimal.sub('', handle_ble))
+                process_connect = subprocess.Popen("sudo hcitool ledc " + str(non_decimal.sub('', handle_ble)), stdout=subprocess.PIPE, shell=True)
                 handle_ble_connect, err = process_connect.communicate()
 
                 print("ESEGUO sudo gatttool --char-read --uuid " + str(uuid_to_check) + " -b " + str(device_to_connect) + " | awk '{print $4}'")
