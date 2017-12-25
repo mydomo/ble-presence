@@ -225,16 +225,16 @@ def read_battery_level():
                 device_to_connect = device
                 usb_dongle_reset()
 
-                print ("ESEGUO: sudo hcitool lecc " + device_to_connect + " | awk '{print $3}'")
-                process_get_connection_ID = subprocess.Popen("sudo hcitool lecc " + device_to_connect + " | awk '{print $3}'", stdout=subprocess.PIPE, shell=True)
+                print ("ESEGUO: sudo hcitool lecc " + str(device_to_connect) + " | awk '{print $3}'")
+                process_get_connection_ID = subprocess.Popen("sudo hcitool lecc " + str(device_to_connect) + " | awk '{print $3}'", stdout=subprocess.PIPE, shell=True)
                 handle_ble, err = process_get_connection_ID.communicate()
 
-                print("sudo hcitool ledc " + handle_ble)
-                process_connect = subprocess.Popen("sudo hcitool ledc " + handle_ble, stdout=subprocess.PIPE, shell=True)
+                print("sudo hcitool ledc " + str(handle_ble))
+                process_connect = subprocess.Popen("sudo hcitool ledc " + str(handle_ble), stdout=subprocess.PIPE, shell=True)
                 handle_ble_connect, err = process_connect.communicate()
 
-                print("sudo gatttool --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'")
-                process_ble_value = subprocess.Popen("sudo gatttool --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'", stdout=subprocess.PIPE, shell=True)
+                print("sudo gatttool --char-read --uuid " + str(uuid_to_check) + " -b " + str(device_to_connect) + " | awk '{print $4}'")
+                process_ble_value = subprocess.Popen("sudo gatttool --char-read --uuid " + str(uuid_to_check) + " -b " + str(device_to_connect) + " | awk '{print $4}'", stdout=subprocess.PIPE, shell=True)
                 ble_value, err = process_ble_value.communicate()
                 #handle_ble = os.popen("sudo hcitool lecc " + device_to_connect + " | awk '{print $3}'").read()
                 #print (str(handle_ble))
