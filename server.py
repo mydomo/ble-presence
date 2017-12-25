@@ -219,83 +219,32 @@ def read_battery_level():
     while (not killer.kill_now):
         if mode == 'battery_level' and read_value_lock == False and batt_need_update == True:
             read_value_lock = True
+            scan_beacon_data = False
             print ("Dispositivi da analizzare: " + str(devices_to_analize))
             for device in devices_to_analize:
                 device_to_connect = device
-                print ("Analizzo dispositivo: " + str(device))
-                # i'm reading the value stored
-                battery_level_moderator =  str(batt_lev_detected.get(device, "Never"))
-                # cleaning the value stored
-                cleaned_battery_level_moderator = str(battery_level_moderator.replace("[", "").replace("]", "").replace(" ", "").replace("'", ""))
-                # assign the battery level and the timestamp to different variables
-                if cleaned_battery_level_moderator != "Never":
-                    # DEVICE HAS A PREVIOUS STORED BATTERY LEVEL
-                    stored_batterylevel, stored_timestamp = cleaned_battery_level_moderator.split(',')
-                    time_difference = int(time.time()) - int(stored_timestamp)
+                usb_dongle_reset()
 
-                    if ( (int(time_difference) >= int(min_inval_between_batt_level_readings)) or (str(stored_batterylevel) == "255") ):
-                        # THE TIME DIFFERENCE IT'S OVER OR THE BATTERY LEVEL HAS NOT PROPERLY READ
-                        print ("Device stored but need rescan: last scan: " + str(time_difference) + " seconds ago, stored battery level " + str(stored_batterylevel)) 
-                        scan_beacon_data = False
-                        usb_dongle_reset()
-                        # CODE TO READ THE BATTERY LEVEL
-                        try:
-                            print ("ESEGUO: sudo hcitool lecc " + device_to_connect + " | awk '{print $3}'")
-                            process_get_connection_ID = subprocess.Popen("sudo hcitool lecc " + device_to_connect + " | awk '{print $3}'", stdout=subprocess.PIPE, shell=True)
-                            handle_ble, err = process_get_connection_ID.communicate()
+                print ("ESEGUO: sudo hcitool lecc " + device_to_connect + " | awk '{print $3}'")
+                process_get_connection_ID = subprocess.Popen("sudo hcitool lecc " + device_to_connect + " | awk '{print $3}'", stdout=subprocess.PIPE, shell=True)
+                handle_ble, err = process_get_connection_ID.communicate()
 
-                            print("sudo hcitool ledc " + handle_ble)
-                            process_connect = subprocess.Popen("sudo hcitool ledc " + handle_ble, stdout=subprocess.PIPE, shell=True)
-                            handle_ble_connect, err = process_connect.communicate()
+                print("sudo hcitool ledc " + handle_ble)
+                process_connect = subprocess.Popen("sudo hcitool ledc " + handle_ble, stdout=subprocess.PIPE, shell=True)
+                handle_ble_connect, err = process_connect.communicate()
 
-                            print("sudo gatttool --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'")
-                            process_ble_value = subprocess.Popen("sudo gatttool --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'", stdout=subprocess.PIPE, shell=True)
-                            ble_value, err = process_ble_value.communicate()
-                            #handle_ble = os.popen("sudo hcitool lecc " + device_to_connect + " | awk '{print $3}'").read()
-                            #print (str(handle_ble))
-                            #handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
-                            #ble_value = os.popen("sudo gatttool --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
-                            #NUT handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
-                            #NUT #handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
-                            #NUT #ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
-                            print ("Value got from device " + str(device_to_connect) + " is: " + str(ble_value) + "converted: " + int(ble_value ,16))
-                        except:
-                            ble_value = "nd"
-
-                        if (ble_value != '') and (ble_value != "nd"):
-                            ble_value = int(ble_value ,16)
-
-                        elif (ble_value == '') or (ble_value == 'nd'):
-                            ble_value = '255'
-
-                        time_checked = str(int(time.time()))
-                        batt_lev_detected[device] = [ble_value,time_checked]
-                        read_value_lock = False
-
-                elif cleaned_battery_level_moderator == "Never":
-                    # DEVICE DON'T HAVE A PREVIOUS STORED BATTERY LEVEL
-                        scan_beacon_data = False
-                        usb_dongle_reset()
-                        # CODE TO READ THE BATTERY LEVEL
-                        try:
-                            handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
-                            handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
-                            #ble_value = int(os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read() ,16)
-                            ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
-                            print ("Value got from device " + device_to_connect + " is: " + str(ble_value) + "converted: " + int(ble_value ,16))
-                        except:
-                            ble_value = 'nd'
-
-                        if (ble_value != '') and (ble_value != 'nd'):
-                            ble_value = int(ble_value ,16)
-
-                        elif (ble_value == '') or (ble_value == 'nd'):
-                            ble_value = '255'
-                            
-                        time_checked = str(int(time.time()))
-                        batt_lev_detected[device] = [ble_value,time_checked]
-                        read_value_lock = False
-
+                print("sudo gatttool --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'")
+                process_ble_value = subprocess.Popen("sudo gatttool --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'", stdout=subprocess.PIPE, shell=True)
+                ble_value, err = process_ble_value.communicate()
+                #handle_ble = os.popen("sudo hcitool lecc " + device_to_connect + " | awk '{print $3}'").read()
+                #print (str(handle_ble))
+                #handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                #ble_value = os.popen("sudo gatttool --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                #NUT handle_ble = os.popen("sudo hcitool lecc --random " + device_to_connect + " | awk '{print $3}'").read()
+                #NUT #handle_ble_connect = os.popen("sudo hcitool ledc " + handle_ble).read()
+                #NUT #ble_value = os.popen("sudo gatttool -t random --char-read --uuid " + uuid_to_check + " -b " + device_to_connect + " | awk '{print $4}'").read()
+                print ("Value got from device " + str(device_to_connect) + " is: " + str(ble_value) + "converted: " + int(ble_value ,16))
+            read_value_lock = False
             #AS SOON AS IT FINISH RESTART THE scan_beacon_data PROCESS
             scan_beacon_data = True
             mode = 'beacon_data'
